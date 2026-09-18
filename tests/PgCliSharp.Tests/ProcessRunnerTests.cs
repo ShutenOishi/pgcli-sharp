@@ -170,6 +170,30 @@ public sealed class ProcessRunnerTests
         Assert.Equal(new byte[] { 0, 1, 2, 255 }, output.ToArray());
     }
 
+
+    [Fact]
+    public async Task RunAsync_BinaryStandardInput_IsForwardedByteForByte()
+    {
+        byte[] expected = { 0, 1, 2, 255, 128, 10 };
+        using var input = new MemoryStream(expected);
+        using var output = new MemoryStream();
+
+        (string executable, string[] arguments) = GetBinaryEchoCommand();
+        var request = new ProcessRunRequest(
+            executable,
+            arguments,
+            standardOutput: output,
+            standardInput: input);
+        var runner = new ProcessRunner();
+
+        ProcessRunResult result = await runner.RunAsync(
+            request,
+            CancellationToken.None);
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Equal(expected, output.ToArray());
+    }
+
     private static async Task<bool> WaitForFileAsync(
         string path,
         TimeSpan timeout)
@@ -214,6 +238,27 @@ public sealed class ProcessRunnerTests
         {
             return true;
         }
+    }
+
+
+    private static (string Executable, string[] Arguments) GetBinaryEchoCommand()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            string powerShell = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                "WindowsPowerShell",
+                "v1.0",
+                "powershell.exe");
+            const string Script =
+                "[Console]::OpenStandardInput().CopyTo([Console]::OpenStandardOutput())";
+
+            return (
+                powerShell,
+                new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", Script });
+        }
+
+        return ("/bin/cat", Array.Empty<string>());
     }
 
     private static (string Executable, string[] Arguments) GetLongRunningCommand()
