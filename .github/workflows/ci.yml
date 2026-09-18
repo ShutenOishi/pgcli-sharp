@@ -1,10 +1,13 @@
 name: CI
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
       - main
-      - phase-0-foundation
   pull_request:
   workflow_dispatch:
 
@@ -36,40 +39,13 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Validate phase release manifest
+      - name: Validate phase metadata and bilingual documentation
         shell: bash
-        run: |
-          set -euo pipefail
-          test -f .github/phase-release.json
-          test -f "$(jq -r '.notes_file' .github/phase-release.json)"
-          jq -e '
-            (.phase | type == "number") and
-            (.tag | type == "string" and test("^phase-[0-9]+$")) and
-            (.title | type == "string" and length > 0) and
-            (.notes_file | type == "string" and startswith("docs/releases/")) and
-            (.prerelease | type == "boolean")
-          ' .github/phase-release.json >/dev/null
+        run: bash eng/validate-phase-metadata.sh
 
-      - name: Validate bilingual human-facing documentation
+      - name: Validate PostgreSQL compatibility specifications
         shell: bash
-        run: |
-          set -euo pipefail
-
-          phase="$(jq -r '.phase' .github/phase-release.json)"
-          notes_file="$(jq -r '.notes_file' .github/phase-release.json)"
-
-          test -f README.ja.md
-          grep -F 'README.ja.md' README.md >/dev/null
-          grep -F '## 日本語' "$notes_file" >/dev/null
-          grep -F '## English' "$notes_file" >/dev/null
-          english_line="$(grep -n -m1 '^## English$' "$notes_file" | cut -d: -f1)"
-          japanese_line="$(grep -n -m1 '^## 日本語$' "$notes_file" | cut -d: -f1)"
-          test -n "$english_line"
-          test -n "$japanese_line"
-
-          if [ "$phase" -ge 1 ]; then
-            test "$english_line" -lt "$japanese_line"
-          fi
+        run: bash eng/validate-compatibility-specs.sh
 
       - name: Restore
         run: dotnet restore PgCliSharp.slnx
