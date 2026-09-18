@@ -8,6 +8,8 @@ Build a strongly typed .NET API for PostgreSQL command-line tools with explicit 
 
 ## Phase 0 - Foundation
 
+**Status: Complete (2026-09-18).** The accepted foundation is implemented and validated on Linux, Windows, and macOS. Windows additionally exercises the `netstandard2.0` asset through a .NET Framework 4.8 consumer test.
+
 - Create solution/project structure.
 - Establish package ID and NuGet metadata.
 - Implement target-framework matrix.
