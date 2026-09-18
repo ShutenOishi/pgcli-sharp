@@ -15,6 +15,10 @@ internal static class MessageKeys
     internal const string InvalidRestrictKey = nameof(InvalidRestrictKey);
     internal const string OutputPathRequired = nameof(OutputPathRequired);
     internal const string InvalidOptionValue = nameof(InvalidOptionValue);
+    internal const string ExecutablePathRequired = nameof(ExecutablePathRequired);
+    internal const string OutputStreamMustBeWritable = nameof(OutputStreamMustBeWritable);
+    internal const string FilterPathRequired = nameof(FilterPathRequired);
+    internal const string FilterInputMustBeReadable = nameof(FilterInputMustBeReadable);
 
     internal static readonly string[] All =
     {
@@ -31,5 +35,9 @@ internal static class MessageKeys
         InvalidRestrictKey,
         OutputPathRequired,
         InvalidOptionValue,
+        ExecutablePathRequired,
+        OutputStreamMustBeWritable,
+        FilterPathRequired,
+        FilterInputMustBeReadable,
     };
 }
