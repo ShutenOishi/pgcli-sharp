@@ -84,12 +84,12 @@ public enum PgDumpLargeObjectMode
 }
 
 /// <summary>
-/// <para>EN: Controls pg_dump password prompting.</para>
-/// <para>JA: pg_dump のパスワードプロンプト動作を制御します。</para>
+/// <para>EN: Controls password prompting for PostgreSQL client tools.</para>
+/// <para>JA: PostgreSQL クライアントツールのパスワードプロンプト動作を制御します。</para>
 /// </summary>
 public enum PgPasswordPromptMode
 {
-    /// <summary><para>EN: Use pg_dump/libpq default prompting behavior.</para><para>JA: pg_dump/libpq の既定のプロンプト動作を使用します。</para></summary>
+    /// <summary><para>EN: Use the PostgreSQL tool/libpq default prompting behavior.</para><para>JA: PostgreSQL ツール/libpq の既定のプロンプト動作を使用します。</para></summary>
     Default,
 
     /// <summary><para>EN: Never prompt for a password (-w/--no-password).</para><para>JA: パスワードを要求しません（-w/--no-password）。</para></summary>

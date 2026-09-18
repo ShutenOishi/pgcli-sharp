@@ -21,6 +21,10 @@ internal static class MessageKeys
     internal const string FilterInputMustBeReadable = nameof(FilterInputMustBeReadable);
     internal const string CompressionNoneDetailsNotAllowed = nameof(CompressionNoneDetailsNotAllowed);
     internal const string CompressionLongRequiresZstd = nameof(CompressionLongRequiresZstd);
+    internal const string InputPathRequired = nameof(InputPathRequired);
+    internal const string InputStreamMustBeReadable = nameof(InputStreamMustBeReadable);
+    internal const string DatabaseNameRequired = nameof(DatabaseNameRequired);
+    internal const string PositiveValueRequired = nameof(PositiveValueRequired);
 
     internal static readonly string[] All =
     {
@@ -43,5 +47,9 @@ internal static class MessageKeys
         FilterInputMustBeReadable,
         CompressionNoneDetailsNotAllowed,
         CompressionLongRequiresZstd,
+        InputPathRequired,
+        InputStreamMustBeReadable,
+        DatabaseNameRequired,
+        PositiveValueRequired,
     };
 }

@@ -14,13 +14,17 @@
   <data name="InvalidOptionCombination" xml:space="preserve"><value>オプション {0} の組み合わせは PostgreSQL {1} では無効です。</value></data>
   <data name="InvalidCompressionLevel" xml:space="preserve"><value>圧縮レベル {0} は {1} では使用できません。</value></data>
   <data name="InvalidCompressionCombination" xml:space="preserve"><value>指定された圧縮設定は無効です: {0}。</value></data>
-  <data name="InvalidRestrictKey" xml:space="preserve"><value>pg_dump の restrict key には、空ではない ASCII 英数字のみを指定できます。</value></data>
-  <data name="OutputPathRequired" xml:space="preserve"><value>空ではない pg_dump の出力パスを指定する必要があります。</value></data>
-  <data name="InvalidOptionValue" xml:space="preserve"><value>値 '{1}' は pg_dump オプション '{0}' では無効です。</value></data>
+  <data name="InvalidRestrictKey" xml:space="preserve"><value>PostgreSQL の restrict key には、空ではない ASCII 英数字のみを指定できます。</value></data>
+  <data name="OutputPathRequired" xml:space="preserve"><value>空ではない PostgreSQL ツールの出力パスを指定する必要があります。</value></data>
+  <data name="InvalidOptionValue" xml:space="preserve"><value>値 '{1}' は PostgreSQL オプション '{0}' では無効です。</value></data>
   <data name="ExecutablePathRequired" xml:space="preserve"><value>空ではない PostgreSQL 実行ファイルのパスを指定する必要があります。</value></data>
-  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>pg_dump の出力ストリームは書き込み可能である必要があります。</value></data>
-  <data name="FilterPathRequired" xml:space="preserve"><value>空ではない pg_dump フィルターファイルのパスを指定する必要があります。</value></data>
-  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>pg_dump のフィルター入力ストリームは読み取り可能である必要があります。</value></data>
+  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>PostgreSQL ツールの出力ストリームは書き込み可能である必要があります。</value></data>
+  <data name="FilterPathRequired" xml:space="preserve"><value>空ではない PostgreSQL フィルターファイルのパスを指定する必要があります。</value></data>
+  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>PostgreSQL フィルター入力ストリームは読み取り可能である必要があります。</value></data>
   <data name="CompressionNoneDetailsNotAllowed" xml:space="preserve"><value>圧縮方式 'none' では、圧縮レベルまたは long-distance モードを指定できません。</value></data>
   <data name="CompressionLongRequiresZstd" xml:space="preserve"><value>long-distance 圧縮モードは zstd でのみ使用できます。</value></data>
+  <data name="InputPathRequired" xml:space="preserve"><value>空ではない PostgreSQL ツールの入力パスを指定する必要があります。</value></data>
+  <data name="InputStreamMustBeReadable" xml:space="preserve"><value>PostgreSQL ツールの入力ストリームは読み取り可能である必要があります。</value></data>
+  <data name="DatabaseNameRequired" xml:space="preserve"><value>空ではないデータベース名または接続文字列を指定する必要があります。</value></data>
+  <data name="PositiveValueRequired" xml:space="preserve"><value>値は 0 より大きい必要があります。</value></data>
 </root>

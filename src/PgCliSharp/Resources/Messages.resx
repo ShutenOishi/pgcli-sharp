@@ -14,13 +14,17 @@
   <data name="InvalidOptionCombination" xml:space="preserve"><value>Options {0} form an invalid combination for PostgreSQL {1}.</value></data>
   <data name="InvalidCompressionLevel" xml:space="preserve"><value>Compression level {0} is not valid for {1}.</value></data>
   <data name="InvalidCompressionCombination" xml:space="preserve"><value>The requested compression settings are not valid: {0}.</value></data>
-  <data name="InvalidRestrictKey" xml:space="preserve"><value>The pg_dump restrict key must be a non-empty ASCII alphanumeric string.</value></data>
-  <data name="OutputPathRequired" xml:space="preserve"><value>A non-empty pg_dump output path is required.</value></data>
-  <data name="InvalidOptionValue" xml:space="preserve"><value>Value '{1}' is invalid for pg_dump option '{0}'.</value></data>
+  <data name="InvalidRestrictKey" xml:space="preserve"><value>The PostgreSQL restrict key must be a non-empty ASCII alphanumeric string.</value></data>
+  <data name="OutputPathRequired" xml:space="preserve"><value>A non-empty PostgreSQL tool output path is required.</value></data>
+  <data name="InvalidOptionValue" xml:space="preserve"><value>Value '{1}' is invalid for PostgreSQL option '{0}'.</value></data>
   <data name="ExecutablePathRequired" xml:space="preserve"><value>A non-empty PostgreSQL executable path is required.</value></data>
-  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>The pg_dump output stream must be writable.</value></data>
-  <data name="FilterPathRequired" xml:space="preserve"><value>A non-empty pg_dump filter file path is required.</value></data>
-  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>The pg_dump filter input stream must be readable.</value></data>
+  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>The PostgreSQL tool output stream must be writable.</value></data>
+  <data name="FilterPathRequired" xml:space="preserve"><value>A non-empty PostgreSQL filter file path is required.</value></data>
+  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>The PostgreSQL filter input stream must be readable.</value></data>
   <data name="CompressionNoneDetailsNotAllowed" xml:space="preserve"><value>The 'none' compression method cannot specify a level or long-distance mode.</value></data>
   <data name="CompressionLongRequiresZstd" xml:space="preserve"><value>Long-distance compression mode is supported only with zstd.</value></data>
+  <data name="InputPathRequired" xml:space="preserve"><value>A non-empty PostgreSQL tool input path is required.</value></data>
+  <data name="InputStreamMustBeReadable" xml:space="preserve"><value>The PostgreSQL tool input stream must be readable.</value></data>
+  <data name="DatabaseNameRequired" xml:space="preserve"><value>A non-empty database name or connection string is required.</value></data>
+  <data name="PositiveValueRequired" xml:space="preserve"><value>The value must be greater than zero.</value></data>
 </root>
