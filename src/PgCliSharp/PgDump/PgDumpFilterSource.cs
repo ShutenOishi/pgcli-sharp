@@ -66,10 +66,14 @@ public sealed class PgDumpFilterSource
     /// <returns><para>EN: The filter source.</para><para>JA: フィルター入力元です。</para></returns>
     public static PgDumpFilterSource FromStandardInput(Stream input)
     {
+#if NETSTANDARD2_0
         if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
+#else
+        ArgumentNullException.ThrowIfNull(input);
+#endif
 
         if (!input.CanRead)
         {
