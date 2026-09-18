@@ -117,6 +117,10 @@ Tools that can alter or recover data directories require especially explicit doc
 - Complete README/examples.
 - Release candidates followed by `1.0.0`.
 
+## Phase completion releases
+
+Every completed phase is recorded as a GitHub Release under ADR-0009. The phase-completion PR must update `.github/phase-release.json` and add the matching `docs/releases/phase-N.md`. After that change reaches `main`, the Phase Release workflow creates an immutable `phase-N` release containing an explicit source ZIP, `.nupkg`, and `.snupkg` for the exact merge commit. This milestone release does not imply publication to nuget.org.
+
 ## Continuous work
 
 For every phase:
@@ -126,6 +130,7 @@ For every phase:
 - extend compatibility specifications;
 - add regression tests for discovered PostgreSQL/version differences;
 - keep release notes/changelog;
+- update the Phase release manifest and release notes when a phase is completed;
 - avoid relying on chat history as project specification.
 
 ## Future PostgreSQL releases
