@@ -68,7 +68,7 @@ public sealed class PgDumpCompression
     /// <para>JA: PostgreSQL 16 以降の方式指定による圧縮指定を作成します。</para>
     /// </summary>
     /// <param name="method"><para>EN: Compression method.</para><para>JA: 圧縮方式です。</para></param>
-    /// <param name="level"><para>EN: Optional method-specific compression level.</para><para>JA: 任意の方式別圧縮レベルです。</para></param>
+    /// <param name="level"><para>EN: Optional method-specific compression level. gzip accepts -1 or 1 through 9; LZ4 accepts 0 through 12; zstd bounds are determined by the executable's linked zstd library.</para><para>JA: 任意の方式別圧縮レベルです。gzip は -1 または 1〜9、LZ4 は 0〜12 を受け付けます。zstd の範囲は実行ファイルがリンクしている zstd ライブラリに依存します。</para></param>
     /// <param name="longMode"><para>EN: Enables zstd long-distance mode. Valid only with zstd.</para><para>JA: zstd の long-distance モードを有効にします。zstd でのみ有効です。</para></param>
     /// <returns><para>EN: The typed compression specification.</para><para>JA: 型付き圧縮指定です。</para></returns>
     public static PgDumpCompression ForMethod(
@@ -102,7 +102,7 @@ public sealed class PgDumpCompression
         if (level.HasValue)
         {
             if (method == PgDumpCompressionMethod.Gzip &&
-                (level.Value < 1 || level.Value > 9))
+                ((level.Value < 1 || level.Value > 9) && level.Value != -1))
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(level),
@@ -111,7 +111,7 @@ public sealed class PgDumpCompression
             }
 
             if (method == PgDumpCompressionMethod.Lz4 &&
-                (level.Value < 1 || level.Value > 12))
+                (level.Value < 0 || level.Value > 12))
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(level),
