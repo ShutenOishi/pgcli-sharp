@@ -64,7 +64,7 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0004](0004-bilingual-documentation-and-localized-messages.md) | Provide bilingual XML documentation and localized runtime messages | Accepted |
 | [0005](0005-direct-process-execution-and-stream-safe-output.md) | Execute tools directly and preserve stream-safe output | Superseded |
 | [0006](0006-nuget-release-and-trusted-publishing.md) | Publish NuGet packages through automated trusted releases | Accepted |
-| [0007](0007-target-framework-matrix.md) | Initial target framework matrix | Proposed |
+| [0007](0007-target-framework-matrix.md) | Initial target framework matrix | Accepted |
 | [0008](0008-netstandard20-cliwrap-process-backend.md) | Use a conditional CliWrap backend for .NET Standard 2.0 process execution | Accepted |
 
 ## Template
