@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ExecutableStartFailed" xml:space="preserve"><value>Failed to start PostgreSQL executable '{0}'.</value></data>
+  <data name="ExecutableVersionMismatch" xml:space="preserve"><value>Expected PostgreSQL {0}, but executable '{1}' reports PostgreSQL {2}.</value></data>
+  <data name="ExecutableVersionOutputInvalid" xml:space="preserve"><value>Could not parse a PostgreSQL version from the output produced by executable '{0}'.</value></data>
+  <data name="ProcessExitedWithError" xml:space="preserve"><value>PostgreSQL executable '{0}' exited with code {1}.</value></data>
+  <data name="ProcessTimedOut" xml:space="preserve"><value>PostgreSQL executable '{0}' did not finish within the configured timeout of {1}.</value></data>
+  <data name="OptionNotSupported" xml:space="preserve"><value>Option '{0}' is not supported by PostgreSQL {1}.</value></data>
+  <data name="InvalidOptionCombination" xml:space="preserve"><value>Options {0} form an invalid combination for PostgreSQL {1}.</value></data>
+</root>

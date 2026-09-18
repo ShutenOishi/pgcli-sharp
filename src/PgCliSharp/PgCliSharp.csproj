@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>PgCliSharp</RootNamespace>
+    <AssemblyName>PgCliSharp</AssemblyName>
+    <PackageId>PgCliSharp</PackageId>
+    <Version>0.1.0-alpha.0</Version>
+    <Authors>ShutenOishi</Authors>
+    <Description>Strongly typed .NET wrapper for PostgreSQL command-line tools.</Description>
+    <PackageTags>postgresql;postgres;cli;pg_dump;backup</PackageTags>
+    <PackageProjectUrl>https://github.com/ShutenOishi/pgcli-sharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ShutenOishi/pgcli-sharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" Link="README.md" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+</Project>
