@@ -63,12 +63,13 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0003](0003-typed-options-and-pre-execution-validation.md) | Use per-tool typed options and pre-execution validation | Accepted |
 | [0004](0004-bilingual-documentation-and-localized-messages.md) | Provide bilingual XML documentation and localized runtime messages | Accepted |
 | [0005](0005-direct-process-execution-and-stream-safe-output.md) | Execute tools directly and preserve stream-safe output | Superseded |
-| [0006](0006-nuget-release-and-trusted-publishing.md) | Publish NuGet packages through automated trusted releases | Accepted |
+| [0006](0006-nuget-release-and-trusted-publishing.md) | Publish NuGet packages through automated trusted releases | Superseded |
 | [0007](0007-target-framework-matrix.md) | Initial target framework matrix | Accepted |
 | [0008](0008-netstandard20-cliwrap-process-backend.md) | Use a conditional CliWrap backend for .NET Standard 2.0 process execution | Accepted |
 | [0009](0009-phase-release-artifacts.md) | Record every completed phase as a GitHub Release with immutable artifacts | Superseded |
-| [0010](0010-bilingual-human-facing-releases.md) | Provide bilingual human-facing documentation and Phase Releases | Accepted |
+| [0010](0010-bilingual-human-facing-releases.md) | Provide bilingual human-facing documentation and Phase Releases | Superseded |
 | [0011](0011-specification-first-tool-implementation.md) | Use a specification-first workflow for PostgreSQL CLI tools | Accepted |
+| [0012](0012-defer-external-publication-until-final-phase.md) | Defer external publication until the final release phase | Accepted |
 
 ## Template
 
