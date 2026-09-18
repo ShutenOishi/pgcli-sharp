@@ -1,5 +1,7 @@
 # PgCliSharp Roadmap
 
+> This roadmap describes planned work. Accepted architecture/product decisions are recorded separately in [Architecture Decision Records](adr/README.md). Proposed ADRs are not commitments until accepted.
+
 ## Product direction
 
 Build a strongly typed .NET API for PostgreSQL command-line tools with explicit executable selection, PostgreSQL 10-18 compatibility, proactive validation, bilingual public documentation, localized runtime diagnostics, and automated NuGet publishing.
@@ -116,7 +118,8 @@ Tools that can alter or recover data directories require especially explicit doc
 
 For every phase:
 
-- update canonical docs when design changes;
+- create or supersede ADRs for material repository-wide decisions;
+- update consolidated canonical docs in the same change;
 - extend compatibility specifications;
 - add regression tests for discovered PostgreSQL/version differences;
 - keep release notes/changelog;
