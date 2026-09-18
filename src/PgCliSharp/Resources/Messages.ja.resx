@@ -10,6 +10,7 @@
   <data name="ProcessExitedWithError" xml:space="preserve"><value>PostgreSQL 実行ファイル '{0}' が終了コード {1} で終了しました。</value></data>
   <data name="ProcessTimedOut" xml:space="preserve"><value>PostgreSQL 実行ファイル '{0}' は設定されたタイムアウト {1} 以内に終了しませんでした。</value></data>
   <data name="OptionNotSupported" xml:space="preserve"><value>オプション '{0}' は PostgreSQL {1} ではサポートされていません。</value></data>
+  <data name="OptionRequiresExecutableVersion" xml:space="preserve"><value>オプション '{0}' はこのメジャー系列の PostgreSQL 実行ファイル {1} 以降が必要ですが、実行ファイルは {2} と報告しました。</value></data>
   <data name="InvalidOptionCombination" xml:space="preserve"><value>オプション {0} の組み合わせは PostgreSQL {1} では無効です。</value></data>
   <data name="InvalidCompressionLevel" xml:space="preserve"><value>圧縮レベル {0} は {1} では使用できません。</value></data>
   <data name="InvalidCompressionCombination" xml:space="preserve"><value>指定された圧縮設定は無効です: {0}。</value></data>
