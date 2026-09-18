@@ -26,6 +26,7 @@ Build a strongly typed .NET API for PostgreSQL command-line tools with explicit 
 
 ## Phase 1 - pg_dump
 
+**Status: Complete (2026-09-18).** PostgreSQL 10-18 option coverage, version/patch availability metadata, typed argument generation, validation, binary-safe stdout, PostgreSQL 17+ filter stdin, bilingual public API documentation, and cross-platform tests are implemented. The maintained compatibility specification is `spec/postgresql/pg_dump.json`.
 - Inventory official pg_dump options for PostgreSQL 10-18.
 - Implement `PgDumpOptions`.
 - Use enums for finite option values.
@@ -33,7 +34,7 @@ Build a strongly typed .NET API for PostgreSQL command-line tools with explicit 
 - Support repeatable options with collections.
 - Implement version availability validation.
 - Implement option-combination validation.
-- Support binary/stdout streaming safely.
+- Support binary/stdout streaming safely, including stdin for PostgreSQL 17+ `--filter=-`.
 - Add bilingual XML docs to all public API.
 - Add unit/compatibility/integration tests.
 

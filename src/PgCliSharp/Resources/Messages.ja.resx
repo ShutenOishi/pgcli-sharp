@@ -10,5 +10,17 @@
   <data name="ProcessExitedWithError" xml:space="preserve"><value>PostgreSQL 実行ファイル '{0}' が終了コード {1} で終了しました。</value></data>
   <data name="ProcessTimedOut" xml:space="preserve"><value>PostgreSQL 実行ファイル '{0}' は設定されたタイムアウト {1} 以内に終了しませんでした。</value></data>
   <data name="OptionNotSupported" xml:space="preserve"><value>オプション '{0}' は PostgreSQL {1} ではサポートされていません。</value></data>
+  <data name="OptionRequiresExecutableVersion" xml:space="preserve"><value>オプション '{0}' はこのメジャー系列の PostgreSQL 実行ファイル {1} 以降が必要ですが、実行ファイルは {2} と報告しました。</value></data>
   <data name="InvalidOptionCombination" xml:space="preserve"><value>オプション {0} の組み合わせは PostgreSQL {1} では無効です。</value></data>
+  <data name="InvalidCompressionLevel" xml:space="preserve"><value>圧縮レベル {0} は {1} では使用できません。</value></data>
+  <data name="InvalidCompressionCombination" xml:space="preserve"><value>指定された圧縮設定は無効です: {0}。</value></data>
+  <data name="InvalidRestrictKey" xml:space="preserve"><value>pg_dump の restrict key には、空ではない ASCII 英数字のみを指定できます。</value></data>
+  <data name="OutputPathRequired" xml:space="preserve"><value>空ではない pg_dump の出力パスを指定する必要があります。</value></data>
+  <data name="InvalidOptionValue" xml:space="preserve"><value>値 '{1}' は pg_dump オプション '{0}' では無効です。</value></data>
+  <data name="ExecutablePathRequired" xml:space="preserve"><value>空ではない PostgreSQL 実行ファイルのパスを指定する必要があります。</value></data>
+  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>pg_dump の出力ストリームは書き込み可能である必要があります。</value></data>
+  <data name="FilterPathRequired" xml:space="preserve"><value>空ではない pg_dump フィルターファイルのパスを指定する必要があります。</value></data>
+  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>pg_dump のフィルター入力ストリームは読み取り可能である必要があります。</value></data>
+  <data name="CompressionNoneDetailsNotAllowed" xml:space="preserve"><value>圧縮方式 'none' では、圧縮レベルまたは long-distance モードを指定できません。</value></data>
+  <data name="CompressionLongRequiresZstd" xml:space="preserve"><value>long-distance 圧縮モードは zstd でのみ使用できます。</value></data>
 </root>

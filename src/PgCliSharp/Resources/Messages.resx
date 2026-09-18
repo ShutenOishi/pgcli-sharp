@@ -10,5 +10,17 @@
   <data name="ProcessExitedWithError" xml:space="preserve"><value>PostgreSQL executable '{0}' exited with code {1}.</value></data>
   <data name="ProcessTimedOut" xml:space="preserve"><value>PostgreSQL executable '{0}' did not finish within the configured timeout of {1}.</value></data>
   <data name="OptionNotSupported" xml:space="preserve"><value>Option '{0}' is not supported by PostgreSQL {1}.</value></data>
+  <data name="OptionRequiresExecutableVersion" xml:space="preserve"><value>Option '{0}' requires PostgreSQL executable version {1} or later in this major branch, but the executable reports {2}.</value></data>
   <data name="InvalidOptionCombination" xml:space="preserve"><value>Options {0} form an invalid combination for PostgreSQL {1}.</value></data>
+  <data name="InvalidCompressionLevel" xml:space="preserve"><value>Compression level {0} is not valid for {1}.</value></data>
+  <data name="InvalidCompressionCombination" xml:space="preserve"><value>The requested compression settings are not valid: {0}.</value></data>
+  <data name="InvalidRestrictKey" xml:space="preserve"><value>The pg_dump restrict key must be a non-empty ASCII alphanumeric string.</value></data>
+  <data name="OutputPathRequired" xml:space="preserve"><value>A non-empty pg_dump output path is required.</value></data>
+  <data name="InvalidOptionValue" xml:space="preserve"><value>Value '{1}' is invalid for pg_dump option '{0}'.</value></data>
+  <data name="ExecutablePathRequired" xml:space="preserve"><value>A non-empty PostgreSQL executable path is required.</value></data>
+  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>The pg_dump output stream must be writable.</value></data>
+  <data name="FilterPathRequired" xml:space="preserve"><value>A non-empty pg_dump filter file path is required.</value></data>
+  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>The pg_dump filter input stream must be readable.</value></data>
+  <data name="CompressionNoneDetailsNotAllowed" xml:space="preserve"><value>The 'none' compression method cannot specify a level or long-distance mode.</value></data>
+  <data name="CompressionLongRequiresZstd" xml:space="preserve"><value>Long-distance compression mode is supported only with zstd.</value></data>
 </root>

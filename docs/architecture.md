@@ -91,6 +91,8 @@ Avoid pairs of booleans that can represent impossible states when a single enum 
 
 Every option that differs by PostgreSQL version must have machine-testable compatibility metadata or equivalent validation logic.
 
+Availability is not assumed to be major-version-only. Security backports or other maintenance-branch changes can introduce an option in a later patch release. Phase 1's `pg_dump --restrict-key` support is the reference case: validation uses the actual numeric executable version from the `--version` probe as well as the selected major version.
+
 Examples include:
 
 - introduction/removal of options;
@@ -126,6 +128,7 @@ Requirements:
 - pass individual argument values; modern targets use `ProcessStartInfo.ArgumentList`, while the `netstandard2.0` backend delegates token formatting to CliWrap;
 - redirect stdout/stderr where needed;
 - support binary stdout without converting the entire stream to text;
+- support binary-safe stdin streaming for tools/options that consume standard input, such as PostgreSQL 17+ `pg_dump --filter=-`;
 - support `CancellationToken`;
 - support timeout configuration;
 - attempt to terminate the complete process tree on cancellation/timeout where the target framework supports it;
@@ -179,6 +182,8 @@ This data can drive:
 - future PostgreSQL major-version upgrades.
 
 The authoritative source for CLI semantics is PostgreSQL official documentation and executable behavior.
+
+Phase 1 stores the complete pg_dump compatibility inventory in `spec/postgresql/pg_dump.json`. It records per-major resolved option sets, short/long spellings, spelling availability, repeatability, required option arguments, wrapper/upstream defaults, format and compression rules, and patch-level availability. The inventory has also been compared mechanically against the official `REL_10_STABLE` through `REL_18_STABLE` pg_dump source option tables.
 
 ## 12. Test layers
 

@@ -1,7 +1,7 @@
 {
-  "phase": 0,
-  "tag": "phase-0",
-  "title": "Phase 0 - Foundation / 基盤",
-  "notes_file": "docs/releases/phase-0.md",
+  "phase": 1,
+  "tag": "phase-1",
+  "title": "Phase 1 - pg_dump / pg_dump 型付きラッパー",
+  "notes_file": "docs/releases/phase-1.md",
   "prerelease": true
 }

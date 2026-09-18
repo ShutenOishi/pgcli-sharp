@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed its Phase 0 foundation. Phase 1 will implement the first complete typed wrapper, `pg_dump`.
+PgCliSharp has completed Phase 1. The first complete typed wrapper, `pg_dump`, supports PostgreSQL 10 through 18 with version-aware validation. Phase 2 will add `pg_restore` and `pg_dumpall`.
 
 Initial PostgreSQL compatibility target:
 
@@ -18,6 +18,32 @@ Initial PostgreSQL compatibility target:
 
 Each completed roadmap phase is preserved as a GitHub Release with an explicit source ZIP and NuGet package artifacts.
 
+## pg_dump quick start
+
+The executable path and expected PostgreSQL CLI major version are explicit:
+
+```csharp
+var pgDump = new PgDump(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dump.exe",
+    PostgreSqlMajorVersion.V18);
+
+var options = new PgDumpOptions
+{
+    Database = "appdb",
+    Format = PgDumpFormat.Custom,
+};
+
+options.Schemas.Add("public");
+
+PgDumpResult result = await pgDump.ExecuteAsync(
+    options,
+    PgDumpOutput.ToFile("appdb.dump"),
+    timeout: TimeSpan.FromMinutes(10));
+```
+
+`PgDumpOptions` models the PostgreSQL 10-18 option union with enums, value objects, and ordered collections. PgCliSharp validates the selected executable version, version-specific option availability, and incompatible combinations before starting the dump. Stdout destinations remain binary-safe, and PostgreSQL 17+ `--filter=-` can stream filter rules through stdin.
+
+The maintained compatibility inventory is in [`spec/postgresql/pg_dump.json`](spec/postgresql/pg_dump.json), with human-readable Phase 1 research in [`docs/pg-dump-phase-1.md`](docs/pg-dump-phase-1.md).
 ## Development
 
 The repository uses the XML solution format:
