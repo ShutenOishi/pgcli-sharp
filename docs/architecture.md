@@ -252,6 +252,10 @@ Release automation should:
 
 Long-lived NuGet API keys should not be the preferred design.
 
+Phase 3 implements the first public preview with a deliberate release manifest at `.github/nuget-release.json`. A change to that manifest on `main` (or an explicit workflow dispatch) runs `.github/workflows/release.yml`. The workflow waits for the exact-commit main CI result, validates package/version/tag consistency, rebuilds and tests the repository, inspects the `.nupkg`/`.snupkg`, and publishes through NuGet Trusted Publishing/OIDC in the GitHub `release` environment. It does not store a long-lived NuGet API key.
+
+The package release tag is `v<package-version>` and is separate from the roadmap milestone tag `phase-N`. For Phase 3, the milestone Release is gated on the version Release pointing to the same commit so the first public NuGet preview and Phase 3 milestone have one source identity.
+
 ## 16. Planned implementation order
 
 1. Project/solution and execution infrastructure.

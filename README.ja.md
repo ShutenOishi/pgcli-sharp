@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 2 まで完了しています。バックアップ／リストアの中核として、`pg_dump`、`pg_restore`、`pg_dumpall` の型付きラッパーが揃い、PostgreSQL 10〜18 のメジャー差と必要なパッチバージョン差を考慮して検証します。
+Phase 2 のバックアップ／リストア中核まで完了しています。Phase 3 では `PgCliSharp 0.1.0-alpha.1` を最初の公開 NuGet プレビューとして準備し、正確な release commit の全OS CI と NuGet Trusted Publishing/OIDC を公開ゲートにします。
 
 初期対応範囲:
 
@@ -17,6 +17,16 @@ Phase 2 まで完了しています。バックアップ／リストアの中核
 - `net10.0`
 
 ロードマップ上の各 Phase が完了するたびに GitHub Release を作成し、その時点のソース ZIP と NuGet パッケージ成果物を保存します。
+
+## NuGet プレビュー
+
+最初の公開プレビューは `0.1.0-alpha.1` です。
+
+```bash
+dotnet add package PgCliSharp --version 0.1.0-alpha.1
+```
+
+package の target framework は `netstandard2.0`、`net8.0`、`net10.0` です。公開は GitHub Actions から NuGet Trusted Publishing/OIDC を利用して行い、長期 NuGet API key はリポジトリへ保存しません。
 
 ## 主な設計方針
 

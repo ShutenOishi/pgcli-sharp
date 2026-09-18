@@ -1,0 +1,196 @@
+name: NuGet Release
+
+concurrency:
+  group: nuget-release
+  cancel-in-progress: false
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/nuget-release.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: Publish NuGet preview
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Validate release metadata
+        shell: bash
+        run: bash eng/validate-nuget-release.sh
+
+      - name: Read release manifest
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "package_id=$(jq -r '.package_id' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+          echo "version=$(jq -r '.version' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+          echo "tag=$(jq -r '.tag' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+          echo "title=$(jq -r '.title' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+          echo "notes_file=$(jq -r '.notes_file' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+          echo "nuget_user=$(jq -r '.nuget_user' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$(jq -r '.prerelease' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for exact-commit main CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            run_json="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$GITHUB_SHA" --event push --limit 1 --json status,conclusion,databaseId 2>/dev/null || true)"
+            status="$(jq -r '.[0].status // empty' <<<"$run_json")"
+            conclusion="$(jq -r '.[0].conclusion // empty' <<<"$run_json")"
+            run_id="$(jq -r '.[0].databaseId // empty' <<<"$run_json")"
+
+            if [ "$status" = "completed" ]; then
+              if [ "$conclusion" = "success" ]; then
+                echo "Exact-commit CI succeeded: $run_id"
+                exit 0
+              fi
+              echo "Exact-commit CI failed: run=$run_id conclusion=$conclusion" >&2
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          echo "Timed out waiting for exact-commit CI." >&2
+          exit 1
+
+      - name: Preflight immutable release identity
+        id: preflight
+        env:
+          PACKAGE_ID: ${{ steps.release.outputs.package_id }}
+          VERSION: ${{ steps.release.outputs.version }}
+          TAG: ${{ steps.release.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag_exists=false
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            tag_exists=true
+            git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
+            tag_commit="$(git rev-list -n1 "$TAG")"
+            if [ "$tag_commit" != "$GITHUB_SHA" ]; then
+              echo "Tag $TAG already points to $tag_commit, not $GITHUB_SHA." >&2
+              exit 1
+            fi
+          fi
+
+          package_lower="$(tr '[:upper:]' '[:lower:]' <<<"$PACKAGE_ID")"
+          index_url="https://api.nuget.org/v3-flatcontainer/$package_lower/index.json"
+          status="$(curl -sS -o /tmp/nuget-index.json -w '%{http_code}' "$index_url")"
+
+          package_published=false
+          if [ "$status" = "200" ]; then
+            if jq -e --arg version "$VERSION" '.versions | index($version) != null' /tmp/nuget-index.json >/dev/null; then
+              package_published=true
+              package_url="https://api.nuget.org/v3-flatcontainer/$package_lower/$VERSION/$package_lower.$VERSION.nupkg"
+              curl -fsSL "$package_url" -o /tmp/published.nupkg
+              unzip -p /tmp/published.nupkg "$PACKAGE_ID.nuspec" > /tmp/published.nuspec
+              repository_line="$(grep -o '<repository[^>]*/>' /tmp/published.nuspec | head -n1)"
+              if ! grep -F "commit=\"$GITHUB_SHA\"" <<<"$repository_line" >/dev/null; then
+                echo "NuGet version $PACKAGE_ID $VERSION already exists but was not built from $GITHUB_SHA." >&2
+                exit 1
+              fi
+            fi
+          elif [ "$status" != "404" ]; then
+            echo "Unexpected NuGet index HTTP status: $status" >&2
+            exit 1
+          fi
+
+          if [ "$tag_exists" = "true" ] && [ "$package_published" != "true" ]; then
+            echo "Tag $TAG exists but NuGet package $PACKAGE_ID $VERSION is not published." >&2
+            exit 1
+          fi
+
+          echo "package_published=$package_published" >> "$GITHUB_OUTPUT"
+
+      - name: Restore
+        run: dotnet restore PgCliSharp.slnx
+
+      - name: Build
+        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Pack
+        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Verify NuGet package artifacts
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: bash eng/verify-nuget-package.sh artifacts
+
+      - name: NuGet login with Trusted Publishing
+        if: steps.preflight.outputs.package_published != 'true'
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ steps.release.outputs.nuget_user }}
+
+      - name: Publish package to NuGet.org
+        if: steps.preflight.outputs.package_published != 'true'
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+          PACKAGE_ID: ${{ steps.release.outputs.package_id }}
+          VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet nuget push "artifacts/$PACKAGE_ID.$VERSION.nupkg"             --api-key "$NUGET_API_KEY"             --source "https://api.nuget.org/v3/index.json"
+
+      - name: Create or verify version GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_ID: ${{ steps.release.outputs.package_id }}
+          VERSION: ${{ steps.release.outputs.version }}
+          TAG: ${{ steps.release.outputs.tag }}
+          TITLE: ${{ steps.release.outputs.title }}
+          NOTES_FILE: ${{ steps.release.outputs.notes_file }}
+          PRERELEASE: ${{ steps.release.outputs.prerelease }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
+            tag_commit="$(git rev-list -n1 "$TAG")"
+            test "$tag_commit" = "$GITHUB_SHA"
+          else
+            prerelease_args=()
+            if [ "$PRERELEASE" = "true" ]; then
+              prerelease_args+=(--prerelease)
+            fi
+
+            gh release create "$TAG"               --repo "$GITHUB_REPOSITORY"               --target "$GITHUB_SHA"               --title "$TITLE"               --notes-file "$NOTES_FILE"               "${prerelease_args[@]}"               "artifacts/$PACKAGE_ID.$VERSION.nupkg"               "artifacts/$PACKAGE_ID.$VERSION.snupkg"
+          fi
+
+          assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+          grep -Fx "$PACKAGE_ID.$VERSION.nupkg" <<<"$assets"
+          grep -Fx "$PACKAGE_ID.$VERSION.snupkg" <<<"$assets"

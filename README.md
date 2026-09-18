@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed Phase 2. The backup/restore core now includes typed `pg_dump`, `pg_restore`, and `pg_dumpall` wrappers for PostgreSQL 10 through 18 with version- and patch-aware validation.
+PgCliSharp has completed the Phase 2 backup/restore core. Phase 3 prepares `PgCliSharp 0.1.0-alpha.1` as the first public NuGet preview, with publication gated by the exact-commit cross-platform CI and NuGet Trusted Publishing/OIDC.
 
 Initial PostgreSQL compatibility target:
 
@@ -17,6 +17,16 @@ Initial PostgreSQL compatibility target:
 - `net10.0`
 
 Each completed roadmap phase is preserved as a GitHub Release with an explicit source ZIP and NuGet package artifacts.
+
+## NuGet preview
+
+The first public preview version is `0.1.0-alpha.1`:
+
+```bash
+dotnet add package PgCliSharp --version 0.1.0-alpha.1
+```
+
+The package targets `netstandard2.0`, `net8.0`, and `net10.0`. Preview publication is performed by GitHub Actions using NuGet Trusted Publishing/OIDC; no long-lived NuGet API key is stored in the repository.
 
 ## pg_dump quick start
 
