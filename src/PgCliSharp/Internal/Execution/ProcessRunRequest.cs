@@ -8,7 +8,8 @@ internal sealed class ProcessRunRequest
         Stream? standardOutput = null,
         TimeSpan? timeout = null,
         bool throwOnNonZeroExitCode = true,
-        IReadOnlyDictionary<string, string>? environmentVariables = null)
+        IReadOnlyDictionary<string, string>? environmentVariables = null,
+        Stream? standardInput = null)
     {
         if (string.IsNullOrWhiteSpace(executablePath))
         {
@@ -29,12 +30,23 @@ internal sealed class ProcessRunRequest
             throw new ArgumentOutOfRangeException(nameof(timeout), timeout, "Timeout must be greater than zero.");
         }
 
+        if (standardInput is not null && !standardInput.CanRead)
+        {
+            throw new ArgumentException("Standard input stream must be readable.", nameof(standardInput));
+        }
+
+        if (standardOutput is not null && !standardOutput.CanWrite)
+        {
+            throw new ArgumentException("Standard output stream must be writable.", nameof(standardOutput));
+        }
+
         ExecutablePath = executablePath;
         Arguments = arguments.ToArray();
         StandardOutput = standardOutput;
         Timeout = timeout;
         ThrowOnNonZeroExitCode = throwOnNonZeroExitCode;
         EnvironmentVariables = environmentVariables;
+        StandardInput = standardInput;
     }
 
     internal string ExecutablePath { get; }
@@ -48,4 +60,6 @@ internal sealed class ProcessRunRequest
     internal bool ThrowOnNonZeroExitCode { get; }
 
     internal IReadOnlyDictionary<string, string>? EnvironmentVariables { get; }
+
+    internal Stream? StandardInput { get; }
 }
