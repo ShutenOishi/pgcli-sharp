@@ -157,7 +157,24 @@ Runtime user-facing messages are localized according to `docs/localization.md`.
 
 Exceptions should expose machine-readable structured properties in addition to localized message text whenever practical. Callers must not need to parse localized strings to understand the failure.
 
-## 11. Specification data and compatibility testing
+## 11. Specification-first tool implementation
+
+New PostgreSQL CLI wrappers follow [the tool implementation workflow](tool-implementation-workflow.md) defined by ADR-0011.
+
+Before the complete public API for a tool is considered stable enough to implement:
+
+- compare PostgreSQL 10-18 documentation per major rather than projecting the newest option list backward;
+- resolve ambiguous parser/default/constraint behavior with the corresponding upstream stable source;
+- inspect official security/release history for patch-level backports;
+- distinguish feature availability from spelling/alias availability;
+- record the result in a machine-readable tool specification;
+- perform inventory and API-binding completeness audits.
+
+Version-varying runtime checks should be centralized in availability metadata. Exact executable versions must be supported when availability begins in a maintenance release.
+
+Public option types remain tool-specific. Reusable internal serializers/validators should be extracted only after at least two tools demonstrate identical semantics; similar switch names alone are not sufficient evidence for a shared public abstraction.
+
+## 12. Specification data and compatibility testing
 
 The repository should maintain machine-readable compatibility data when it provides a net benefit, for example under:
 
@@ -183,9 +200,11 @@ This data can drive:
 
 The authoritative source for CLI semantics is PostgreSQL official documentation and executable behavior.
 
+CI performs structural validation for all top-level tool specification JSON files under `spec/postgresql/`. Source-level option-table comparison is a research-time audit whose result is recorded in the specification because CI should not depend on live upstream source availability.
+
 Phase 1 stores the complete pg_dump compatibility inventory in `spec/postgresql/pg_dump.json`. It records per-major resolved option sets, short/long spellings, spelling availability, repeatability, required option arguments, wrapper/upstream defaults, format and compression rules, and patch-level availability. The inventory has also been compared mechanically against the official `REL_10_STABLE` through `REL_18_STABLE` pg_dump source option tables.
 
-## 12. Test layers
+## 13. Test layers
 
 Use three logical test layers:
 
@@ -195,7 +214,7 @@ Use three logical test layers:
 
 Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and CliWrap compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
 
-## 13. Package and target framework policy
+## 14. Package and target framework policy
 
 Package ID target: `PgCliSharp`.
 
@@ -209,7 +228,7 @@ Phase 0 validation confirmed this matrix across Linux, macOS, and Windows CI. Wi
 
 The core package should avoid unnecessary dependencies such as Npgsql or Microsoft.Extensions packages unless a clear project-wide benefit justifies them. ADR-0008 allows CliWrap specifically and only for the `netstandard2.0` execution backend because the .NET Standard 2.0 BCL does not provide equivalent argument/process-tree APIs.
 
-## 14. NuGet and release policy
+## 15. NuGet and release policy
 
 Use Semantic Versioning.
 
@@ -231,7 +250,7 @@ Release automation should:
 
 Long-lived NuGet API keys should not be the preferred design.
 
-## 15. Planned implementation order
+## 16. Planned implementation order
 
 1. Project/solution and execution infrastructure.
 2. Version parsing/validation for PostgreSQL 10-18.
@@ -244,7 +263,7 @@ Long-lived NuGet API keys should not be the preferred design.
 9. Server applications in a clearly separated namespace/category.
 10. Public API review and 1.0 stabilization.
 
-## 16. Living specification and ADR policy
+## 17. Living specification and ADR policy
 
 This document is intentionally a living, consolidated specification.
 

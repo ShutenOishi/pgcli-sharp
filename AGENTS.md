@@ -10,6 +10,7 @@ Before making design or implementation changes, read these documents:
 2. `docs/architecture.md` - consolidated current architecture and compatibility policy
 3. `docs/localization.md` - consolidated English/Japanese documentation and runtime localization policy
 4. `docs/roadmap.md` - current implementation and NuGet release roadmap
+5. `docs/tool-implementation-workflow.md` - required specification-first workflow for adding PostgreSQL CLI tools
 
 Accepted ADRs preserve the authoritative decision history. The consolidated documents describe the current intended state. Proposed ADRs are not binding until accepted.
 
@@ -32,6 +33,11 @@ If an Accepted decision changes, create a new superseding ADR instead of rewriti
 - User-facing diagnostics and exception messages must be localizable in English and Japanese using resources; do not hard-code localized strings throughout the implementation.
 - Tests must cover version-specific argument generation and validation.
 - Changes to PostgreSQL compatibility claims must be backed by PostgreSQL official documentation and/or executable integration tests.
+- New PostgreSQL CLI tool work follows `docs/tool-implementation-workflow.md`: research and machine-readable compatibility specification come before public API implementation.
+- Do not infer old-version behavior from the newest PostgreSQL documentation. Compare every supported major independently, then use upstream source/security history to resolve parser behavior, aliases, constraints, and patch-level backports.
+- Distinguish feature availability from spelling/alias availability. A feature can exist in older majors under different option names.
+- Before implementation is considered complete, the compatibility specification must map every inventory entry to a public/API binding or an explicit special binding, and runtime availability metadata must be covered by tests.
+- Prefer tool-specific public option types. Extract shared internal serializers/validators only after at least two tools demonstrate genuinely identical semantics; do not create speculative public "common options" abstractions.
 - NuGet releases use Semantic Versioning and GitHub Actions. Trusted Publishing/OIDC is preferred over long-lived NuGet API keys.
 - Every completed roadmap Phase must be recorded as a bilingual GitHub Release according to ADR-0010. A Phase-completion PR must update `.github/phase-release.json` and add/update the matching `docs/releases/phase-N.md` release notes.
 - Starting with Phase 1, Phase Release Notes must present the `## English` section before the `## 日本語` section. Phase 0 is grandfathered and keeps its existing Japanese-first ordering.
@@ -52,3 +58,12 @@ If a rule becomes obsolete or implementation uncovers an exception:
 Do not rewrite Accepted ADR history merely to make it match new code.
 
 Chat conversations are not the canonical record. The repository documents and ADRs are.
+
+## Efficient repository workflow
+
+- Batch logically related edits into a coherent commit before opening or updating a PR when practical. This reduces redundant CI runs and review noise.
+- Open a Draft PR once the research/spec baseline is coherent enough to review; do not use a Draft PR as a substitute for recording research in the repository.
+- CI cancels superseded runs for the same PR/ref. Do not interpret a cancelled older run as a failure when a newer commit replaced it.
+- Keep Phase completion metadata (`.github/phase-release.json` and `docs/releases/phase-N.md`) unchanged until implementation, tests, and completion documentation have passed CI.
+- After the final Phase metadata change, require a fresh all-platform CI pass before merge.
+- After merge, verify the main CI, Phase Release workflow, `phase-N` tag target, Release target commit, and required source ZIP/`.nupkg`/`.snupkg` assets before declaring the Phase complete.

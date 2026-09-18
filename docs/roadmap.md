@@ -42,9 +42,17 @@ This phase defines the design template for later tools.
 
 ## Phase 2 - pg_restore and pg_dumpall
 
-- Implement complete typed option coverage for PostgreSQL 10-18.
-- Reuse internal execution/connection argument infrastructure without leaking inappropriate options between public option classes.
-- Complete backup/restore trio tests.
+Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
+
+- Research `pg_restore` and `pg_dumpall` independently across PostgreSQL 10-18 before completing either public API.
+- Create machine-readable `spec/postgresql/pg_restore.json` and `spec/postgresql/pg_dumpall.json`.
+- Verify each per-major option inventory against upstream option tables/parser source and security/release history where necessary.
+- Complete typed option coverage for PostgreSQL 10-18.
+- Build centralized runtime availability metadata for each tool before scattering version checks through validators.
+- Compare `pg_dump`, `pg_restore`, and `pg_dumpall` connection semantics; extract shared internal argument/validation helpers only for behavior proven identical.
+- Keep public Options classes tool-specific.
+- Complete backup/restore trio tests, including cross-tool archive/I/O scenarios where meaningful.
+- Do not update Phase 2 release metadata until both tools pass the full implementation/completeness gate.
 
 ## Phase 3 - First NuGet preview
 
@@ -126,12 +134,14 @@ Every completed phase is recorded as a GitHub Release under ADR-0010. The phase-
 
 For every phase:
 
+- follow `docs/tool-implementation-workflow.md` for PostgreSQL CLI implementation work;
+- complete compatibility research/specification and inventory/API audits before treating the public API as complete;
 - create or supersede ADRs for material repository-wide decisions;
 - update consolidated canonical docs in the same change;
 - extend compatibility specifications;
 - add regression tests for discovered PostgreSQL/version differences;
 - keep release notes/changelog;
-- update the Phase release manifest and release notes when a phase is completed;
+- update the Phase release manifest and release notes only after implementation/completion documentation has a green all-platform CI run;
 - avoid relying on chat history as project specification.
 
 ## Future PostgreSQL releases
