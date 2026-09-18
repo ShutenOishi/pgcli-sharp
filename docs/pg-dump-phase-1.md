@@ -26,6 +26,26 @@ https://www.postgresql.org/support/security/CVE-2026-18408/
 
 The versioned PostgreSQL documentation is a living representation of the current maintenance state of each branch. Therefore, an option visible on a historical major's current documentation page is not automatically assumed to have existed in `.0`. The `--restrict-key` backport is the concrete Phase 1 case that requires patch-level metadata.
 
+## Inventory verification
+
+After the documentation comparison, the resolved long-option sets were mechanically compared with the official PostgreSQL source branches (`REL_10_STABLE` through `REL_18_STABLE`), specifically the `long_options[]` table in `src/bin/pg_dump/pg_dump.c`.
+
+After applying spelling-level availability for the large-object aliases, the specification exactly matches the upstream long-option set for every supported major:
+
+| PostgreSQL | Distinct long options |
+|---|---:|
+| 10 | 54 |
+| 11 | 56 |
+| 12 | 58 |
+| 13 | 60 |
+| 14 | 62 |
+| 15 | 62 |
+| 16 | 67 |
+| 17 | 70 |
+| 18 | 77 |
+
+An important distinction is that the large-object *feature* exists throughout the supported range, while the canonical `--large-objects` / `--no-large-objects` spellings appear from PostgreSQL 16. PostgreSQL 10-15 use `--blobs` / `--no-blobs`. PostgreSQL 16+ retain those older names as compatibility aliases.
+
 ## Compatibility findings
 
 The PgCliSharp-supported union currently contains 75 inventory entries, including normal dump options, connection options, and the `--help`/`--version` utility commands.
@@ -43,6 +63,16 @@ The major-version boundaries that materially affect the typed model are:
 | 16 | Compression becomes `level` or `method[:detail]` with `gzip/lz4/zstd/none`; adds table-and-children selectors; `--large-objects` names become canonical and `--blobs` aliases become deprecated. `--restrict-key` requires 16.10+. |
 | 17 | Adds `--exclude-extension`, repeatable `--filter` (including `-` for stdin), and `--sync-method`. `--restrict-key` requires 17.6+. |
 | 18 | Adds data/schema/statistics inclusion and exclusion controls including `--statistics`, `--statistics-only`, `--sequence-data`, `--no-data`, `--no-schema`, `--no-statistics`, and `--no-policies`. Statistics also change the meaning of the data/post-data sections. |
+
+### Repeated verbose option semantics
+
+`-v/--verbose` is accepted repeatedly throughout PostgreSQL 10-18, but its effect changed:
+
+- PostgreSQL 10-11: each occurrence only sets the same boolean verbose flag; occurrences after the first are redundant.
+- PostgreSQL 12-13: each occurrence selects INFO logging; occurrences after the first are redundant.
+- PostgreSQL 14-18: pg_dump calls `pg_logging_increase_verbosity()`, so repeated occurrences increase logging verbosity.
+
+`PgDumpOptions.Verbosity` therefore remains a non-negative occurrence count. This preserves exact CLI expressiveness while documenting that values greater than one only have additional semantic effect from PostgreSQL 14 onward.
 
 ### Patch-level availability
 
@@ -93,6 +123,8 @@ For PostgreSQL 16-18:
 
 The public model will use `PgDumpCompression`, not `int?` or an arbitrary command-line string.
 
+The common PostgreSQL compression parser also recognizes a `workers` detail, but current pg_dump source explicitly warns that compression workers are not supported by pg_dump. PgCliSharp therefore does not expose a typed pg_dump worker-count setting. For supported method details, gzip accepts its default level or 1-9, LZ4 accepts 0-12, and zstd's exact numeric bounds are linked-library-dependent; the wrapper validates the stable method constraints and leaves the build-dependent zstd bound to the executable.
+
 ### Connection and environment behavior
 
 Typed connection properties cover:
@@ -134,18 +166,13 @@ All public types and members receive English-first/Japanese-second XML documenta
 
 ### Compatibility metadata
 
-The machine-readable specification supports:
+Runtime availability is represented by `PgDumpOptionAvailabilityCatalog`. Each version-varying option records:
 
-- ordinary major `since`/`until` availability;
-- patch-level minimums by major;
-- aliases and canonical spellings;
-- repeatability;
-- argument/value classification;
-- defaults;
-- format and combination constraints;
-- known semantic changes.
+- first supported PostgreSQL major;
+- last supported PostgreSQL major;
+- optional minimum exact executable versions by major.
 
-Runtime metadata will use the same concepts. Tests will keep the runtime table aligned with the repository specification.
+The validator consumes this catalog rather than maintaining a second independent set of version constants. The machine-readable JSON specification remains the durable cross-agent reference and is separately tested/reviewed against the runtime catalog.
 
 ### Argument generation
 
