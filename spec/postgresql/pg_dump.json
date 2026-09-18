@@ -29,7 +29,15 @@
       "18": "https://www.postgresql.org/docs/18/app-pgdump.html"
     },
     "restrictKeySecurityNotice": "https://www.postgresql.org/support/security/CVE-2025-8714/",
-    "restrictKeyFollowupSecurityNotice": "https://www.postgresql.org/support/security/CVE-2026-18408/"
+    "restrictKeyFollowupSecurityNotice": "https://www.postgresql.org/support/security/CVE-2026-18408/",
+    "supplementalUpstreamSource": {
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_dump/pg_dump.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_dump/pg_dump.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_dump/pg_dump.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_dump/pg_dump.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_dump/pg_dump.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_dump/pg_dump.c"
+    }
   },
   "outputFormats": {
     "plain": {
@@ -2726,6 +2734,32 @@
       "id": "availability",
       "when": "an option is requested",
       "require": "selected major and actual executable patch satisfy option availability"
+    },
+    {
+      "id": "data-only-clean-conflict",
+      "when": "dataOnly && clean",
+      "require": "false",
+      "source": "upstream pg_dump source validation"
+    },
+    {
+      "id": "schema-only-foreign-data-conflict",
+      "when": "schemaOnly && includedForeignData.Count > 0",
+      "require": "false",
+      "since": 13,
+      "source": "upstream pg_dump source validation"
+    },
+    {
+      "id": "parallel-foreign-data-conflict",
+      "when": "jobs > 1 && includedForeignData.Count > 0",
+      "require": "false",
+      "since": 13,
+      "source": "upstream pg_dump source validation"
+    },
+    {
+      "id": "pg18-statistics-with-only-conflicts",
+      "when": "PostgreSQL 18",
+      "require": "dataOnly conflicts statistics; schemaOnly conflicts statistics in addition to the only/no conflicts",
+      "source": "REL_18_STABLE pg_dump source validation"
     }
   ],
   "designDecisions": {
