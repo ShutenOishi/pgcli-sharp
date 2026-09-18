@@ -446,7 +446,7 @@ internal static class PgDumpValidator
         T value,
         string optionName,
         PostgreSqlMajorVersion selectedVersion)
-        where T : struct
+        where T : struct, Enum
     {
 #if NETSTANDARD2_0
         bool defined = Enum.IsDefined(typeof(T), value);
