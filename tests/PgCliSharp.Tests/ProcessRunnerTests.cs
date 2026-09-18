@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using PgCliSharp.Internal.Execution;
 
@@ -64,6 +65,123 @@ public sealed class ProcessRunnerTests
 
         Assert.NotEqual(0, result.ExitCode);
         Assert.Contains(value, combinedOutput);
+    }
+
+    [Fact]
+    public async Task RunAsync_Timeout_TerminatesDescendantProcessTreeOnWindows()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return;
+        }
+
+        string pidFile = Path.Combine(
+            Path.GetTempPath(),
+            "pgclisharp-child-" + Guid.NewGuid().ToString("N") + ".pid");
+
+        string powerShell = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.System),
+            "WindowsPowerShell",
+            "v1.0",
+            "powershell.exe");
+
+        string escapedPidFile = pidFile.Replace("'", "''");
+        string script =
+            "$child = Start-Process -FilePath $env:ComSpec " +
+            "-ArgumentList '/d','/c','ping 127.0.0.1 -n 30 > nul' -PassThru; " +
+            "[IO.File]::WriteAllText('" + escapedPidFile + "', $child.Id.ToString()); " +
+            "Wait-Process -Id $child.Id";
+
+        var request = new ProcessRunRequest(
+            powerShell,
+            new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script },
+            Stream.Null,
+            TimeSpan.FromSeconds(2));
+        var runner = new ProcessRunner();
+
+        try
+        {
+            await Assert.ThrowsAsync<PgProcessTimeoutException>(
+                () => runner.RunAsync(request, CancellationToken.None));
+
+            Assert.True(
+                File.Exists(pidFile),
+                "The descendant process PID file was not created before timeout.");
+
+            int childProcessId = int.Parse(
+                File.ReadAllText(pidFile),
+                System.Globalization.CultureInfo.InvariantCulture);
+
+            bool descendantExited = HasProcessExited(childProcessId);
+            Assert.True(
+                descendantExited,
+                "The descendant process remained alive after timeout termination.");
+        }
+        finally
+        {
+            if (File.Exists(pidFile))
+            {
+                File.Delete(pidFile);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task RunAsync_BinaryStandardOutput_PreservesBytesOnWindows()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return;
+        }
+
+        string powerShell = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.System),
+            "WindowsPowerShell",
+            "v1.0",
+            "powershell.exe");
+        const string Script =
+            "[Console]::OpenStandardOutput().Write([byte[]](0,1,2,255),0,4)";
+
+        using var output = new MemoryStream();
+        var request = new ProcessRunRequest(
+            powerShell,
+            new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", Script },
+            output);
+        var runner = new ProcessRunner();
+
+        ProcessRunResult result = await runner.RunAsync(
+            request,
+            CancellationToken.None);
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Equal(new byte[] { 0, 1, 2, 255 }, output.ToArray());
+    }
+
+    private static bool HasProcessExited(int processId)
+    {
+        try
+        {
+            using Process process = Process.GetProcessById(processId);
+            if (process.WaitForExit(2000))
+            {
+                return true;
+            }
+
+            try
+            {
+                process.Kill();
+            }
+            catch (InvalidOperationException)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        catch (ArgumentException)
+        {
+            return true;
+        }
     }
 
     private static (string Executable, string[] Arguments) GetLongRunningCommand()
