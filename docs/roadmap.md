@@ -119,7 +119,7 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase completion releases
 
-Every completed phase is recorded as a GitHub Release under ADR-0010. The phase-completion PR must update `.github/phase-release.json` and add the matching `docs/releases/phase-N.md`. After that change reaches `main`, the Phase Release workflow creates a `phase-N` release containing an immutable explicit source ZIP, `.nupkg`, and `.snupkg` for the exact merge commit, with English/Japanese title and release notes. This milestone release does not imply publication to nuget.org.
+Every completed phase is recorded as a GitHub Release under ADR-0010. The phase-completion PR must update `.github/phase-release.json` and add the matching `docs/releases/phase-N.md`. After that change reaches `main`, the Phase Release workflow creates a `phase-N` release containing an immutable explicit source ZIP, `.nupkg`, and `.snupkg` for the exact merge commit, with English/Japanese title and release notes. Starting with Phase 1, release notes are ordered English first and Japanese second; Phase 0 retains its existing Japanese-first ordering. This milestone release does not imply publication to nuget.org.
 
 ## Continuous work
 
