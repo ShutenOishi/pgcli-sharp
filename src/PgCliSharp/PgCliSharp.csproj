@@ -4,14 +4,17 @@
     <RootNamespace>PgCliSharp</RootNamespace>
     <AssemblyName>PgCliSharp</AssemblyName>
     <PackageId>PgCliSharp</PackageId>
-    <Version>0.1.0-alpha.0</Version>
+    <Title>PgCliSharp</Title>
+    <Version>0.1.0-alpha.1</Version>
     <Authors>ShutenOishi</Authors>
-    <Description>Strongly typed .NET wrapper for PostgreSQL command-line tools.</Description>
+    <Copyright>Copyright (c) 2026 ShutenOishi</Copyright>
+    <Description>Strongly typed .NET wrapper for PostgreSQL command-line tools with PostgreSQL 10-18 compatibility.</Description>
     <PackageTags>postgresql;postgres;cli;pg_dump;pg_restore;pg_dumpall;backup;restore</PackageTags>
     <PackageProjectUrl>https://github.com/ShutenOishi/pgcli-sharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ShutenOishi/pgcli-sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>First public preview of the typed pg_dump, pg_restore, and pg_dumpall backup/restore core. / pg_dump・pg_restore・pg_dumpall の型付きバックアップ／リストア中核を含む初回公開プレビュー。</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>

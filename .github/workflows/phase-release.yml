@@ -54,10 +54,31 @@ jobs:
           echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
           echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
 
-
       - name: Validate PostgreSQL compatibility specifications
         shell: bash
         run: bash eng/validate-compatibility-specs.sh
+
+      - name: Validate Phase 3 NuGet publication gate
+        if: steps.phase.outputs.phase == '3'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash eng/validate-nuget-release.sh
+
+          nuget_tag="$(jq -r '.tag' .github/nuget-release.json)"
+          if ! gh release view "$nuget_tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Required NuGet version Release $nuget_tag is not complete yet." >&2
+            exit 1
+          fi
+
+          git fetch --force origin "refs/tags/$nuget_tag:refs/tags/$nuget_tag"
+          nuget_commit="$(git rev-list -n1 "$nuget_tag")"
+          if [ "$nuget_commit" != "$GITHUB_SHA" ]; then
+            echo "NuGet version tag $nuget_tag points to $nuget_commit, not $GITHUB_SHA." >&2
+            exit 1
+          fi
 
       - name: Check release uniqueness
         id: existing
@@ -90,6 +111,13 @@ jobs:
         if: steps.existing.outputs.exists != 'true'
         run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
 
+      - name: Verify NuGet package artifacts
+        if: steps.existing.outputs.exists != 'true'
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: bash eng/verify-nuget-package.sh artifacts
+
       - name: Create source ZIP
         if: steps.existing.outputs.exists != 'true'
         env:
@@ -97,7 +125,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git archive --format=zip --output "artifacts/pgcli-sharp-${TAG}.zip" "$GITHUB_SHA"
+          git archive --format=zip --output "artifacts/pgcli-sharp-$TAG.zip" "$GITHUB_SHA"
 
       - name: Verify release artifacts
         if: steps.existing.outputs.exists != 'true'
@@ -107,7 +135,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -f "artifacts/pgcli-sharp-${TAG}.zip"
+          test -f "artifacts/pgcli-sharp-$TAG.zip"
           compgen -G "artifacts/*.nupkg" >/dev/null
           compgen -G "artifacts/*.snupkg" >/dev/null
 
@@ -130,7 +158,7 @@ jobs:
             prerelease_args+=(--prerelease)
           fi
 
-          gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "$TITLE"             --notes-file "$NOTES_FILE"             "${prerelease_args[@]}"             "artifacts/pgcli-sharp-${TAG}.zip"             artifacts/*.nupkg             artifacts/*.snupkg
+          gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "$TITLE"             --notes-file "$NOTES_FILE"             "${prerelease_args[@]}"             "artifacts/pgcli-sharp-$TAG.zip"             artifacts/*.nupkg             artifacts/*.snupkg
 
       - name: Synchronize GitHub Release title and notes
         env:
@@ -144,10 +172,7 @@ jobs:
 
           # Phase tags, target commits, and attached artifacts are immutable.
           # Human-readable title/notes may be synchronized for translation and typo fixes.
-          gh release edit "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "$TITLE" \
-            --notes-file "$NOTES_FILE"
+          gh release edit "$TAG"             --repo "$GITHUB_REPOSITORY"             --title "$TITLE"             --notes-file "$NOTES_FILE"
 
       - name: Verify GitHub Release assets
         env:
@@ -160,6 +185,6 @@ jobs:
           assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
           echo "$assets"
 
-          grep -Fx "pgcli-sharp-${TAG}.zip" <<< "$assets"
+          grep -Fx "pgcli-sharp-$TAG.zip" <<< "$assets"
           grep -E '\.nupkg$' <<< "$assets"
           grep -E '\.snupkg$' <<< "$assets"

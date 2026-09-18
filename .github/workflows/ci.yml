@@ -43,6 +43,10 @@ jobs:
         shell: bash
         run: bash eng/validate-phase-metadata.sh
 
+      - name: Validate NuGet release metadata
+        shell: bash
+        run: bash eng/validate-nuget-release.sh
+
       - name: Validate PostgreSQL compatibility specifications
         shell: bash
         run: bash eng/validate-compatibility-specs.sh
@@ -59,6 +63,13 @@ jobs:
       - name: Pack
         if: runner.os == 'Linux'
         run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Verify NuGet package artifacts
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: bash eng/verify-nuget-package.sh artifacts
 
       - name: Upload package artifacts
         if: runner.os == 'Linux'

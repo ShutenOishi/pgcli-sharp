@@ -59,15 +59,15 @@ Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
 
 ## Phase 3 - First NuGet preview
 
-Target an initial preview such as `0.1.0-alpha.1` once the foundation and backup/restore core are usable.
+**Status: Release candidate prepared (2026-09-19).** The intended first public package is `PgCliSharp 0.1.0-alpha.1`. Publication remains gated on the exact release commit passing the full Linux/macOS/Windows CI and the NuGet Trusted Publishing exchange succeeding.
 
-- Finalize package metadata.
-- Produce `.nupkg` and `.snupkg`.
-- Verify SourceLink and XML docs.
-- Configure GitHub Actions release workflow.
-- Configure NuGet Trusted Publishing/OIDC.
-- Validate version/tag consistency.
-- Publish first preview.
+- Finalize package metadata. **Prepared for `0.1.0-alpha.1`.**
+- Produce `.nupkg` and `.snupkg`. **Validated in CI/release workflows.**
+- Verify SourceLink, repository commit metadata, XML docs, and clean local package consumption. **Automated in `eng/verify-nuget-package.sh`.**
+- Configure GitHub Actions release workflow. **Implemented in `.github/workflows/release.yml`.**
+- Configure NuGet Trusted Publishing/OIDC. **Workflow uses the `release` environment and `NuGet/login@v1`; nuget.org policy must match the repository/workflow/environment.**
+- Validate package version/tag/source-commit consistency. **Automated by `.github/nuget-release.json` and the release workflow.**
+- Publish first preview. **Pending the protected publication gate.**
 
 ## Phase 4 - Backup and WAL tools
 
