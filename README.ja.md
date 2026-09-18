@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 0（基盤実装）は完了しています。Phase 1 では、最初の完全な型付きラッパーとして `pg_dump` を実装します。
+Phase 1 まで完了しています。最初の完全な型付きラッパーとして `pg_dump` を実装し、PostgreSQL 10〜18 のバージョン差を考慮した検証に対応しました。Phase 2 では `pg_restore` と `pg_dumpall` を実装します。
 
 初期対応範囲:
 
@@ -28,6 +28,32 @@ Phase 0（基盤実装）は完了しています。Phase 1 では、最初の�
 - stdout のバイナリ出力を文字列化せず扱える構成にします。
 - 公開 API の XML コメントと PgCliSharp 自身のユーザー向け診断は英語・日本語に対応します。
 
+## pg_dump クイックスタート
+
+実行ファイルのパスと、期待する PostgreSQL CLI メジャーバージョンを明示します。
+
+```csharp
+var pgDump = new PgDump(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dump.exe",
+    PostgreSqlMajorVersion.V18);
+
+var options = new PgDumpOptions
+{
+    Database = "appdb",
+    Format = PgDumpFormat.Custom,
+};
+
+options.Schemas.Add("public");
+
+PgDumpResult result = await pgDump.ExecuteAsync(
+    options,
+    PgDumpOutput.ToFile("appdb.dump"),
+    timeout: TimeSpan.FromMinutes(10));
+```
+
+`PgDumpOptions` は PostgreSQL 10〜18 のオプション union を enum、value object、順序を保持する collection で表現します。実行前に実際の実行ファイルバージョン、オプションのバージョン別 availability、不正な組み合わせを検証します。stdout はバイナリセーフに扱い、PostgreSQL 17 以降の `--filter=-` ではフィルタールールを stdin からストリーミングできます。
+
+機械可読な互換性仕様は [`spec/postgresql/pg_dump.json`](spec/postgresql/pg_dump.json)、Phase 1 の調査内容は [`docs/pg-dump-phase-1.md`](docs/pg-dump-phase-1.md) に保存しています。
 ## 開発
 
 ソリューションは XML 形式の `.slnx` を使用します。
