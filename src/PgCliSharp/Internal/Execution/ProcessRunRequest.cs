@@ -15,10 +15,14 @@ internal sealed class ProcessRunRequest
             throw new ArgumentException("An executable path is required.", nameof(executablePath));
         }
 
+#if NETSTANDARD2_0
         if (arguments is null)
         {
             throw new ArgumentNullException(nameof(arguments));
         }
+#else
+        ArgumentNullException.ThrowIfNull(arguments);
+#endif
 
         if (timeout.HasValue && timeout.Value <= TimeSpan.Zero)
         {
