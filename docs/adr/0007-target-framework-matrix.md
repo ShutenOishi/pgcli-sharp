@@ -14,7 +14,7 @@ A broad target matrix increases consumer compatibility but also increases implem
 
 ## Decision
 
-Initial proposal:
+Accepted matrix:
 
 ```xml
 <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
@@ -46,7 +46,7 @@ Broad reach but prevents target-specific use of modern APIs and optimizations wi
 
 ## Consequences
 
-### Positive if accepted
+### Positive
 
 - Broad consumer reach.
 - Modern target-specific implementations can coexist with compatibility support.
