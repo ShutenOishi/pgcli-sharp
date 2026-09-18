@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 1 まで完了しています。最初の完全な型付きラッパーとして `pg_dump` を実装し、PostgreSQL 10〜18 のバージョン差を考慮した検証に対応しました。Phase 2 では `pg_restore` と `pg_dumpall` を実装します。
+Phase 2 まで完了しています。バックアップ／リストアの中核として、`pg_dump`、`pg_restore`、`pg_dumpall` の型付きラッパーが揃い、PostgreSQL 10〜18 のメジャー差と必要なパッチバージョン差を考慮して検証します。
 
 初期対応範囲:
 
@@ -54,6 +54,34 @@ PgDumpResult result = await pgDump.ExecuteAsync(
 `PgDumpOptions` は PostgreSQL 10〜18 のオプション union を enum、value object、順序を保持する collection で表現します。実行前に実際の実行ファイルバージョン、オプションのバージョン別 availability、不正な組み合わせを検証します。stdout はバイナリセーフに扱い、PostgreSQL 17 以降の `--filter=-` ではフィルタールールを stdin からストリーミングできます。
 
 機械可読な互換性仕様は [`spec/postgresql/pg_dump.json`](spec/postgresql/pg_dump.json)、Phase 1 の調査内容は [`docs/pg-dump-phase-1.md`](docs/pg-dump-phase-1.md) に保存しています。
+
+## pg_restore / pg_dumpall
+
+Phase 2 では、アーカイブ入力、データベースへの直接復元、生成 SQL・一覧出力、クラスタ全体の SQL スクリプト出力を、任意文字列のコマンドライン末尾ではなく専用の型で表現します。
+
+```csharp
+var pgRestore = new PgRestore(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_restore.exe",
+    PostgreSqlMajorVersion.V18);
+
+await pgRestore.ExecuteAsync(
+    new PgRestoreOptions { Jobs = 4 },
+    PgRestoreInput.FromFile("appdb.dump"),
+    PgRestoreOutput.ToDatabase("appdb"));
+
+var pgDumpAll = new PgDumpAll(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dumpall.exe",
+    PostgreSqlMajorVersion.V18);
+
+await pgDumpAll.ExecuteAsync(
+    new PgDumpAllOptions { InitialDatabase = "postgres" },
+    PgDumpAllOutput.ToFile("cluster.sql"));
+```
+
+`PgRestoreInput` はアーカイブのファイル・ディレクトリ・stdin を区別します。`PgRestoreOutput` はデータベースへの直接復元と生成 SQL・一覧出力を区別し、ストリーム出力では `--file=-` を使用して PostgreSQL 10〜18 で一貫したラッパー動作にします。`PgDumpAllScope` は globals/roles/tablespaces-only の排他的な状態を矛盾する bool の組み合わせなしで表現します。
+
+機械可読な互換性仕様は [`spec/postgresql/pg_restore.json`](spec/postgresql/pg_restore.json) と [`spec/postgresql/pg_dumpall.json`](spec/postgresql/pg_dumpall.json)、調査記録は [`docs/pg-restore-phase-2.md`](docs/pg-restore-phase-2.md) と [`docs/pg-dumpall-phase-2.md`](docs/pg-dumpall-phase-2.md) に保存しています。
+
 ## 開発
 
 ソリューションは XML 形式の `.slnx` を使用します。

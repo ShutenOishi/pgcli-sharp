@@ -1,7 +1,7 @@
 {
-  "phase": 1,
-  "tag": "phase-1",
-  "title": "Phase 1 - pg_dump / pg_dump 型付きラッパー",
-  "notes_file": "docs/releases/phase-1.md",
+  "phase": 2,
+  "tag": "phase-2",
+  "title": "Phase 2 - pg_restore + pg_dumpall / pg_restore・pg_dumpall 型付きラッパー",
+  "notes_file": "docs/releases/phase-2.md",
   "prerelease": true
 }

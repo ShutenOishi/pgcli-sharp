@@ -128,7 +128,7 @@ Requirements:
 - pass individual argument values; modern targets use `ProcessStartInfo.ArgumentList`, while the `netstandard2.0` backend delegates token formatting to CliWrap;
 - redirect stdout/stderr where needed;
 - support binary stdout without converting the entire stream to text;
-- support binary-safe stdin streaming for tools/options that consume standard input, such as PostgreSQL 17+ `pg_dump --filter=-`;
+- support binary-safe stdin streaming for tools/options that consume standard input, including PostgreSQL 17+ `pg_dump --filter=-`, `pg_restore` archive/filter stdin, and `pg_dumpall --filter=-`;
 - support `CancellationToken`;
 - support timeout configuration;
 - attempt to terminate the complete process tree on cancellation/timeout where the target framework supports it;
@@ -204,6 +204,8 @@ CI performs structural validation for all top-level tool specification JSON file
 
 Phase 1 stores the complete pg_dump compatibility inventory in `spec/postgresql/pg_dump.json`. It records per-major resolved option sets, short/long spellings, spelling availability, repeatability, required option arguments, wrapper/upstream defaults, format and compression rules, and patch-level availability. The inventory has also been compared mechanically against the official `REL_10_STABLE` through `REL_18_STABLE` pg_dump source option tables.
 
+Phase 2 applies the same specification-first contract to `spec/postgresql/pg_restore.json` and `spec/postgresql/pg_dumpall.json`. Runtime availability catalogs cover major-version differences and the maintenance-release boundaries for security-backported `--restrict-key`. Spec-to-runtime/API coverage tests keep option inventories, public bindings, and centralized availability metadata synchronized.
+
 ## 13. Test layers
 
 Use three logical test layers:
@@ -255,7 +257,7 @@ Long-lived NuGet API keys should not be the preferred design.
 1. Project/solution and execution infrastructure.
 2. Version parsing/validation for PostgreSQL 10-18.
 3. Full `pg_dump` typed option coverage.
-4. `pg_restore` and `pg_dumpall`.
+4. Full typed `pg_restore` and `pg_dumpall` coverage, including archive/script I/O and cross-tool backup/restore contracts.
 5. First NuGet preview and publication pipeline validation.
 6. Backup/WAL tools.
 7. Database-management and maintenance client tools.

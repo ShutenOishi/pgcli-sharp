@@ -1,0 +1,2351 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_dumpall",
+  "researchedAt": "2026-09-18",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "sourcePolicy": "Official per-major PostgreSQL application documentation, stable-branch source parser/option table, security advisories, and release notes."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pg-dumpall.html",
+      "11": "https://www.postgresql.org/docs/11/app-pg-dumpall.html",
+      "12": "https://www.postgresql.org/docs/12/app-pg-dumpall.html",
+      "13": "https://www.postgresql.org/docs/13/app-pg-dumpall.html",
+      "14": "https://www.postgresql.org/docs/14/app-pg-dumpall.html",
+      "15": "https://www.postgresql.org/docs/15/app-pg-dumpall.html",
+      "16": "https://www.postgresql.org/docs/16/app-pg-dumpall.html",
+      "17": "https://www.postgresql.org/docs/17/app-pg-dumpall.html",
+      "18": "https://www.postgresql.org/docs/18/app-pg-dumpall.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_dump/pg_dumpall.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_dump/pg_dumpall.c"
+    },
+    "restrictKeySecurityNotice": "https://www.postgresql.org/support/security/CVE-2025-8714/",
+    "restrictKeyFollowupSecurityNotice": "https://www.postgresql.org/support/security/CVE-2026-18408/",
+    "pg17ReleaseNotes": "https://www.postgresql.org/docs/17/release-17.html"
+  },
+  "output": {
+    "format": "SQL script only",
+    "stdout": "default upstream destination; PgCliSharp exposes binary-safe Stream even though content is SQL text/selected encoding",
+    "file": "--file lets pg_dumpall write its file and perform its own sync behavior",
+    "nestedPgDump": "pg_dumpall locates pg_dump in the same directory and requires the exact same PostgreSQL version before dumping databases"
+  },
+  "connection": {
+    "dbname": "--dbname is a libpq connection string; database name inside it is ignored because pg_dumpall connects to many databases",
+    "initialDatabase": "-l/--database chooses the initial database for globals/discovery; otherwise upstream tries postgres then template1",
+    "precedence": "connection-string parameters override conflicting individual command-line connection parameters according to upstream/libpq behavior"
+  },
+  "environments": {
+    "directDefaults": [
+      "PGHOST",
+      "PGOPTIONS",
+      "PGPORT",
+      "PGUSER"
+    ],
+    "encodingAlternative": "PGCLIENTENCODING/libpq behavior can affect connections; --encoding explicitly sets dump output encoding from PostgreSQL 11+",
+    "color": {
+      "since": 12,
+      "name": "PG_COLOR",
+      "values": [
+        "always",
+        "auto",
+        "never"
+      ]
+    },
+    "inherited": "libpq environment variables apply. Passwords should use libpq password mechanisms and are never rendered into PgCliSharp command diagnostics."
+  },
+  "options": [
+    {
+      "id": "data-only",
+      "spellings": {
+        "short": "-a",
+        "long": [
+          "--data-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump schema and data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ContentMode",
+        "type": "PgDumpAllContentMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "clean",
+      "spellings": {
+        "short": "-c",
+        "long": [
+          "--clean"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "do not emit DROP commands"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Clean",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "file",
+      "spellings": {
+        "short": "-f",
+        "long": [
+          "--file"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "path",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "write SQL script to stdout"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "binding": "PgDumpAllOutput"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "PgCliSharp models stdout/file output separately and keeps stream output byte-safe even though pg_dumpall output is SQL text."
+      ]
+    },
+    {
+      "id": "globals-only",
+      "spellings": {
+        "short": "-g",
+        "long": [
+          "--globals-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "scope",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump globals and databases"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--roles-only",
+        "--tablespaces-only",
+        "--exclude-database/--filter database exclusions"
+      ],
+      "api": {
+        "property": "Scope",
+        "type": "PgDumpAllScope"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PGHOST/libpq default"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "dbname",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--dbname"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "connection-string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "individual connection options/libpq defaults"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ConnectionString",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Database name in the connection string is ignored because pg_dumpall connects to multiple databases. Conflicting command-line connection options are overridden by connstr fields according to libpq/upstream semantics."
+      ]
+    },
+    {
+      "id": "database",
+      "spellings": {
+        "short": "-l",
+        "long": [
+          "--database"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "database-name",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "try postgres then template1 for globals/database discovery"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "InitialDatabase",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "oids",
+      "spellings": {
+        "short": "-o",
+        "long": [
+          "--oids"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 11
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "do not include table OIDs"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "IncludeOids",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-owner",
+      "spellings": {
+        "short": "-O",
+        "long": [
+          "--no-owner"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "emit ownership commands"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoOwner",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "port",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PGPORT/libpq default"
+      },
+      "constraints": [
+        "1..65535 in PgCliSharp typed API"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "roles-only",
+      "spellings": {
+        "short": "-r",
+        "long": [
+          "--roles-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "scope",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump globals and databases"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--globals-only",
+        "--tablespaces-only",
+        "--exclude-database/--filter database exclusions"
+      ],
+      "api": {
+        "property": "Scope",
+        "type": "PgDumpAllScope"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "schema-only",
+      "spellings": {
+        "short": "-s",
+        "long": [
+          "--schema-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump schema and data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ContentMode",
+        "type": "PgDumpAllContentMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "superuser",
+      "spellings": {
+        "short": "-S",
+        "long": [
+          "--superuser"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "identifier",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "no explicit superuser name for trigger disabling"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Superuser",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "tablespaces-only",
+      "spellings": {
+        "short": "-t",
+        "long": [
+          "--tablespaces-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "scope",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump globals and databases"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--globals-only",
+        "--roles-only",
+        "--exclude-database/--filter database exclusions"
+      ],
+      "api": {
+        "property": "Scope",
+        "type": "PgDumpAllScope"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PGUSER/libpq default"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "verbose",
+      "spellings": {
+        "short": "-v",
+        "long": [
+          "--verbose"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "counter",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "0; option not emitted",
+        "upstream": "normal verbosity"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Verbosity",
+        "type": "int"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Passed to nested pg_dump. PG10-13 repeated occurrences do not increase pg_dumpall logging beyond verbose/INFO; PG14+ increase diagnostic verbosity per occurrence."
+      ]
+    },
+    {
+      "id": "no-password",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--no-password"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "prompt-policy",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "libpq default prompt behavior"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "password",
+      "spellings": {
+        "short": "-W",
+        "long": [
+          "--password"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "prompt-policy",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "libpq default prompt behavior"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-privileges",
+      "spellings": {
+        "short": "-x",
+        "long": [
+          "--no-privileges",
+          "--no-acl"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "spellingAvailability": {
+        "--no-privileges": "10-18 canonical",
+        "--no-acl": "10-18 compatibility alias"
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump privileges"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoPrivileges",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "PgCliSharp emits --no-privileges."
+      ]
+    },
+    {
+      "id": "column-inserts",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--column-inserts",
+          "--attribute-inserts"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "spellingAvailability": {
+        "--column-inserts": "10-18 canonical",
+        "--attribute-inserts": "10-18 compatibility alias"
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "use COPY where possible"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ColumnInserts",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "PgCliSharp emits --column-inserts."
+      ]
+    },
+    {
+      "id": "binary-upgrade",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--binary-upgrade"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "normal dump mode"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "BinaryUpgrade",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "disable-dollar-quoting",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--disable-dollar-quoting"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "allow dollar quoting"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "DisableDollarQuoting",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "disable-triggers",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--disable-triggers"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "do not emit trigger disable/enable commands"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "DisableTriggers",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "if-exists",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--if-exists"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "plain DROP commands without IF EXISTS"
+      },
+      "constraints": [],
+      "dependencies": [
+        "requires --clean"
+      ],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "IfExists",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "inserts",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--inserts"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "use COPY where possible"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Inserts",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "lock-wait-timeout",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--lock-wait-timeout"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "timeout",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "wait indefinitely for table locks"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "LockWaitTimeout",
+        "type": "TimeSpan?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Forwarded to nested pg_dump; integer milliseconds are valid across supported server versions. PgCliSharp serializes invariant integer milliseconds."
+      ]
+    },
+    {
+      "id": "no-tablespaces",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-tablespaces"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump/create tablespaces and object tablespace selections"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoTablespaces",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "quote-all-identifiers",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--quote-all-identifiers"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "quote identifiers only when needed"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "QuoteAllIdentifiers",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "role",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--role"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "identifier",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "no SET ROLE"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Role",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "use-set-session-authorization",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--use-set-session-authorization"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "use ALTER OWNER"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "UseSetSessionAuthorization",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-publications",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-publications"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump publications"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoPublications",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-role-passwords",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-role-passwords"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump role password hashes where permitted"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoRolePasswords",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-security-labels",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-security-labels"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump security labels"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoSecurityLabels",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-subscriptions",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-subscriptions"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump subscriptions"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoSubscriptions",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "sync output file safely before completion"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoSync",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-unlogged-table-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-unlogged-table-data"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump unlogged relation data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoUnloggedTableData",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "encoding",
+      "spellings": {
+        "short": "-E",
+        "long": [
+          "--encoding"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "encoding",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "use active/default client encoding"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Encoding",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "load-via-partition-root",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--load-via-partition-root"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore partition data directly to leaf partitions"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "LoadViaPartitionRoot",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-comments",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-comments"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump comments"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoComments",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "exclude-database",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--exclude-database"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump every connectable database"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "GlobalsOnly/RolesOnly/TablespacesOnly scope"
+      ],
+      "api": {
+        "property": "ExcludedDatabases",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "extra-float-digits",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--extra-float-digits"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "nested pg_dump default"
+      },
+      "constraints": [
+        "-15..3"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ExtraFloatDigits",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "on-conflict-do-nothing",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--on-conflict-do-nothing"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "normal INSERT conflict behavior"
+      },
+      "constraints": [],
+      "dependencies": [
+        "requires an INSERT mode in nested pg_dump: --inserts, --column-inserts, or --rows-per-insert"
+      ],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "OnConflictDoNothing",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "rows-per-insert",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--rows-per-insert"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "positive-int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "COPY unless another INSERT mode is selected"
+      },
+      "constraints": [
+        "> 0"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "RowsPerInsert",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "restrict-key",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--restrict-key"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "alphanumeric-key",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18,
+        "minimumExecutableVersionByMajor": {
+          "13": "13.22",
+          "14": "14.19",
+          "15": "15.14",
+          "16": "16.10",
+          "17": "17.6",
+          "18": "18.0"
+        }
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "generate a random key as needed"
+      },
+      "constraints": [
+        "ASCII alphanumeric only"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "RestrictKey",
+        "type": "PgDumpAllRestrictKey?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-toast-compression",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-toast-compression"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "preserve TOAST compression selection"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoToastCompression",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-table-access-method",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-table-access-method"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "emit table access methods"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoTableAccessMethod",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "filter",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--filter"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "filter-source",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "no filter files"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Filters",
+        "type": "IList<PgDumpAllFilterSource>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Only 'exclude database PATTERN' entries are supported. '-' reads from stdin."
+      ]
+    },
+    {
+      "id": "no-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-data"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoData",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-policies",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-policies"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump policies"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoPolicies",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-schema",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-schema"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump schema"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoSchema",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-statistics",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-statistics"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "dump statistics according to PostgreSQL 18 defaults/options"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--statistics",
+        "--statistics-only"
+      ],
+      "api": {
+        "property": "NoStatistics",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "statistics",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--statistics"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "statistics not added beyond default dump content"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--no-statistics",
+        "--data-only",
+        "--schema-only"
+      ],
+      "api": {
+        "property": "Statistics",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "statistics-only",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--statistics-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "normal schema/data dump"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--data-only",
+        "--schema-only",
+        "--no-statistics"
+      ],
+      "api": {
+        "property": "ContentMode",
+        "type": "PgDumpAllContentMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "sequence-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--sequence-data"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "sequence values follow normal data inclusion semantics"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "SequenceData",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "utility",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "normal execution"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "binding": "Executable version probe / utility command"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "utility",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "normal execution"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "oids",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "oids",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added --encoding",
+        "added --load-via-partition-root",
+        "added --no-comments"
+      ]
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "exclude-database",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "removed --oids",
+        "added --exclude-database",
+        "added --extra-float-digits",
+        "added --on-conflict-do-nothing",
+        "added --rows-per-insert"
+      ]
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "exclude-database",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "restrict-key",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "--restrict-key present in current docs/source only from executable 13.22 due CVE-2025-8714 backport"
+      ]
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "exclude-database",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "restrict-key",
+        "no-toast-compression",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-toast-compression",
+        "repeated --verbose begins increasing logging verbosity"
+      ]
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "exclude-database",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "restrict-key",
+        "no-toast-compression",
+        "no-table-access-method",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-table-access-method"
+      ]
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "exclude-database",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "restrict-key",
+        "no-toast-compression",
+        "no-table-access-method",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "exclude-database",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "restrict-key",
+        "no-toast-compression",
+        "no-table-access-method",
+        "filter",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added repeatable --filter for database exclusion"
+      ]
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pg-dumpall.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "clean",
+        "file",
+        "globals-only",
+        "host",
+        "dbname",
+        "database",
+        "no-owner",
+        "port",
+        "roles-only",
+        "schema-only",
+        "superuser",
+        "tablespaces-only",
+        "username",
+        "verbose",
+        "no-password",
+        "password",
+        "no-privileges",
+        "column-inserts",
+        "binary-upgrade",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-tablespaces",
+        "quote-all-identifiers",
+        "role",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-role-passwords",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-unlogged-table-data",
+        "encoding",
+        "load-via-partition-root",
+        "no-comments",
+        "exclude-database",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "restrict-key",
+        "no-toast-compression",
+        "no-table-access-method",
+        "filter",
+        "no-data",
+        "no-policies",
+        "no-schema",
+        "no-statistics",
+        "statistics",
+        "statistics-only",
+        "sequence-data",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-data/--no-policies/--no-schema/--no-statistics/--statistics/--statistics-only/--sequence-data"
+      ]
+    }
+  },
+  "validationRules": [
+    {
+      "id": "scope-exclusive",
+      "require": "GlobalsOnly, RolesOnly, and TablespacesOnly are mutually exclusive and represented as one enum"
+    },
+    {
+      "id": "exclude-scope",
+      "since": 12,
+      "require": "database exclusion patterns/filter database exclusions cannot be combined with globals/roles/tablespaces-only scopes"
+    },
+    {
+      "id": "if-exists-clean",
+      "require": "--if-exists requires --clean"
+    },
+    {
+      "id": "rows-positive",
+      "since": 12,
+      "require": "--rows-per-insert > 0"
+    },
+    {
+      "id": "extra-float-range",
+      "since": 12,
+      "require": "--extra-float-digits in -15..3"
+    },
+    {
+      "id": "on-conflict-insert",
+      "since": 12,
+      "require": "--on-conflict-do-nothing requires insert-style nested pg_dump output"
+    },
+    {
+      "id": "restrict-key",
+      "require": "ASCII alphanumeric and exact executable version at/after security-backport boundary"
+    },
+    {
+      "id": "filter-stdin",
+      "since": 17,
+      "require": "at most one stdin filter stream is bound by PgCliSharp"
+    },
+    {
+      "id": "pg18-content",
+      "since": 18,
+      "require": "data-only/schema-only/statistics-only and statistics/no-statistics conflicts mirror nested pg_dump semantics"
+    }
+  ],
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-18",
+    "method": "Compared resolved long-option spellings with REL_10_STABLE through REL_18_STABLE src/bin/pg_dump/pg_dumpall.c long_options[]; utility --help/--version handled separately because source recognizes them before getopt.",
+    "result": "Exact source-table inventory captured for all majors; no unexplained source/spec options remain.",
+    "sourceLongOptionCountsByMajor": {
+      "10": 38,
+      "11": 41,
+      "12": 44,
+      "13": 45,
+      "14": 46,
+      "15": 47,
+      "16": 47,
+      "17": 48,
+      "18": 55
+    },
+    "noteworthyParserFindings": [
+      "--dbname is a connection string while -l/--database is the initial database.",
+      "pg_dumpall requires a same-version sibling pg_dump executable.",
+      "--no-acl and --attribute-inserts are aliases; canonical wrapper spellings are --no-privileges and --column-inserts.",
+      "PG17 filter supports only exclude database entries.",
+      "Output is always SQL script; stdout is upstream default."
+    ]
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-18",
+    "result": "Complete option-table and hard-validation audit performed across REL_10_STABLE..REL_18_STABLE."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-18",
+    "result": "All inventory entries have an explicit public API or wrapper binding. CI reflection tests verify typed property bindings, and version-varying entries are compared with the runtime availability catalog.",
+    "specialBindings": {
+      "file": "PgDumpAllOutput",
+      "version": "executable version probe",
+      "help": "utility command"
+    }
+  },
+  "designDecisions": {
+    "scope": "Mutually exclusive globals/roles/tablespaces modes are represented by PgDumpAllScope rather than contradictory booleans.",
+    "connection": "No public shared connection-options base is introduced because pg_dumpall --dbname semantics differ materially from pg_dump/pg_restore.",
+    "output": "Dedicated PgDumpAllOutput separates stdout stream and file output.",
+    "nestedTool": "The wrapper validates pg_dumpall itself; upstream then enforces the same-version sibling pg_dump invariant."
+  }
+}

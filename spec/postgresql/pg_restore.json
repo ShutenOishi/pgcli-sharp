@@ -1,0 +1,2289 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_restore",
+  "researchedAt": "2026-09-18",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "sourcePolicy": "Official per-major PostgreSQL application documentation, stable-branch source parser/option table, security advisories, and release notes."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pgrestore.html",
+      "11": "https://www.postgresql.org/docs/11/app-pgrestore.html",
+      "12": "https://www.postgresql.org/docs/12/app-pgrestore.html",
+      "13": "https://www.postgresql.org/docs/13/app-pgrestore.html",
+      "14": "https://www.postgresql.org/docs/14/app-pgrestore.html",
+      "15": "https://www.postgresql.org/docs/15/app-pgrestore.html",
+      "16": "https://www.postgresql.org/docs/16/app-pgrestore.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgrestore.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgrestore.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_dump/pg_restore.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_dump/pg_restore.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_dump/pg_restore.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_dump/pg_restore.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_dump/pg_restore.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_dump/pg_restore.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_dump/pg_restore.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_dump/pg_restore.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_dump/pg_restore.c"
+    },
+    "restrictKeySecurityNotice": "https://www.postgresql.org/support/security/CVE-2025-8714/",
+    "restrictKeyFollowupSecurityNotice": "https://www.postgresql.org/support/security/CVE-2026-18408/",
+    "pg17ReleaseNotes": "https://www.postgresql.org/docs/17/release-17.html"
+  },
+  "archiveInput": {
+    "acceptedFormats": [
+      "custom",
+      "directory",
+      "tar"
+    ],
+    "autoDetect": true,
+    "positionalInput": "archive filename or directory; omission means stdin",
+    "standardInput": "supported for non-parallel archive input; cannot safely share stdin with --filter=-",
+    "plain": "not supported by pg_restore; restore plain pg_dump scripts with psql",
+    "parallel": "--jobs > 1 requires custom/directory archive and a regular file/directory input; ignored for script output"
+  },
+  "executionModes": {
+    "directDatabase": "--dbname; executes SQL directly against target; --file and --restrict-key are incompatible",
+    "script": "--file; generated SQL script, with '-' representing stdout",
+    "list": "--list; writes TOC listing, optionally through --file"
+  },
+  "environments": {
+    "directDefaults": [
+      "PGHOST",
+      "PGOPTIONS",
+      "PGPORT",
+      "PGUSER"
+    ],
+    "intentionallyNotUsedAsImplicitDb": "PGDATABASE is not read to select direct-database mode when --dbname is absent",
+    "color": {
+      "since": 12,
+      "name": "PG_COLOR",
+      "values": [
+        "always",
+        "auto",
+        "never"
+      ]
+    },
+    "inherited": "libpq environment variables apply for database connections. Passwords should use libpq password mechanisms; PgCliSharp does not put passwords on the command line."
+  },
+  "options": [
+    {
+      "id": "clean",
+      "spellings": {
+        "short": "-c",
+        "long": [
+          "--clean"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "disabled"
+      },
+      "constraints": [],
+      "dependencies": [
+        "--if-exists depends on --clean"
+      ],
+      "incompatibleCombinations": [
+        "--data-only"
+      ],
+      "api": {
+        "property": "Clean",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "create",
+      "spellings": {
+        "short": "-C",
+        "long": [
+          "--create"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "disabled"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "PostgreSQL 12+: --single-transaction"
+      ],
+      "api": {
+        "property": "Create",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "data-only",
+      "spellings": {
+        "short": "-a",
+        "long": [
+          "--data-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore schema and data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--schema-only",
+        "--clean",
+        "PostgreSQL 18: --statistics-only, --no-data, --statistics"
+      ],
+      "api": {
+        "property": "ContentMode",
+        "type": "PgRestoreContentMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "dbname",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--dbname"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "connection-string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "script/list output unless a database is named"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--file",
+        "--restrict-key"
+      ],
+      "api": {
+        "binding": "PgRestoreOutput.ToDatabase"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "exit-on-error",
+      "spellings": {
+        "short": "-e",
+        "long": [
+          "--exit-on-error"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "continue after SQL errors and report count"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ExitOnError",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Implied by --single-transaction and --transaction-size."
+      ]
+    },
+    {
+      "id": "exclude-schema",
+      "spellings": {
+        "short": "-N",
+        "long": [
+          "--exclude-schema"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "identifier-pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "no schema exclusion"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ExcludedSchemas",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "file",
+      "spellings": {
+        "short": "-f",
+        "long": [
+          "--file"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "path-or-stdout",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL 10-11 can emit script to stdout when omitted; PostgreSQL 12+ normal restore requires -d or -f unless --list"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--dbname"
+      ],
+      "api": {
+        "binding": "PgRestoreOutput script/list destination"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "PgCliSharp emits --file=- for stream/stdout script output to make the destination explicit across all supported majors."
+      ]
+    },
+    {
+      "id": "format",
+      "spellings": {
+        "short": "-F",
+        "long": [
+          "--format"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "enum(c|custom|d|directory|t|tar)",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "auto-detect archive format"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "ArchiveFormat",
+        "type": "PgRestoreArchiveFormat?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "PostgreSQL 10-17 parser dispatches by first character; PostgreSQL 18 recognizes exact c/custom, d/directory, t/tar names and explicitly rejects plain. PgCliSharp emits canonical full values only."
+      ]
+    },
+    {
+      "id": "function",
+      "spellings": {
+        "short": "-P",
+        "long": [
+          "--function"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "object-name",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "all functions subject to other filters"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Functions",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PGHOST/libpq default"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "index",
+      "spellings": {
+        "short": "-I",
+        "long": [
+          "--index"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "object-name",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "all indexes subject to other filters"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Indexes",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "jobs",
+      "spellings": {
+        "short": "-j",
+        "long": [
+          "--jobs"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "positive-int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "1"
+      },
+      "constraints": [
+        ">= 1",
+        "parallel restore is supported only for custom or directory archives; input must be a regular file/directory; ignored for script output",
+        "cannot be >1 with --single-transaction"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Jobs",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "list",
+      "spellings": {
+        "short": "-l",
+        "long": [
+          "--list"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "mode",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "PgRestoreMode.Restore",
+        "upstream": "restore archive"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Mode",
+        "type": "PgRestoreMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-privileges",
+      "spellings": {
+        "short": "-x",
+        "long": [
+          "--no-privileges",
+          "--no-acl"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "spellingAvailability": {
+        "--no-privileges": "10-18 canonical",
+        "--no-acl": "10-18 compatibility alias"
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore privileges"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoPrivileges",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "PgCliSharp emits --no-privileges."
+      ]
+    },
+    {
+      "id": "no-owner",
+      "spellings": {
+        "short": "-O",
+        "long": [
+          "--no-owner"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore ownership"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoOwner",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-reconnect",
+      "spellings": {
+        "short": "-R",
+        "long": [
+          "--no-reconnect"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "compatibility-no-op",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "no effect"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoReconnect",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Obsolete; accepted as a no-op for backwards compatibility. PgCliSharp deliberately allows it."
+      ]
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "port",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PGPORT/libpq default"
+      },
+      "constraints": [
+        "1..65535 in PgCliSharp typed API"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-password",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--no-password"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "prompt-policy",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "libpq default prompt behavior"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "password",
+      "spellings": {
+        "short": "-W",
+        "long": [
+          "--password"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "prompt-policy",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "libpq default prompt behavior"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "schema",
+      "spellings": {
+        "short": "-n",
+        "long": [
+          "--schema"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "object-name",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "all schemas subject to other filters"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Schemas",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "schema-only",
+      "spellings": {
+        "short": "-s",
+        "long": [
+          "--schema-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "mode",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore schema and data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--data-only",
+        "PostgreSQL 18: --statistics-only, --no-schema, --statistics"
+      ],
+      "api": {
+        "property": "ContentMode",
+        "type": "PgRestoreContentMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "superuser",
+      "spellings": {
+        "short": "-S",
+        "long": [
+          "--superuser"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "identifier",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "current connected user"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Superuser",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Relevant to --disable-triggers."
+      ]
+    },
+    {
+      "id": "table",
+      "spellings": {
+        "short": "-t",
+        "long": [
+          "--table"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "object-name",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "all tables subject to other filters"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Tables",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "pg_restore table names are exact object names, not pg_dump wildcard patterns; subsidiary objects are not automatically selected."
+      ]
+    },
+    {
+      "id": "trigger",
+      "spellings": {
+        "short": "-T",
+        "long": [
+          "--trigger"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "object-name",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "all triggers subject to other filters"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Triggers",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "use-list",
+      "spellings": {
+        "short": "-L",
+        "long": [
+          "--use-list"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "path",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "archive TOC order/selection"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "UseListFile",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PGUSER/libpq default"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "verbose",
+      "spellings": {
+        "short": "-v",
+        "long": [
+          "--verbose"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "counter",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "0; option not emitted",
+        "upstream": "normal verbosity"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Verbosity",
+        "type": "int"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "PG10-13 repeated occurrences are accepted but do not increase beyond verbose/INFO; PG14+ each occurrence increases diagnostic verbosity."
+      ]
+    },
+    {
+      "id": "single-transaction",
+      "spellings": {
+        "short": "-1",
+        "long": [
+          "--single-transaction"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "None",
+        "upstream": "no enclosing all-object transaction"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "multiple jobs",
+        "PostgreSQL 12+: --create",
+        "PostgreSQL 17+: --transaction-size"
+      ],
+      "api": {
+        "property": "TransactionMode",
+        "type": "PgRestoreTransactionMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Implies --exit-on-error upstream."
+      ]
+    },
+    {
+      "id": "disable-triggers",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--disable-triggers"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "do not disable triggers"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "DisableTriggers",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Relevant only when restoring without schema; accepted in other modes and may have no effect."
+      ]
+    },
+    {
+      "id": "enable-row-security",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--enable-row-security"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "row_security off during restore where applicable"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "EnableRowSecurity",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "if-exists",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--if-exists"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "plain DROP commands without IF EXISTS"
+      },
+      "constraints": [],
+      "dependencies": [
+        "requires --clean"
+      ],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "IfExists",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-data-for-failed-tables",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-data-for-failed-tables"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "attempt table data even if table creation failed"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoDataForFailedTables",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Effective only for direct database restore; accepted for script output without effect."
+      ]
+    },
+    {
+      "id": "no-tablespaces",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-tablespaces"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore tablespace selections"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoTablespaces",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "role",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--role"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "identifier",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "no SET ROLE"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Role",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "section",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--section"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "enum(pre-data|data|post-data)",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "all sections"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Sections",
+        "type": "IList<PgRestoreSection>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "strict-names",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--strict-names"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "unmatched schema/table selectors are tolerated"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "StrictNames",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "use-set-session-authorization",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--use-set-session-authorization"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "use ALTER OWNER"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "UseSetSessionAuthorization",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-publications",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-publications"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore publications"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoPublications",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-security-labels",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-security-labels"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore security labels"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoSecurityLabels",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-subscriptions",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-subscriptions"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore subscriptions"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoSubscriptions",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-comments",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-comments"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore comments"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoComments",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "restrict-key",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--restrict-key"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "alphanumeric-key",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18,
+        "minimumExecutableVersionByMajor": {
+          "13": "13.22",
+          "14": "14.19",
+          "15": "15.14",
+          "16": "16.10",
+          "17": "17.6",
+          "18": "18.0"
+        }
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "generate random key when SQL script output needs one"
+      },
+      "constraints": [
+        "ASCII alphanumeric only",
+        "SQL script output only; cannot be used with --dbname"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "RestrictKey",
+        "type": "PgRestoreRestrictKey?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-table-access-method",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-table-access-method"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore table access methods"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoTableAccessMethod",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "transaction-size",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--transaction-size"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "positive-int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "one transaction per SQL command/object as applicable"
+      },
+      "constraints": [
+        ">= 1"
+      ],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--single-transaction"
+      ],
+      "api": {
+        "property": "TransactionMode",
+        "type": "PgRestoreTransactionMode?"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "Implies --exit-on-error."
+      ]
+    },
+    {
+      "id": "filter",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--filter"
+        ]
+      },
+      "argumentMode": "required",
+      "valueKind": "filter-source",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "no filter files"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "Filters",
+        "type": "IList<PgRestoreFilterSource>"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": [
+        "'-' reads filter rules from stdin; only one stdin consumer can be represented safely by PgCliSharp. Include supports function/index/schema/table/trigger; exclude supports schema only."
+      ]
+    },
+    {
+      "id": "no-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-data"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--data-only"
+      ],
+      "api": {
+        "property": "NoData",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-policies",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-policies"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore policies"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "property": "NoPolicies",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-schema",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-schema"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore schema"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--schema-only"
+      ],
+      "api": {
+        "property": "NoSchema",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-statistics",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-statistics"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore statistics if present"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--statistics",
+        "--statistics-only"
+      ],
+      "api": {
+        "property": "NoStatistics",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "statistics",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--statistics"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore statistics if present"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--no-statistics",
+        "--data-only",
+        "--schema-only"
+      ],
+      "api": {
+        "property": "Statistics",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "statistics-only",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--statistics-only"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "mode",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "restore schema and data"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [
+        "--data-only",
+        "--schema-only",
+        "--no-statistics"
+      ],
+      "api": {
+        "property": "ContentMode",
+        "type": "PgRestoreContentMode"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "utility",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "normal execution"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "binding": "Executable version probe / utility command"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "valueKind": "utility",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "normal execution"
+      },
+      "constraints": [],
+      "dependencies": [],
+      "incompatibleCombinations": [],
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official stable-branch option table/parser.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-comments"
+      ]
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "normal restore now hard-requires one of --dbname or --file unless --list",
+        "--create + --single-transaction becomes an explicit hard error"
+      ]
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "restrict-key",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "--restrict-key present in current docs/source only from executable 13.22 due CVE-2025-8714 backport"
+      ]
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "restrict-key",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "repeated --verbose begins increasing logging verbosity"
+      ]
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "restrict-key",
+        "no-table-access-method",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-table-access-method"
+      ]
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "restrict-key",
+        "no-table-access-method",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "restrict-key",
+        "no-table-access-method",
+        "transaction-size",
+        "filter",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added repeatable --filter",
+        "added --transaction-size"
+      ]
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgrestore.html",
+      "inventoryBasis": "current official documentation for this major, including maintenance-backported options where documented",
+      "optionIdsInCurrentMajorDocumentation": [
+        "clean",
+        "create",
+        "data-only",
+        "dbname",
+        "exit-on-error",
+        "exclude-schema",
+        "file",
+        "format",
+        "function",
+        "host",
+        "index",
+        "jobs",
+        "list",
+        "no-privileges",
+        "no-owner",
+        "no-reconnect",
+        "port",
+        "no-password",
+        "password",
+        "schema",
+        "schema-only",
+        "superuser",
+        "table",
+        "trigger",
+        "use-list",
+        "username",
+        "verbose",
+        "single-transaction",
+        "disable-triggers",
+        "enable-row-security",
+        "if-exists",
+        "no-data-for-failed-tables",
+        "no-tablespaces",
+        "role",
+        "section",
+        "strict-names",
+        "use-set-session-authorization",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-comments",
+        "restrict-key",
+        "no-table-access-method",
+        "transaction-size",
+        "filter",
+        "no-data",
+        "no-policies",
+        "no-schema",
+        "no-statistics",
+        "statistics",
+        "statistics-only",
+        "version",
+        "help"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-data/--no-policies/--no-schema/--no-statistics/--statistics/--statistics-only",
+        "format parser now recognizes exact canonical names rather than dispatching only on first character"
+      ]
+    }
+  },
+  "validationRules": [
+    {
+      "id": "direct-vs-script-output",
+      "require": "database output and --file output are mutually exclusive"
+    },
+    {
+      "id": "data-schema-only",
+      "require": "data-only and schema-only are mutually exclusive"
+    },
+    {
+      "id": "data-clean",
+      "require": "data-only and clean are mutually exclusive"
+    },
+    {
+      "id": "if-exists-clean",
+      "require": "--if-exists requires --clean"
+    },
+    {
+      "id": "single-jobs",
+      "require": "--single-transaction cannot be combined with jobs > 1"
+    },
+    {
+      "id": "create-single-pg12",
+      "since": 12,
+      "require": "--create and --single-transaction cannot be combined"
+    },
+    {
+      "id": "transaction-size-single",
+      "since": 17,
+      "require": "--transaction-size and --single-transaction cannot be combined"
+    },
+    {
+      "id": "jobs-input",
+      "require": "when jobs > 1 actually applies, archive must be custom/directory and input must be regular file/directory; script-output ignored behavior is not prohibited"
+    },
+    {
+      "id": "restrict-script",
+      "require": "--restrict-key requires script output and an exact executable version at/after the security-backport boundary"
+    },
+    {
+      "id": "filter-stdin",
+      "since": 17,
+      "require": "at most one stdin filter and no simultaneous archive-stdin consumer"
+    },
+    {
+      "id": "pg18-content",
+      "since": 18,
+      "require": "data-only/schema-only/statistics-only are pairwise exclusive; each conflicts with corresponding no-*; statistics conflicts with no-statistics and with data-only/schema-only"
+    }
+  ],
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-18",
+    "method": "Compared resolved long-option spellings with REL_10_STABLE through REL_18_STABLE src/bin/pg_dump/pg_restore.c cmdopts[] tables; utility --help/--version handled separately because source recognizes them before getopt.",
+    "result": "Exact source-table inventory captured for all majors; no unexplained source/spec options remain.",
+    "sourceLongOptionCountsByMajor": {
+      "10": 41,
+      "11": 42,
+      "12": 42,
+      "13": 43,
+      "14": 43,
+      "15": 44,
+      "16": 44,
+      "17": 46,
+      "18": 52
+    },
+    "noteworthyParserFindings": [
+      "PG10-11 allow script stdout by omission; PG12+ normal restore requires -d or -f unless --list.",
+      "--no-reconnect is a deliberate no-op.",
+      "PG12+ adds a hard --create/--single-transaction conflict.",
+      "PG17 transaction-size is 1..INT_MAX and implies exit-on-error.",
+      "PG18 adds statistics content modes and exact full-name format parsing."
+    ]
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-18",
+    "result": "Complete option-table and hard-validation audit performed across REL_10_STABLE..REL_18_STABLE."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-18",
+    "result": "All inventory entries have an explicit public API or wrapper binding. CI reflection tests verify typed property bindings, and version-varying entries are compared with the runtime availability catalog.",
+    "specialBindings": {
+      "dbname": "PgRestoreOutput.ToDatabase",
+      "file": "PgRestoreOutput script/list destination",
+      "version": "executable version probe",
+      "help": "utility command"
+    }
+  },
+  "designDecisions": {
+    "input": "Dedicated PgRestoreInput models archive file/directory/stdin; archive input is not an arbitrary option string.",
+    "output": "Dedicated PgRestoreOutput models direct database vs SQL/list stream/file output.",
+    "noOvervalidation": "Options documented/upstream-implemented as ignored in a mode (for example parallel jobs during script generation) are not rejected merely for being ineffective.",
+    "secrets": "No password value command-line option exists; environment values are not rendered in diagnostics."
+  }
+}

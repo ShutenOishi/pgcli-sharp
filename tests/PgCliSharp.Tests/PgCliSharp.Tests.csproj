@@ -24,4 +24,10 @@
   <ItemGroup>
     <ProjectReference Include="../../src/PgCliSharp/PgCliSharp.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../spec/postgresql/*.json"
+          Link="spec/%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

@@ -42,6 +42,8 @@ This phase defines the design template for later tools.
 
 ## Phase 2 - pg_restore and pg_dumpall
 
+**Status: Complete (2026-09-18).** The typed `pg_restore` and `pg_dumpall` APIs, PostgreSQL 10-18 compatibility specifications, centralized availability checks, execution/I/O support, backup/restore trio tests, bilingual documentation, and cross-platform completion gate are complete.
+
 Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
 
 - Research `pg_restore` and `pg_dumpall` independently across PostgreSQL 10-18 before completing either public API.
@@ -51,7 +53,8 @@ Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
 - Build centralized runtime availability metadata for each tool before scattering version checks through validators.
 - Compare `pg_dump`, `pg_restore`, and `pg_dumpall` connection semantics; extract shared internal argument/validation helpers only for behavior proven identical.
 - Keep public Options classes tool-specific.
-- Complete backup/restore trio tests, including cross-tool archive/I/O scenarios where meaningful.
+- Complete backup/restore trio tests, including cross-tool archive/I/O scenarios where meaningful. **Implemented.**
+- Keep spec-to-API and spec-to-runtime availability coverage tests in CI so inventory drift fails the build. **Implemented.**
 - Do not update Phase 2 release metadata until both tools pass the full implementation/completeness gate.
 
 ## Phase 3 - First NuGet preview
