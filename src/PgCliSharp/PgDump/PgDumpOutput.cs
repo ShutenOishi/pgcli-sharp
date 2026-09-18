@@ -45,7 +45,9 @@ public sealed class PgDumpOutput
 
         if (!destination.CanWrite)
         {
-            throw new ArgumentException("The pg_dump output stream must be writable.", nameof(destination));
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable),
+                nameof(destination));
         }
 
         return new PgDumpOutput(PgDumpOutputKind.StandardOutput, destination, null);
