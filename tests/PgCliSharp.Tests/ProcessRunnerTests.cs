@@ -68,7 +68,7 @@ public sealed class ProcessRunnerTests
     }
 
     [Fact]
-    public async Task RunAsync_Timeout_TerminatesDescendantProcessTreeOnWindows()
+    public async Task RunAsync_Cancellation_TerminatesDescendantProcessTreeOnWindows()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -95,30 +95,43 @@ public sealed class ProcessRunnerTests
         var request = new ProcessRunRequest(
             powerShell,
             new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script },
-            Stream.Null,
-            TimeSpan.FromSeconds(2));
+            Stream.Null);
         var runner = new ProcessRunner();
+        using var cancellation = new CancellationTokenSource(
+            TimeSpan.FromSeconds(30));
+
+        Task<ProcessRunResult> runTask = runner.RunAsync(
+            request,
+            cancellation.Token);
 
         try
         {
-            await Assert.ThrowsAsync<PgProcessTimeoutException>(
-                () => runner.RunAsync(request, CancellationToken.None));
+            bool pidCreated = await WaitForFileAsync(
+                pidFile,
+                TimeSpan.FromSeconds(15));
 
             Assert.True(
-                File.Exists(pidFile),
-                "The descendant process PID file was not created before timeout.");
+                pidCreated,
+                "The descendant process PID file was not created after the child process started.");
 
             int childProcessId = int.Parse(
                 File.ReadAllText(pidFile),
                 System.Globalization.CultureInfo.InvariantCulture);
 
+            cancellation.Cancel();
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(
+                () => runTask);
+
             bool descendantExited = HasProcessExited(childProcessId);
             Assert.True(
                 descendantExited,
-                "The descendant process remained alive after timeout termination.");
+                "The descendant process remained alive after cancellation.");
         }
         finally
         {
+            cancellation.Cancel();
+
             if (File.Exists(pidFile))
             {
                 File.Delete(pidFile);
@@ -155,6 +168,25 @@ public sealed class ProcessRunnerTests
 
         Assert.Equal(0, result.ExitCode);
         Assert.Equal(new byte[] { 0, 1, 2, 255 }, output.ToArray());
+    }
+
+    private static async Task<bool> WaitForFileAsync(
+        string path,
+        TimeSpan timeout)
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        while (stopwatch.Elapsed < timeout)
+        {
+            if (File.Exists(path))
+            {
+                return true;
+            }
+
+            await Task.Delay(50);
+        }
+
+        return File.Exists(path);
     }
 
     private static bool HasProcessExited(int processId)
