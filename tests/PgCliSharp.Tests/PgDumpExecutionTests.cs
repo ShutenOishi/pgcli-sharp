@@ -168,11 +168,17 @@ public sealed class PgDumpExecutionTests
                     $"pg_dump (PostgreSQL) {_version}\n");
 
                 Assert.NotNull(request.StandardOutput);
+#if NET8_0_OR_GREATER
+                await request.StandardOutput!.WriteAsync(
+                    versionBytes.AsMemory(),
+                    cancellationToken);
+#else
                 await request.StandardOutput!.WriteAsync(
                     versionBytes,
                     0,
                     versionBytes.Length,
                     cancellationToken);
+#endif
 
                 return new ProcessRunResult(0, TimeSpan.Zero, string.Empty);
             }
@@ -196,11 +202,17 @@ public sealed class PgDumpExecutionTests
 
             if (request.StandardOutput is not null)
             {
+#if NET8_0_OR_GREATER
+                await request.StandardOutput.WriteAsync(
+                    _dumpOutput.AsMemory(),
+                    cancellationToken);
+#else
                 await request.StandardOutput.WriteAsync(
                     _dumpOutput,
                     0,
                     _dumpOutput.Length,
                     cancellationToken);
+#endif
             }
 
             return new ProcessRunResult(
