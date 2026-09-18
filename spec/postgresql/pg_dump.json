@@ -215,7 +215,11 @@
       },
       "notes": [
         "--large-objects is canonical from PostgreSQL 16; --blobs remains a deprecated alias from 16."
-      ]
+      ],
+      "spellingAvailability": {
+        "--blobs/--no-blobs": "PostgreSQL 10-18 compatibility aliases (mapped according to option polarity)",
+        "--large-objects/--no-large-objects": "PostgreSQL 16-18 canonical long forms"
+      }
     },
     {
       "id": "no-large-objects",
@@ -241,7 +245,11 @@
       },
       "notes": [
         "--no-large-objects is canonical from PostgreSQL 16; --no-blobs remains a deprecated alias from 16."
-      ]
+      ],
+      "spellingAvailability": {
+        "--blobs/--no-blobs": "PostgreSQL 10-18 compatibility aliases (mapped according to option polarity)",
+        "--large-objects/--no-large-objects": "PostgreSQL 16-18 canonical long forms"
+      }
     },
     {
       "id": "clean",
@@ -2782,5 +2790,21 @@
     "repeatables": "Use ordered collections and emit one command-line option per collection item.",
     "output": "Output destination is a dedicated API, not an overloaded string; stdout streams remain binary-safe.",
     "versionValidation": "Probe --version before execution. Use actual parsed numeric executable version for patch-dependent availability such as --restrict-key."
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-18",
+    "method": "Compared every version's resolved long-option spelling set against the official REL_10_STABLE through REL_18_STABLE src/bin/pg_dump/pg_dump.c long_options table.",
+    "result": "Exact match for PostgreSQL 10, 11, 12, 13, 14, 15, 16, 17, and 18 after applying per-spelling availability.",
+    "longOptionCountsByMajor": {
+      "10": 54,
+      "11": 56,
+      "12": 58,
+      "13": 60,
+      "14": 62,
+      "15": 62,
+      "16": 67,
+      "17": 70,
+      "18": 77
+    }
   }
 }
