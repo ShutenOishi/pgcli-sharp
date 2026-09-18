@@ -76,7 +76,12 @@ public sealed class PgDumpCompression
         int? level = null,
         bool longMode = false)
     {
-        if (!Enum.IsDefined(typeof(PgDumpCompressionMethod), method))
+#if NETSTANDARD2_0
+        bool methodDefined = Enum.IsDefined(typeof(PgDumpCompressionMethod), method);
+#else
+        bool methodDefined = Enum.IsDefined(method);
+#endif
+        if (!methodDefined)
         {
             throw new ArgumentOutOfRangeException(nameof(method), method, null);
         }
