@@ -164,6 +164,13 @@ The root `README.md` may remain primarily English for ecosystem interoperability
 
 Phase release notes under `docs/releases/` must contain both Japanese and English in the same file so the GitHub Release body is bilingual without requiring navigation to another page.
 
+Language order is standardized from Phase 1 onward:
+
+1. `## English`
+2. `## 日本語`
+
+Phase 0 is intentionally grandfathered with its existing Japanese-first layout and does not need to be reordered retroactively.
+
 GitHub Release tags, target commits, and attached artifacts remain immutable according to the phase-release ADR. Human-readable Release metadata such as title and notes may be synchronized later when adding/fixing translations or correcting non-semantic documentation errors.
 
 Internal engineering documents such as ADRs may remain English-first unless a Japanese version materially improves usability. They are not required to duplicate every paragraph in both languages.

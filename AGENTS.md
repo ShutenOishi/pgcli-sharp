@@ -34,6 +34,7 @@ If an Accepted decision changes, create a new superseding ADR instead of rewriti
 - Changes to PostgreSQL compatibility claims must be backed by PostgreSQL official documentation and/or executable integration tests.
 - NuGet releases use Semantic Versioning and GitHub Actions. Trusted Publishing/OIDC is preferred over long-lived NuGet API keys.
 - Every completed roadmap Phase must be recorded as a bilingual GitHub Release according to ADR-0010. A Phase-completion PR must update `.github/phase-release.json` and add/update the matching `docs/releases/phase-N.md` release notes.
+- Starting with Phase 1, Phase Release Notes must present the `## English` section before the `## 日本語` section. Phase 0 is grandfathered and keeps its existing Japanese-first ordering.
 
 ## Updating project decisions
 
