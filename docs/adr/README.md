@@ -68,6 +68,7 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0008](0008-netstandard20-cliwrap-process-backend.md) | Use a conditional CliWrap backend for .NET Standard 2.0 process execution | Accepted |
 | [0009](0009-phase-release-artifacts.md) | Record every completed phase as a GitHub Release with immutable artifacts | Superseded |
 | [0010](0010-bilingual-human-facing-releases.md) | Provide bilingual human-facing documentation and Phase Releases | Accepted |
+| [0011](0011-specification-first-tool-implementation.md) | Use a specification-first workflow for PostgreSQL CLI tools | Accepted |
 
 ## Template
 
