@@ -10,6 +10,7 @@ internal static class PgDumpValidator
         PostgreSqlMajorVersion selectedVersion,
         PostgreSqlExecutableVersion executableVersion)
     {
+#if NETSTANDARD2_0
         if (options is null)
         {
             throw new ArgumentNullException(nameof(options));
@@ -19,6 +20,10 @@ internal static class PgDumpValidator
         {
             throw new ArgumentNullException(nameof(output));
         }
+#else
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(output);
+#endif
 
         ValidateEnumValues(options, selectedVersion);
         ValidateScalarValues(options, selectedVersion);
@@ -382,7 +387,12 @@ internal static class PgDumpValidator
                     null);
             }
 
-            if (!Enum.IsDefined(typeof(PgDumpFilterSourceKind), filter.Kind))
+#if NETSTANDARD2_0
+            bool filterKindDefined = Enum.IsDefined(typeof(PgDumpFilterSourceKind), filter.Kind);
+#else
+            bool filterKindDefined = Enum.IsDefined(filter.Kind);
+#endif
+            if (!filterKindDefined)
             {
                 throw new PgInvalidOptionValueException(
                     selectedVersion,
@@ -438,7 +448,12 @@ internal static class PgDumpValidator
         PostgreSqlMajorVersion selectedVersion)
         where T : struct
     {
-        if (!Enum.IsDefined(typeof(T), value))
+#if NETSTANDARD2_0
+        bool defined = Enum.IsDefined(typeof(T), value);
+#else
+        bool defined = Enum.IsDefined(value);
+#endif
+        if (!defined)
         {
             throw new PgInvalidOptionValueException(
                 selectedVersion,
