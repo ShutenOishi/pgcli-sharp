@@ -49,6 +49,10 @@ jobs:
           test -n "$title"
           test "$title" != "null"
           test -f "$notes_file"
+          test -f README.ja.md
+          grep -F 'README.ja.md' README.md >/dev/null
+          grep -F '## 日本語' "$notes_file" >/dev/null
+          grep -F '## English' "$notes_file" >/dev/null
 
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
