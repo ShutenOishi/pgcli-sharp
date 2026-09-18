@@ -55,12 +55,69 @@ jobs:
         run: |
           set -euo pipefail
 
+          phase="$(jq -r '.phase' .github/phase-release.json)"
           notes_file="$(jq -r '.notes_file' .github/phase-release.json)"
 
           test -f README.ja.md
           grep -F 'README.ja.md' README.md >/dev/null
           grep -F '## 日本語' "$notes_file" >/dev/null
           grep -F '## English' "$notes_file" >/dev/null
+          english_line="$(grep -n -m1 '^## English
+
+      - name: Restore
+        run: dotnet restore PgCliSharp.slnx
+
+      - name: Build
+        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Pack
+        if: runner.os == 'Linux'
+        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Upload package artifacts
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgclisharp-packages
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+          if-no-files-found: error
+ "$notes_file" | cut -d: -f1)"
+          japanese_line="$(grep -n -m1 '^## 日本語
+
+      - name: Restore
+        run: dotnet restore PgCliSharp.slnx
+
+      - name: Build
+        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Pack
+        if: runner.os == 'Linux'
+        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Upload package artifacts
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgclisharp-packages
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+          if-no-files-found: error
+ "$notes_file" | cut -d: -f1)"
+          test -n "$english_line"
+          test -n "$japanese_line"
+
+          if [ "$phase" -ge 1 ]; then
+            test "$english_line" -lt "$japanese_line"
+          fi
 
       - name: Restore
         run: dotnet restore PgCliSharp.slnx
