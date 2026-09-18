@@ -4,7 +4,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed its Phase 0 foundation. Phase 1 will implement the first complete typed wrapper, `pg_dump`. Initial PostgreSQL compatibility target is PostgreSQL 10 through 18.
+PgCliSharp has completed its Phase 0 foundation. Phase 1 will implement the first complete typed wrapper, `pg_dump`. Initial PostgreSQL compatibility target is PostgreSQL 10 through 18. Each completed roadmap phase is preserved as a GitHub Release with an explicit source ZIP and NuGet package artifacts.
 
 ## Development
 
