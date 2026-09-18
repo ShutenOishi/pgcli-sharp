@@ -7,6 +7,7 @@ on:
     paths:
       - .github/phase-release.json
       - .github/workflows/phase-release.yml
+      - docs/releases/**
   workflow_dispatch:
 
 permissions:
@@ -127,6 +128,23 @@ jobs:
           fi
 
           gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "$TITLE"             --notes-file "$NOTES_FILE"             "${prerelease_args[@]}"             "artifacts/pgcli-sharp-${TAG}.zip"             artifacts/*.nupkg             artifacts/*.snupkg
+
+      - name: Synchronize GitHub Release title and notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+          TITLE: ${{ steps.phase.outputs.title }}
+          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Phase tags, target commits, and attached artifacts are immutable.
+          # Human-readable title/notes may be synchronized for translation and typo fixes.
+          gh release edit "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TITLE" \
+            --notes-file "$NOTES_FILE"
 
       - name: Verify GitHub Release assets
         env:
