@@ -1420,8 +1420,8 @@
         "--single-transaction"
       ],
       "api": {
-        "property": "TransactionSize",
-        "type": "int?"
+        "property": "TransactionMode",
+        "type": "PgRestoreTransactionMode?"
       },
       "sourceVerification": "Verified against official stable-branch option table/parser.",
       "notes": [
@@ -2272,7 +2272,7 @@
   },
   "apiCoverageVerification": {
     "verifiedAt": "2026-09-18",
-    "result": "Every inventory entry has an intended typed property or explicit I/O/utility/version binding; implementation audit must keep these bindings synchronized.",
+    "result": "All inventory entries have an explicit public API or wrapper binding. CI reflection tests verify typed property bindings, and version-varying entries are compared with the runtime availability catalog.",
     "specialBindings": {
       "dbname": "PgRestoreOutput.ToDatabase",
       "file": "PgRestoreOutput script/list destination",

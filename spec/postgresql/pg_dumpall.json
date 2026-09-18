@@ -97,8 +97,8 @@
       "dependencies": [],
       "incompatibleCombinations": [],
       "api": {
-        "property": "DataOnly",
-        "type": "bool"
+        "property": "ContentMode",
+        "type": "PgDumpAllContentMode"
       },
       "sourceVerification": "Verified against official stable-branch option table/parser.",
       "notes": []
@@ -429,8 +429,8 @@
       "dependencies": [],
       "incompatibleCombinations": [],
       "api": {
-        "property": "SchemaOnly",
-        "type": "bool"
+        "property": "ContentMode",
+        "type": "PgDumpAllContentMode"
       },
       "sourceVerification": "Verified against official stable-branch option table/parser.",
       "notes": []
@@ -1673,8 +1673,8 @@
         "--no-statistics"
       ],
       "api": {
-        "property": "StatisticsOnly",
-        "type": "bool"
+        "property": "ContentMode",
+        "type": "PgDumpAllContentMode"
       },
       "sourceVerification": "Verified against official stable-branch option table/parser.",
       "notes": []
@@ -2335,7 +2335,7 @@
   },
   "apiCoverageVerification": {
     "verifiedAt": "2026-09-18",
-    "result": "Every inventory entry has an intended typed property or explicit output/utility/version binding; implementation audit must keep these bindings synchronized.",
+    "result": "All inventory entries have an explicit public API or wrapper binding. CI reflection tests verify typed property bindings, and version-varying entries are compared with the runtime availability catalog.",
     "specialBindings": {
       "file": "PgDumpAllOutput",
       "version": "executable version probe",
