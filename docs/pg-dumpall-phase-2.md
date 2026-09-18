@@ -1,6 +1,6 @@
 # Phase 2 Research - pg_dumpall
 
-Status: research/specification and implementation complete; completion-gate validation is in progress under ADR-0011.
+Status: research/specification and implementation complete; the Phase 2 cross-platform completion gate has passed under ADR-0011.
 
 ## Scope and evidence
 
