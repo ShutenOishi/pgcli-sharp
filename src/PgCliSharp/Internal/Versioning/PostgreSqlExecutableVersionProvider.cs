@@ -8,6 +8,7 @@ namespace PgCliSharp.Internal.Versioning;
 internal sealed class PostgreSqlExecutableVersionProvider
 {
     private static readonly TimeSpan DefaultProbeTimeout = TimeSpan.FromSeconds(10);
+    private static readonly string[] VersionArguments = { "--version" };
 
     private readonly IProcessRunner _processRunner;
     private readonly TimeSpan _probeTimeout;
@@ -40,7 +41,7 @@ internal sealed class PostgreSqlExecutableVersionProvider
         using var standardOutput = new MemoryStream();
         var request = new ProcessRunRequest(
             executablePath,
-            new[] { "--version" },
+            VersionArguments,
             standardOutput,
             _probeTimeout);
 
