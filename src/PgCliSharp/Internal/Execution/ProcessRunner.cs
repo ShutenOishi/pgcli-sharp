@@ -45,6 +45,12 @@ internal sealed class ProcessRunner : IProcessRunner
             .WithStandardOutputPipe(PipeTarget.ToStream(standardOutput))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(standardError));
 
+        if (request.StandardInput is not null)
+        {
+            command = command.WithStandardInputPipe(
+                PipeSource.FromStream(request.StandardInput));
+        }
+
         if (request.EnvironmentVariables is not null)
         {
             command = command.WithEnvironmentVariables(
@@ -137,9 +143,7 @@ internal sealed class ProcessRunner : IProcessRunner
         }
 
         var stopwatch = Stopwatch.StartNew();
-        // Do not bind stream draining or process-exit observation directly to the caller token.
-        // Cancellation/timeout first terminates the process tree, then these tasks drain/observe
-        // the terminated process so no redirected pipe is abandoned.
+
         Task<string> standardErrorTask = process.StandardError.ReadToEndAsync(
             CancellationToken.None);
         Stream standardOutput = request.StandardOutput ?? Stream.Null;
@@ -147,6 +151,20 @@ internal sealed class ProcessRunner : IProcessRunner
             standardOutput,
             81920,
             CancellationToken.None);
+
+        using var inputCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken);
+        if (request.Timeout.HasValue)
+        {
+            inputCancellation.CancelAfter(request.Timeout.Value);
+        }
+
+        Task standardInputTask = request.StandardInput is null
+            ? Task.CompletedTask
+            : CopyStandardInputAsync(
+                request.StandardInput,
+                process.StandardInput,
+                inputCancellation.Token);
 
         Task waitTask = process.WaitForExitAsync(CancellationToken.None);
         Task cancellationTask = cancellationToken.CanBeCanceled
@@ -165,9 +183,14 @@ internal sealed class ProcessRunner : IProcessRunner
         if (completedTask != waitTask)
         {
             TryTerminateProcessTree(process);
+            inputCancellation.Cancel();
             await waitTask.ConfigureAwait(false);
             await standardOutputTask.ConfigureAwait(false);
             _ = await standardErrorTask.ConfigureAwait(false);
+            await ObserveInputTerminationAsync(
+                    standardInputTask,
+                    inputCancellation.Token)
+                .ConfigureAwait(false);
             stopwatch.Stop();
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -177,8 +200,13 @@ internal sealed class ProcessRunner : IProcessRunner
                 request.Timeout!.Value);
         }
 
+        inputCancellation.Cancel();
         await standardOutputTask.ConfigureAwait(false);
         string standardError = await standardErrorTask.ConfigureAwait(false);
+        await ObserveInputTerminationAsync(
+                standardInputTask,
+                inputCancellation.Token)
+            .ConfigureAwait(false);
         stopwatch.Stop();
 
         var result = new ProcessRunResult(
@@ -190,6 +218,39 @@ internal sealed class ProcessRunner : IProcessRunner
         return result;
     }
 
+    private static async Task CopyStandardInputAsync(
+        Stream source,
+        StreamWriter destination,
+        CancellationToken cancellationToken)
+    {
+        await source.CopyToAsync(
+                destination.BaseStream,
+                81920,
+                cancellationToken)
+            .ConfigureAwait(false);
+        await destination.BaseStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+        destination.Close();
+    }
+
+    private static async Task ObserveInputTerminationAsync(
+        Task inputTask,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await inputTask.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (IOException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+    }
+
     private static ProcessStartInfo CreateStartInfo(ProcessRunRequest request)
     {
         var startInfo = new ProcessStartInfo
@@ -199,6 +260,7 @@ internal sealed class ProcessRunner : IProcessRunner
             CreateNoWindow = true,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
+            RedirectStandardInput = request.StandardInput is not null,
         };
 
         foreach (string argument in request.Arguments)
