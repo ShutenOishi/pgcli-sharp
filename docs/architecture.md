@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004 and ADR-0006 through ADR-0008. ADR-0005 has been superseded by ADR-0008.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, ADR-0011, and ADR-0012. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -252,9 +252,9 @@ Release automation should:
 
 Long-lived NuGet API keys should not be the preferred design.
 
-Phase 3 implements the first public preview with a deliberate release manifest at `.github/nuget-release.json`. A change to that manifest on `main` (or an explicit workflow dispatch) runs `.github/workflows/release.yml`. The workflow waits for the exact-commit main CI result, validates package/version/tag consistency, rebuilds and tests the repository, inspects the `.nupkg`/`.snupkg`, and publishes through NuGet Trusted Publishing/OIDC in the GitHub `release` environment. It does not store a long-lived NuGet API key.
+ADR-0012 defers all new external publication from Phase 3 until the final release phase. The prepared Phase 3 source commit is `cccf8d9fbe1f2e1104676ab94a7863209c0220dd`; its package candidate remains `PgCliSharp 0.1.0-alpha.1`. Release manifests record this provenance with publication disabled.
 
-The package release tag is `v<package-version>` and is separate from the roadmap milestone tag `phase-N`. For Phase 3, the milestone Release is gated on the version Release pointing to the same commit so the first public NuGet preview and Phase 3 milestone have one source identity.
+The NuGet and Phase release workflows are manual-only. They require an explicit dispatch confirmation and `publication_enabled: true` in the reviewed manifest. When eventual publication is authorized, the workflows rebuild and revalidate the recorded source commit rather than silently packaging whichever commit happens to be current. Trusted Publishing/OIDC remains the preferred NuGet credential mechanism.
 
 ## 16. Planned implementation order
 
