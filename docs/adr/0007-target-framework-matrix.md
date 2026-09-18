@@ -1,6 +1,6 @@
 # ADR-0007: Initial target framework matrix
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-09-18
 - Decision owners: PgCliSharp maintainers
 - Supersedes: None
@@ -12,7 +12,7 @@ PgCliSharp should work in modern .NET applications while retaining broad compati
 
 A broad target matrix increases consumer compatibility but also increases implementation and test complexity.
 
-## Proposed decision
+## Decision
 
 Initial proposal:
 
@@ -28,7 +28,7 @@ Goals:
 
 Public API behavior should remain consistent across targets even where internal compatibility implementations differ.
 
-This remains **Proposed** until a foundation implementation proves that the matrix is maintainable and does not force unacceptable compromises.
+Phase 0 implementation validated that this matrix is maintainable while preserving the required execution semantics. The matrix is therefore accepted as the initial PgCliSharp target-framework policy.
 
 ## Alternatives considered
 
@@ -57,12 +57,18 @@ Broad reach but prevents target-specific use of modern APIs and optimizations wi
 - Process/cancellation APIs require compatibility code.
 - Package behavior must be kept consistent across targets.
 
-## Validation required before acceptance
+## Validation
 
-- Implement the Phase 0 process abstraction for all proposed targets.
-- Run representative unit tests on all targets.
-- Confirm package dependency graph remains acceptable.
-- Confirm cancellation, argument passing, and output streaming can meet ADR-0005.
-- Reassess whether `netstandard2.0` introduces disproportionate complexity.
+Phase 0 validation completed on 2026-09-18.
 
-After validation, either change this ADR to Accepted or create a superseding ADR with the final matrix.
+- The library builds for `netstandard2.0`, `net8.0`, and `net10.0` under the strict warnings-as-errors configuration.
+- Linux, macOS, and Windows CI builds and tests pass.
+- Windows CI runs a `.NET Framework 4.8` test target, which consumes the `netstandard2.0` PgCliSharp asset and exercises the CliWrap compatibility backend defined by ADR-0008.
+- Cancellation and timeout behavior are covered by execution tests.
+- Argument values containing spaces are verified as a single argument token.
+- Binary stdout is verified byte-for-byte without text conversion.
+- A descendant-process integration test verifies process-tree termination after timeout on Windows for the `net48`, `net8.0`, and `net10.0` test targets.
+- The `netstandard2.0` dependency trade-off is explicitly documented and accepted by ADR-0008; CliWrap is conditional to that target and is not exposed in the public API.
+- NuGet package creation succeeds in CI with XML documentation, symbols, and SourceLink enabled.
+
+The validation did not reveal a disproportionate maintenance or behavioral compromise requiring removal of `netstandard2.0`.
