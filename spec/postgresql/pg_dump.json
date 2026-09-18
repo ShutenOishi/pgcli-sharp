@@ -121,7 +121,14 @@
       "numericShorthand": "level>0 means gzip; level=0 means none",
       "plainDefault": "none",
       "customDirectoryDefault": "gzip moderate when available",
-      "tar": "unsupported"
+      "tar": "unsupported",
+      "unsupportedPgDumpDetailKeywords": [
+        "workers"
+      ],
+      "notes": [
+        "PostgreSQL common compression parsing knows a workers detail, but pg_dump currently warns that compression workers are not supported; PgCliSharp therefore does not expose it as a typed pg_dump setting.",
+        "gzip accepts explicit level -1 (library default) or 1..9; LZ4 accepts 0..12; zstd bounds depend on the linked zstd library and are validated by the executable."
+      ]
     }
   },
   "filterFile": {
@@ -632,7 +639,10 @@
         "type": "int"
       },
       "notes": [
-        "Current PostgreSQL 14+ documentation explicitly states repeated use adds debug-level stderr messages."
+        "The option can be repeated in every supported major because getopt accepts repeated -v/--verbose occurrences.",
+        "PostgreSQL 10-11 only set a boolean verbose flag, so repetitions beyond the first are semantically redundant.",
+        "PostgreSQL 12-13 set the logging level to INFO, so repetitions beyond the first are semantically redundant.",
+        "PostgreSQL 14-18 call pg_logging_increase_verbosity(), so repeated occurrences increase logging verbosity."
       ]
     },
     {
@@ -2065,7 +2075,8 @@
       "changesFromPreviousMajor": [
         "baseline inventory for PgCliSharp support",
         "compression is integer 0..9",
-        "minimum documented dumpable server: 8.0"
+        "minimum documented dumpable server: 8.0",
+        "Repeated -v is accepted but only sets a boolean verbose flag; extra occurrences have no additional effect."
       ]
     },
     "11": {
@@ -2132,7 +2143,8 @@
       "changesFromPreviousMajor": [
         "added --load-via-partition-root",
         "added --no-comments",
-        "--oids still present"
+        "--oids still present",
+        "Repeated -v is accepted but only sets a boolean verbose flag; extra occurrences have no additional effect."
       ]
     },
     "12": {
@@ -2203,7 +2215,8 @@
         "added --extra-float-digits",
         "added --on-conflict-do-nothing",
         "added --rows-per-insert",
-        "PG_COLOR documented"
+        "PG_COLOR documented",
+        "Repeated -v is accepted but repeatedly selects INFO logging; extra occurrences have no additional effect."
       ]
     },
     "13": {
@@ -2273,7 +2286,8 @@
       ],
       "changesFromPreviousMajor": [
         "added --include-foreign-data",
-        "--restrict-key is available only from 13.22 due security backport"
+        "--restrict-key is available only from 13.22 due security backport",
+        "Repeated -v is accepted but repeatedly selects INFO logging; extra occurrences have no additional effect."
       ]
     },
     "14": {
@@ -2346,7 +2360,8 @@
       "changesFromPreviousMajor": [
         "added -e/--extension",
         "added --no-toast-compression",
-        "--restrict-key available from 14.19"
+        "--restrict-key available from 14.19",
+        "Repeated -v begins increasing logging verbosity via pg_logging_increase_verbosity()."
       ]
     },
     "15": {
