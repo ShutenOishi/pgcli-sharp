@@ -1,0 +1,2737 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_dump",
+  "researchedAt": "2026-09-18",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "sourcePolicy": "PostgreSQL official per-major documentation; official security notices/release history for patch-level backports"
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pgdump.html",
+      "11": "https://www.postgresql.org/docs/11/app-pgdump.html",
+      "12": "https://www.postgresql.org/docs/12/app-pgdump.html",
+      "13": "https://www.postgresql.org/docs/13/app-pgdump.html",
+      "14": "https://www.postgresql.org/docs/14/app-pgdump.html",
+      "15": "https://www.postgresql.org/docs/15/app-pgdump.html",
+      "16": "https://www.postgresql.org/docs/16/app-pgdump.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgdump.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgdump.html"
+    },
+    "restrictKeySecurityNotice": "https://www.postgresql.org/support/security/CVE-2025-8714/",
+    "restrictKeyFollowupSecurityNotice": "https://www.postgresql.org/support/security/CVE-2026-18408/"
+  },
+  "outputFormats": {
+    "plain": {
+      "cli": [
+        "p",
+        "plain"
+      ],
+      "default": true,
+      "archive": false,
+      "stdout": true,
+      "file": true,
+      "directory": false,
+      "parallelDump": false,
+      "compression": "none by default; explicit compression writes compressed bytes"
+    },
+    "custom": {
+      "cli": [
+        "c",
+        "custom"
+      ],
+      "archive": true,
+      "stdout": true,
+      "file": true,
+      "directory": false,
+      "parallelDump": false,
+      "compression": "compressed by default; supports configured compression except tar restriction does not apply"
+    },
+    "directory": {
+      "cli": [
+        "d",
+        "directory"
+      ],
+      "archive": true,
+      "stdout": false,
+      "file": false,
+      "directory": true,
+      "parallelDump": true,
+      "compression": "compressed by default; --file target directory is required and created by pg_dump"
+    },
+    "tar": {
+      "cli": [
+        "t",
+        "tar"
+      ],
+      "archive": true,
+      "stdout": true,
+      "file": true,
+      "directory": false,
+      "parallelDump": false,
+      "compression": "not supported"
+    }
+  },
+  "compression": {
+    "10-15": {
+      "syntax": "0..9",
+      "model": "legacy-level",
+      "zeroMeans": "none",
+      "plainDefault": "none",
+      "customDirectoryDefault": "moderate compression",
+      "tar": "unsupported"
+    },
+    "16-18": {
+      "syntax": [
+        "level",
+        "method[:detail]"
+      ],
+      "methods": [
+        "gzip",
+        "lz4",
+        "zstd",
+        "none"
+      ],
+      "detailForms": [
+        "integer level",
+        "comma-separated keyword or keyword=value"
+      ],
+      "detailKeywords": [
+        "level",
+        "long"
+      ],
+      "numericShorthand": "level>0 means gzip; level=0 means none",
+      "plainDefault": "none",
+      "customDirectoryDefault": "gzip moderate when available",
+      "tar": "unsupported"
+    }
+  },
+  "filterFile": {
+    "since": 17,
+    "lineGrammar": "{include|exclude} {extension|foreign_data|table|table_and_children|table_data|table_data_and_children|schema} PATTERN",
+    "restrictions": [
+      "foreign_data is include-only",
+      "table_data is exclude-only",
+      "table_data_and_children is exclude-only"
+    ],
+    "standardInputFilename": "-"
+  },
+  "environments": {
+    "directDefaults": [
+      "PGDATABASE",
+      "PGHOST",
+      "PGOPTIONS",
+      "PGPORT",
+      "PGUSER"
+    ],
+    "encodingAlternative": "PGCLIENTENCODING",
+    "color": {
+      "since": 12,
+      "name": "PG_COLOR",
+      "values": [
+        "always",
+        "auto",
+        "never"
+      ]
+    },
+    "inherited": "pg_dump also consumes environment variables supported by libpq; passwords should use libpq mechanisms such as a password file rather than a command-line password value"
+  },
+  "io": {
+    "stdout": "Always treat as bytes. Custom/tar archives and compressed plain output are binary; do not decode stdout in the core execution API.",
+    "file": "When --file is present pg_dump writes the file itself; stdout should not be treated as the dump payload.",
+    "directory": "Requires --file target directory; cannot stream the archive through stdout.",
+    "stdin": "PostgreSQL 17+ --filter=- consumes stdin, therefore the process abstraction needs binary-safe stdin piping as well as stdout piping."
+  },
+  "options": [
+    {
+      "id": "data-only",
+      "spellings": {
+        "short": "-a",
+        "long": [
+          "--data-only"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "DataOnly",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "large-objects",
+      "spellings": {
+        "short": "-b",
+        "long": [
+          "--blobs",
+          "--large-objects"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "LargeObjects",
+        "type": "PgDumpLargeObjectMode"
+      },
+      "notes": [
+        "--large-objects is canonical from PostgreSQL 16; --blobs remains a deprecated alias from 16."
+      ]
+    },
+    {
+      "id": "no-large-objects",
+      "spellings": {
+        "short": "-B",
+        "long": [
+          "--no-blobs",
+          "--no-large-objects"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "LargeObjects",
+        "type": "PgDumpLargeObjectMode"
+      },
+      "notes": [
+        "--no-large-objects is canonical from PostgreSQL 16; --no-blobs remains a deprecated alias from 16."
+      ]
+    },
+    {
+      "id": "clean",
+      "spellings": {
+        "short": "-c",
+        "long": [
+          "--clean"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Clean",
+        "type": "bool"
+      },
+      "notes": [
+        "Ignored when emitting archive formats."
+      ]
+    },
+    {
+      "id": "create",
+      "spellings": {
+        "short": "-C",
+        "long": [
+          "--create"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Create",
+        "type": "bool"
+      },
+      "notes": [
+        "Ignored when emitting archive formats."
+      ]
+    },
+    {
+      "id": "encoding",
+      "spellings": {
+        "short": "-E",
+        "long": [
+          "--encoding"
+        ]
+      },
+      "argument": "encoding",
+      "kind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Encoding",
+        "type": "string"
+      },
+      "notes": [
+        "PGCLIENTENCODING is an environment-variable alternative."
+      ]
+    },
+    {
+      "id": "file",
+      "spellings": {
+        "short": "-f",
+        "long": [
+          "--file"
+        ]
+      },
+      "argument": "file",
+      "kind": "output-target",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Output",
+        "type": "PgDumpOutputTarget"
+      },
+      "notes": [
+        "Optional for file-based formats; required for directory format; omit to stream stdout."
+      ]
+    },
+    {
+      "id": "format",
+      "spellings": {
+        "short": "-F",
+        "long": [
+          "--format"
+        ]
+      },
+      "argument": "format",
+      "kind": "enum",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "plain",
+      "constraints": [],
+      "api": {
+        "property": "Format",
+        "type": "PgDumpFormat",
+        "values": [
+          "Plain",
+          "Custom",
+          "Directory",
+          "Tar"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "jobs",
+      "spellings": {
+        "short": "-j",
+        "long": [
+          "--jobs"
+        ]
+      },
+      "argument": "njobs",
+      "kind": "positive-int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "directory-format-only"
+      ],
+      "api": {
+        "property": "Jobs",
+        "type": "int?"
+      },
+      "notes": [
+        "pg_dump opens njobs + 1 database connections."
+      ]
+    },
+    {
+      "id": "schema",
+      "spellings": {
+        "short": "-n",
+        "long": [
+          "--schema"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Schemas",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "exclude-schema",
+      "spellings": {
+        "short": "-N",
+        "long": [
+          "--exclude-schema"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ExcludedSchemas",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "oids",
+      "spellings": {
+        "short": "-o",
+        "long": [
+          "--oids"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 11
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "IncludeOids",
+        "type": "bool"
+      },
+      "notes": [
+        "Removed in PostgreSQL 12."
+      ]
+    },
+    {
+      "id": "no-owner",
+      "spellings": {
+        "short": "-O",
+        "long": [
+          "--no-owner"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoOwner",
+        "type": "bool"
+      },
+      "notes": [
+        "Ignored when emitting archive formats."
+      ]
+    },
+    {
+      "id": "no-reconnect",
+      "spellings": {
+        "short": "-R",
+        "long": [
+          "--no-reconnect"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoReconnect",
+        "type": "bool"
+      },
+      "notes": [
+        "Obsolete but accepted for backward compatibility."
+      ]
+    },
+    {
+      "id": "schema-only",
+      "spellings": {
+        "short": "-s",
+        "long": [
+          "--schema-only"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "mutually-exclusive:data-only",
+        "postgresql18:mutually-exclusive:statistics-only"
+      ],
+      "api": {
+        "property": "SchemaOnly",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "superuser",
+      "spellings": {
+        "short": "-S",
+        "long": [
+          "--superuser"
+        ]
+      },
+      "argument": "username",
+      "kind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Superuser",
+        "type": "string"
+      },
+      "notes": [
+        "Relevant only with --disable-triggers."
+      ]
+    },
+    {
+      "id": "table",
+      "spellings": {
+        "short": "-t",
+        "long": [
+          "--table"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Tables",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "exclude-table",
+      "spellings": {
+        "short": "-T",
+        "long": [
+          "--exclude-table"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ExcludedTables",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "verbose",
+      "spellings": {
+        "short": "-v",
+        "long": [
+          "--verbose"
+        ]
+      },
+      "argument": null,
+      "kind": "counter",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "0 occurrences",
+      "constraints": [],
+      "api": {
+        "property": "Verbosity",
+        "type": "int"
+      },
+      "notes": [
+        "Current PostgreSQL 14+ documentation explicitly states repeated use adds debug-level stderr messages."
+      ]
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argument": null,
+      "kind": "utility-command",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "binding": "wrapper-version-probe"
+      },
+      "notes": [
+        "Not part of PgDumpOptions normal dump execution."
+      ]
+    },
+    {
+      "id": "no-privileges",
+      "spellings": {
+        "short": "-x",
+        "long": [
+          "--no-privileges",
+          "--no-acl"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoPrivileges",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "compress",
+      "spellings": {
+        "short": "-Z",
+        "long": [
+          "--compress"
+        ]
+      },
+      "argument": "compression",
+      "kind": "versioned-value",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "tar-format-does-not-support-compression"
+      ],
+      "api": {
+        "property": "Compression",
+        "type": "PgDumpCompression"
+      },
+      "notes": [
+        "PostgreSQL 10-15 accept integer level 0..9.",
+        "PostgreSQL 16+ accept level or method[:detail], methods gzip/lz4/zstd/none, detail keywords level and long.",
+        "Custom/directory are compressed by default; plain defaults uncompressed."
+      ]
+    },
+    {
+      "id": "binary-upgrade",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--binary-upgrade"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "BinaryUpgrade",
+        "type": "bool"
+      },
+      "notes": [
+        "For in-place upgrade utilities; upstream does not recommend other use."
+      ]
+    },
+    {
+      "id": "column-inserts",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--column-inserts",
+          "--attribute-inserts"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ColumnInserts",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "disable-dollar-quoting",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--disable-dollar-quoting"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "DisableDollarQuoting",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "disable-triggers",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--disable-triggers"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "DisableTriggers",
+        "type": "bool"
+      },
+      "notes": [
+        "Relevant to data-without-schema output; ignored when emitting an archive. PostgreSQL 18 wording generalizes the earlier data-only wording."
+      ]
+    },
+    {
+      "id": "enable-row-security",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--enable-row-security"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "EnableRowSecurity",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "exclude-table-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--exclude-table-data"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ExcludedTableData",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "if-exists",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--if-exists"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "requires:clean"
+      ],
+      "api": {
+        "property": "IfExists",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "inserts",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--inserts"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Inserts",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "lock-wait-timeout",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--lock-wait-timeout"
+        ]
+      },
+      "argument": "timeout",
+      "kind": "duration",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "LockWaitTimeout",
+        "type": "TimeSpan?"
+      },
+      "notes": [
+        "Upstream accepts statement_timeout formats; integer milliseconds works on every supported target server, so PgCliSharp serializes TimeSpan as integer milliseconds."
+      ]
+    },
+    {
+      "id": "no-publications",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-publications"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoPublications",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-security-labels",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-security-labels"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoSecurityLabels",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-subscriptions",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-subscriptions"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoSubscriptions",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoSync",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-synchronized-snapshots",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-synchronized-snapshots"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 14
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoSynchronizedSnapshots",
+        "type": "bool"
+      },
+      "notes": [
+        "Removed in PostgreSQL 15 when pg_dump's minimum dumpable server became PostgreSQL 9.2."
+      ]
+    },
+    {
+      "id": "no-tablespaces",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-tablespaces"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoTablespaces",
+        "type": "bool"
+      },
+      "notes": [
+        "Ignored when emitting archive formats."
+      ]
+    },
+    {
+      "id": "no-unlogged-table-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-unlogged-table-data"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoUnloggedTableData",
+        "type": "bool"
+      },
+      "notes": [
+        "PostgreSQL 10-14 documentation says unlogged tables; PostgreSQL 15+ says unlogged tables and sequences."
+      ]
+    },
+    {
+      "id": "quote-all-identifiers",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--quote-all-identifiers"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "QuoteAllIdentifiers",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "section",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--section"
+        ]
+      },
+      "argument": "section",
+      "kind": "enum",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Sections",
+        "type": "IList<PgDumpSection>",
+        "values": [
+          "PreData",
+          "Data",
+          "PostData"
+        ]
+      },
+      "notes": [
+        "Default is all sections.",
+        "PostgreSQL 18 data/post-data section semantics include optimizer statistics when statistics are requested."
+      ]
+    },
+    {
+      "id": "serializable-deferrable",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--serializable-deferrable"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "SerializableDeferrable",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "snapshot",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--snapshot"
+        ]
+      },
+      "argument": "snapshotname",
+      "kind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Snapshot",
+        "type": "string"
+      },
+      "notes": []
+    },
+    {
+      "id": "strict-names",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--strict-names"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "StrictNames",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "use-set-session-authorization",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--use-set-session-authorization"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "UseSetSessionAuthorization",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argument": null,
+      "kind": "utility-command",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "binding": "not-normal-options"
+      },
+      "notes": [
+        "Not part of PgDumpOptions normal dump execution."
+      ]
+    },
+    {
+      "id": "dbname",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--dbname"
+        ]
+      },
+      "argument": "dbname-or-connection-string",
+      "kind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Database",
+        "type": "string"
+      },
+      "notes": [
+        "Equivalent to positional dbname; connection-string parameters override conflicting command-line connection options."
+      ]
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argument": "host",
+      "kind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Host",
+        "type": "string"
+      },
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argument": "port",
+      "kind": "int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argument": "username",
+      "kind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Username",
+        "type": "string"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-password",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--no-password"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "notes": []
+    },
+    {
+      "id": "password",
+      "spellings": {
+        "short": "-W",
+        "long": [
+          "--password"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "notes": []
+    },
+    {
+      "id": "role",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--role"
+        ]
+      },
+      "argument": "rolename",
+      "kind": "string",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Role",
+        "type": "string"
+      },
+      "notes": []
+    },
+    {
+      "id": "load-via-partition-root",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--load-via-partition-root"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "LoadViaPartitionRoot",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-comments",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-comments"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoComments",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "extra-float-digits",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--extra-float-digits"
+        ]
+      },
+      "argument": "ndigits",
+      "kind": "int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ExtraFloatDigits",
+        "type": "int?"
+      },
+      "notes": []
+    },
+    {
+      "id": "on-conflict-do-nothing",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--on-conflict-do-nothing"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "requires-any:inserts,column-inserts,rows-per-insert"
+      ],
+      "api": {
+        "property": "OnConflictDoNothing",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "rows-per-insert",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--rows-per-insert"
+        ]
+      },
+      "argument": "nrows",
+      "kind": "positive-int",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "value>0"
+      ],
+      "api": {
+        "property": "RowsPerInsert",
+        "type": "int?"
+      },
+      "notes": [
+        "Implies INSERT output."
+      ]
+    },
+    {
+      "id": "include-foreign-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--include-foreign-data"
+        ]
+      },
+      "argument": "foreignserver-pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "non-empty-pattern"
+      ],
+      "api": {
+        "property": "IncludedForeignData",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "restrict-key",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--restrict-key"
+        ]
+      },
+      "argument": "restrict_key",
+      "kind": "value-object",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18,
+        "minimumPatchByMajor": {
+          "13": "13.22",
+          "14": "14.19",
+          "15": "15.14",
+          "16": "16.10",
+          "17": "17.6",
+          "18": "18.0"
+        }
+      },
+      "default": "not specified",
+      "constraints": [
+        "plain-format-only",
+        "alphanumeric-non-empty"
+      ],
+      "api": {
+        "property": "RestrictKey",
+        "type": "PgDumpRestrictKey"
+      },
+      "notes": [
+        "Backported in the 2025-08-14 security updates for CVE-2025-8714; major-only availability is insufficient."
+      ]
+    },
+    {
+      "id": "extension",
+      "spellings": {
+        "short": "-e",
+        "long": [
+          "--extension"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Extensions",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-toast-compression",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-toast-compression"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoToastCompression",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-table-access-method",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-table-access-method"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoTableAccessMethod",
+        "type": "bool"
+      },
+      "notes": [
+        "Ignored when emitting archive formats."
+      ]
+    },
+    {
+      "id": "table-and-children",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--table-and-children"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "TablesAndChildren",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "exclude-table-and-children",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--exclude-table-and-children"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ExcludedTablesAndChildren",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "exclude-table-data-and-children",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--exclude-table-data-and-children"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ExcludedTableDataAndChildren",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "exclude-extension",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--exclude-extension"
+        ]
+      },
+      "argument": "pattern",
+      "kind": "pattern",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "ExcludedExtensions",
+        "type": "IList<string>"
+      },
+      "notes": []
+    },
+    {
+      "id": "filter",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--filter"
+        ]
+      },
+      "argument": "filename",
+      "kind": "filter-source",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "Filters",
+        "type": "IList<PgDumpFilterSource>"
+      },
+      "notes": [
+        "Filename '-' reads filter rules from stdin. PgCliSharp must therefore support stdin streaming when StandardInput is selected."
+      ]
+    },
+    {
+      "id": "sync-method",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--sync-method"
+        ]
+      },
+      "argument": "method",
+      "kind": "enum",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "default": "fsync",
+      "constraints": [],
+      "api": {
+        "property": "SyncMethod",
+        "type": "PgDumpSyncMethod?",
+        "values": [
+          "Fsync",
+          "Syncfs"
+        ]
+      },
+      "notes": [
+        "Meaningful for directory format; has no effect with --no-sync or non-directory output. syncfs is Linux-specific."
+      ]
+    },
+    {
+      "id": "no-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-data"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "mutually-exclusive:data-only"
+      ],
+      "api": {
+        "property": "NoData",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-policies",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-policies"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "NoPolicies",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-schema",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-schema"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "mutually-exclusive:schema-only"
+      ],
+      "api": {
+        "property": "NoSchema",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "no-statistics",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-statistics"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "default": "statistics are not dumped unless --statistics/--statistics-only is requested",
+      "constraints": [
+        "mutually-exclusive:statistics",
+        "mutually-exclusive:statistics-only"
+      ],
+      "api": {
+        "property": "NoStatistics",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "sequence-data",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--sequence-data"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [],
+      "api": {
+        "property": "SequenceData",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "statistics",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--statistics"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "mutually-exclusive:no-statistics"
+      ],
+      "api": {
+        "property": "Statistics",
+        "type": "bool"
+      },
+      "notes": []
+    },
+    {
+      "id": "statistics-only",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--statistics-only"
+        ]
+      },
+      "argument": null,
+      "kind": "flag",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "default": "not specified",
+      "constraints": [
+        "mutually-exclusive:data-only",
+        "mutually-exclusive:schema-only",
+        "mutually-exclusive:no-statistics"
+      ],
+      "api": {
+        "property": "StatisticsOnly",
+        "type": "bool"
+      },
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "8.0",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "oids",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-synchronized-snapshots",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role"
+      ],
+      "changesFromPreviousMajor": [
+        "baseline inventory for PgCliSharp support",
+        "compression is integer 0..9",
+        "minimum documented dumpable server: 8.0"
+      ]
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "8.0",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "oids",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-synchronized-snapshots",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments"
+      ],
+      "changesFromPreviousMajor": [
+        "added --load-via-partition-root",
+        "added --no-comments",
+        "--oids still present"
+      ]
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "8.0",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-synchronized-snapshots",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert"
+      ],
+      "changesFromPreviousMajor": [
+        "removed --oids",
+        "added --extra-float-digits",
+        "added --on-conflict-do-nothing",
+        "added --rows-per-insert",
+        "PG_COLOR documented"
+      ]
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "8.0",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-synchronized-snapshots",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "include-foreign-data",
+        "restrict-key"
+      ],
+      "changesFromPreviousMajor": [
+        "added --include-foreign-data",
+        "--restrict-key is available only from 13.22 due security backport"
+      ]
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "8.0",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-synchronized-snapshots",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "include-foreign-data",
+        "restrict-key",
+        "extension",
+        "no-toast-compression"
+      ],
+      "changesFromPreviousMajor": [
+        "added -e/--extension",
+        "added --no-toast-compression",
+        "--restrict-key available from 14.19"
+      ]
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "9.2",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "include-foreign-data",
+        "restrict-key",
+        "extension",
+        "no-toast-compression",
+        "no-table-access-method"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-table-access-method",
+        "removed --no-synchronized-snapshots",
+        "minimum documented dumpable server becomes 9.2",
+        "--no-unlogged-table-data now includes sequences",
+        "--restrict-key available from 15.14"
+      ]
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "9.2",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "include-foreign-data",
+        "restrict-key",
+        "extension",
+        "no-toast-compression",
+        "no-table-access-method",
+        "table-and-children",
+        "exclude-table-and-children",
+        "exclude-table-data-and-children"
+      ],
+      "changesFromPreviousMajor": [
+        "structured compression method[:detail] replaces legacy-only 0..9 model",
+        "--large-objects/--no-large-objects become canonical; blobs aliases deprecated",
+        "added table-and-children selectors/exclusions",
+        "--restrict-key available from 16.10"
+      ]
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "9.2",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "include-foreign-data",
+        "restrict-key",
+        "extension",
+        "no-toast-compression",
+        "no-table-access-method",
+        "table-and-children",
+        "exclude-table-and-children",
+        "exclude-table-data-and-children",
+        "exclude-extension",
+        "filter",
+        "sync-method"
+      ],
+      "changesFromPreviousMajor": [
+        "added --exclude-extension",
+        "added repeatable --filter, including '-' for stdin",
+        "added --sync-method",
+        "--restrict-key available from 17.6"
+      ]
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgdump.html",
+      "inventoryBasis": "current official documentation for this major version",
+      "minimumDumpableServer": "9.2",
+      "newerServerThanClient": "not supported",
+      "optionIdsInCurrentMajorDocumentation": [
+        "data-only",
+        "large-objects",
+        "no-large-objects",
+        "clean",
+        "create",
+        "encoding",
+        "file",
+        "format",
+        "jobs",
+        "schema",
+        "exclude-schema",
+        "no-owner",
+        "no-reconnect",
+        "schema-only",
+        "superuser",
+        "table",
+        "exclude-table",
+        "verbose",
+        "version",
+        "no-privileges",
+        "compress",
+        "binary-upgrade",
+        "column-inserts",
+        "disable-dollar-quoting",
+        "disable-triggers",
+        "enable-row-security",
+        "exclude-table-data",
+        "if-exists",
+        "inserts",
+        "lock-wait-timeout",
+        "no-publications",
+        "no-security-labels",
+        "no-subscriptions",
+        "no-sync",
+        "no-tablespaces",
+        "no-unlogged-table-data",
+        "quote-all-identifiers",
+        "section",
+        "serializable-deferrable",
+        "snapshot",
+        "strict-names",
+        "use-set-session-authorization",
+        "help",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "role",
+        "load-via-partition-root",
+        "no-comments",
+        "extra-float-digits",
+        "on-conflict-do-nothing",
+        "rows-per-insert",
+        "include-foreign-data",
+        "restrict-key",
+        "extension",
+        "no-toast-compression",
+        "no-table-access-method",
+        "table-and-children",
+        "exclude-table-and-children",
+        "exclude-table-data-and-children",
+        "exclude-extension",
+        "filter",
+        "sync-method",
+        "no-data",
+        "no-policies",
+        "no-schema",
+        "no-statistics",
+        "sequence-data",
+        "statistics",
+        "statistics-only"
+      ],
+      "changesFromPreviousMajor": [
+        "added --no-data/--no-schema/--no-policies/--no-statistics",
+        "added --sequence-data/--statistics/--statistics-only",
+        "statistics alter section/content semantics",
+        "--restrict-key available from 18.0"
+      ]
+    }
+  },
+  "validationRules": [
+    {
+      "id": "jobs-directory-only",
+      "when": "jobs != null",
+      "require": "format == directory"
+    },
+    {
+      "id": "tar-no-compression",
+      "when": "format == tar",
+      "require": "compression == null or compression means none"
+    },
+    {
+      "id": "directory-needs-directory-output",
+      "when": "format == directory",
+      "require": "output target is directory path"
+    },
+    {
+      "id": "stdout-not-directory",
+      "when": "output target is stdout stream",
+      "require": "format != directory"
+    },
+    {
+      "id": "if-exists-requires-clean",
+      "when": "ifExists",
+      "require": "clean"
+    },
+    {
+      "id": "on-conflict-requires-insert-mode",
+      "when": "onConflictDoNothing",
+      "require": "inserts || columnInserts || rowsPerInsert != null"
+    },
+    {
+      "id": "rows-per-insert-positive",
+      "when": "rowsPerInsert != null",
+      "require": "rowsPerInsert > 0"
+    },
+    {
+      "id": "restrict-key-plain",
+      "when": "restrictKey != null",
+      "require": "format == plain"
+    },
+    {
+      "id": "restrict-key-alphanumeric",
+      "when": "restrictKey != null",
+      "require": "non-empty ASCII alphanumeric"
+    },
+    {
+      "id": "data-schema-only-conflict",
+      "when": "dataOnly && schemaOnly",
+      "require": "false"
+    },
+    {
+      "id": "pg18-only-mode-conflicts",
+      "when": "PostgreSQL 18",
+      "require": "dataOnly/schemaOnly/statisticsOnly are pairwise exclusive; dataOnly conflicts noData; schemaOnly conflicts noSchema; statisticsOnly conflicts noStatistics; statistics conflicts noStatistics"
+    },
+    {
+      "id": "filter-stdin-single-source",
+      "when": "filters contain stdin",
+      "require": "at most one stdin filter source and an input stream is supplied"
+    },
+    {
+      "id": "availability",
+      "when": "an option is requested",
+      "require": "selected major and actual executable patch satisfy option availability"
+    }
+  ],
+  "designDecisions": {
+    "noRawArguments": "No arbitrary raw command-line string in the normal public API.",
+    "repeatables": "Use ordered collections and emit one command-line option per collection item.",
+    "output": "Output destination is a dedicated API, not an overloaded string; stdout streams remain binary-safe.",
+    "versionValidation": "Probe --version before execution. Use actual parsed numeric executable version for patch-dependent availability such as --restrict-key."
+  }
+}
