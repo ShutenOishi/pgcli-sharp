@@ -1,5 +1,9 @@
 name: Phase Release
 
+concurrency:
+  group: phase-release-${{ github.ref }}
+  cancel-in-progress: false
+
 on:
   push:
     branches:
@@ -36,6 +40,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          bash eng/validate-phase-metadata.sh
 
           phase="$(jq -r '.phase' .github/phase-release.json)"
           tag="$(jq -r '.tag' .github/phase-release.json)"
@@ -43,30 +48,16 @@ jobs:
           notes_file="$(jq -r '.notes_file' .github/phase-release.json)"
           prerelease="$(jq -r '.prerelease // true' .github/phase-release.json)"
 
-          test "$phase" != "null"
-          test -n "$tag"
-          test "$tag" != "null"
-          test -n "$title"
-          test "$title" != "null"
-          test -f "$notes_file"
-          test -f README.ja.md
-          grep -F 'README.ja.md' README.md >/dev/null
-          grep -F '## 日本語' "$notes_file" >/dev/null
-          grep -F '## English' "$notes_file" >/dev/null
-          english_line="$(grep -n -m1 '^## English$' "$notes_file" | cut -d: -f1)"
-          japanese_line="$(grep -n -m1 '^## 日本語$' "$notes_file" | cut -d: -f1)"
-          test -n "$english_line"
-          test -n "$japanese_line"
-
-          if [ "$phase" -ge 1 ]; then
-            test "$english_line" -lt "$japanese_line"
-          fi
-
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "title=$title" >> "$GITHUB_OUTPUT"
           echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
           echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+
+      - name: Validate PostgreSQL compatibility specifications
+        shell: bash
+        run: bash eng/validate-compatibility-specs.sh
 
       - name: Check release uniqueness
         id: existing
