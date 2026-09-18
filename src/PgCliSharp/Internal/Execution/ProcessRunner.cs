@@ -13,10 +13,14 @@ internal sealed class ProcessRunner : IProcessRunner
         ProcessRunRequest request,
         CancellationToken cancellationToken)
     {
+#if NETSTANDARD2_0
         if (request is null)
         {
             throw new ArgumentNullException(nameof(request));
         }
+#else
+        ArgumentNullException.ThrowIfNull(request);
+#endif
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -85,10 +89,7 @@ internal sealed class ProcessRunner : IProcessRunner
         {
             stopwatch.Stop();
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                throw new OperationCanceledException(cancellationToken);
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (timeoutSource is not null && timeoutSource.IsCancellationRequested)
             {
@@ -136,19 +137,24 @@ internal sealed class ProcessRunner : IProcessRunner
         }
 
         var stopwatch = Stopwatch.StartNew();
-        Task<string> standardErrorTask = process.StandardError.ReadToEndAsync();
+        // Do not bind stream draining or process-exit observation directly to the caller token.
+        // Cancellation/timeout first terminates the process tree, then these tasks drain/observe
+        // the terminated process so no redirected pipe is abandoned.
+        Task<string> standardErrorTask = process.StandardError.ReadToEndAsync(
+            CancellationToken.None);
         Stream standardOutput = request.StandardOutput ?? Stream.Null;
         Task standardOutputTask = process.StandardOutput.BaseStream.CopyToAsync(
             standardOutput,
-            81920);
+            81920,
+            CancellationToken.None);
 
-        Task waitTask = process.WaitForExitAsync();
+        Task waitTask = process.WaitForExitAsync(CancellationToken.None);
         Task cancellationTask = cancellationToken.CanBeCanceled
             ? Task.Delay(Timeout.Infinite, cancellationToken)
-            : Task.Delay(Timeout.Infinite);
+            : Task.Delay(Timeout.Infinite, CancellationToken.None);
         Task timeoutTask = request.Timeout.HasValue
-            ? Task.Delay(request.Timeout.Value)
-            : Task.Delay(Timeout.Infinite);
+            ? Task.Delay(request.Timeout.Value, CancellationToken.None)
+            : Task.Delay(Timeout.Infinite, CancellationToken.None);
 
         Task completedTask = await Task.WhenAny(
                 waitTask,
@@ -164,10 +170,7 @@ internal sealed class ProcessRunner : IProcessRunner
             _ = await standardErrorTask.ConfigureAwait(false);
             stopwatch.Stop();
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                throw new OperationCanceledException(cancellationToken);
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
             throw new PgProcessTimeoutException(
                 request.ExecutablePath,
