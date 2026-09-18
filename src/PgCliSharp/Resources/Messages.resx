@@ -10,6 +10,7 @@
   <data name="ProcessExitedWithError" xml:space="preserve"><value>PostgreSQL executable '{0}' exited with code {1}.</value></data>
   <data name="ProcessTimedOut" xml:space="preserve"><value>PostgreSQL executable '{0}' did not finish within the configured timeout of {1}.</value></data>
   <data name="OptionNotSupported" xml:space="preserve"><value>Option '{0}' is not supported by PostgreSQL {1}.</value></data>
+  <data name="OptionRequiresExecutableVersion" xml:space="preserve"><value>Option '{0}' requires PostgreSQL executable version {1} or later in this major branch, but the executable reports {2}.</value></data>
   <data name="InvalidOptionCombination" xml:space="preserve"><value>Options {0} form an invalid combination for PostgreSQL {1}.</value></data>
   <data name="InvalidCompressionLevel" xml:space="preserve"><value>Compression level {0} is not valid for {1}.</value></data>
   <data name="InvalidCompressionCombination" xml:space="preserve"><value>The requested compression settings are not valid: {0}.</value></data>
