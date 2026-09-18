@@ -189,7 +189,13 @@
         "property": "DataOnly",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "large-objects",
@@ -219,6 +225,12 @@
       "spellingAvailability": {
         "--blobs/--no-blobs": "PostgreSQL 10-18 compatibility aliases (mapped according to option polarity)",
         "--large-objects/--no-large-objects": "PostgreSQL 16-18 canonical long forms"
+      },
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "context-dependent pg_dump default: included for include-everything dumps, affected by object-selection switches"
       }
     },
     {
@@ -249,6 +261,12 @@
       "spellingAvailability": {
         "--blobs/--no-blobs": "PostgreSQL 10-18 compatibility aliases (mapped according to option polarity)",
         "--large-objects/--no-large-objects": "PostgreSQL 16-18 canonical long forms"
+      },
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "large-object behavior follows pg_dump's context-dependent default unless explicitly excluded"
       }
     },
     {
@@ -274,7 +292,13 @@
       },
       "notes": [
         "Ignored when emitting archive formats."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "create",
@@ -299,7 +323,13 @@
       },
       "notes": [
         "Ignored when emitting archive formats."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "encoding",
@@ -324,7 +354,13 @@
       },
       "notes": [
         "PGCLIENTENCODING is an environment-variable alternative."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "database encoding unless --encoding/PGCLIENTENCODING overrides it"
+      }
     },
     {
       "id": "file",
@@ -349,7 +385,13 @@
       },
       "notes": [
         "Optional for file-based formats; required for directory format; omit to stream stdout."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "supplied separately as PgDumpOutput",
+        "upstream": "stdout for plain/custom/tar; directory format requires a target directory"
+      }
     },
     {
       "id": "format",
@@ -378,7 +420,13 @@
           "Tar"
         ]
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "Plain",
+        "upstream": "plain"
+      }
     },
     {
       "id": "jobs",
@@ -405,7 +453,13 @@
       },
       "notes": [
         "pg_dump opens njobs + 1 database connections."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "1 worker; parallel dump is inactive"
+      }
     },
     {
       "id": "schema",
@@ -428,7 +482,13 @@
         "property": "Schemas",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "exclude-schema",
@@ -451,7 +511,13 @@
         "property": "ExcludedSchemas",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "oids",
@@ -476,7 +542,13 @@
       },
       "notes": [
         "Removed in PostgreSQL 12."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-owner",
@@ -501,7 +573,13 @@
       },
       "notes": [
         "Ignored when emitting archive formats."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-reconnect",
@@ -526,7 +604,13 @@
       },
       "notes": [
         "Obsolete but accepted for backward compatibility."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "schema-only",
@@ -552,7 +636,13 @@
         "property": "SchemaOnly",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "superuser",
@@ -577,7 +667,13 @@
       },
       "notes": [
         "Relevant only with --disable-triggers."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "option omitted; pg_dump/libpq built-in behavior applies"
+      }
     },
     {
       "id": "table",
@@ -600,7 +696,13 @@
         "property": "Tables",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "exclude-table",
@@ -623,7 +725,13 @@
         "property": "ExcludedTables",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "verbose",
@@ -651,7 +759,13 @@
         "PostgreSQL 10-11 only set a boolean verbose flag, so repetitions beyond the first are semantically redundant.",
         "PostgreSQL 12-13 set the logging level to INFO, so repetitions beyond the first are semantically redundant.",
         "PostgreSQL 14-18 call pg_logging_increase_verbosity(), so repeated occurrences increase logging verbosity."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "0 occurrences",
+        "upstream": "normal warning-level logging; no -v occurrences"
+      }
     },
     {
       "id": "version",
@@ -675,7 +789,13 @@
       },
       "notes": [
         "Not part of PgDumpOptions normal dump execution."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "not part of normal PgDumpOptions execution",
+        "upstream": "not applicable; utility command"
+      }
     },
     {
       "id": "no-privileges",
@@ -699,7 +819,13 @@
         "property": "NoPrivileges",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "compress",
@@ -728,7 +854,13 @@
         "PostgreSQL 10-15 accept integer level 0..9.",
         "PostgreSQL 16+ accept level or method[:detail], methods gzip/lz4/zstd/none, detail keywords level and long.",
         "Custom/directory are compressed by default; plain defaults uncompressed."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "plain output is uncompressed by default; custom/directory use their format default compression; tar is uncompressed"
+      }
     },
     {
       "id": "binary-upgrade",
@@ -753,7 +885,13 @@
       },
       "notes": [
         "For in-place upgrade utilities; upstream does not recommend other use."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "column-inserts",
@@ -777,7 +915,13 @@
         "property": "ColumnInserts",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "disable-dollar-quoting",
@@ -800,7 +944,13 @@
         "property": "DisableDollarQuoting",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "disable-triggers",
@@ -825,7 +975,13 @@
       },
       "notes": [
         "Relevant to data-without-schema output; ignored when emitting an archive. PostgreSQL 18 wording generalizes the earlier data-only wording."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "enable-row-security",
@@ -848,7 +1004,13 @@
         "property": "EnableRowSecurity",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "exclude-table-data",
@@ -871,7 +1033,13 @@
         "property": "ExcludedTableData",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "if-exists",
@@ -896,7 +1064,13 @@
         "property": "IfExists",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "inserts",
@@ -919,7 +1093,13 @@
         "property": "Inserts",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "lock-wait-timeout",
@@ -944,7 +1124,13 @@
       },
       "notes": [
         "Upstream accepts statement_timeout formats; integer milliseconds works on every supported target server, so PgCliSharp serializes TimeSpan as integer milliseconds."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "wait indefinitely for the initial shared table lock"
+      }
     },
     {
       "id": "no-publications",
@@ -967,7 +1153,13 @@
         "property": "NoPublications",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-security-labels",
@@ -990,7 +1182,13 @@
         "property": "NoSecurityLabels",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-subscriptions",
@@ -1013,7 +1211,13 @@
         "property": "NoSubscriptions",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-sync",
@@ -1036,7 +1240,13 @@
         "property": "NoSync",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-synchronized-snapshots",
@@ -1061,7 +1271,13 @@
       },
       "notes": [
         "Removed in PostgreSQL 15 when pg_dump's minimum dumpable server became PostgreSQL 9.2."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-tablespaces",
@@ -1086,7 +1302,13 @@
       },
       "notes": [
         "Ignored when emitting archive formats."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-unlogged-table-data",
@@ -1111,7 +1333,13 @@
       },
       "notes": [
         "PostgreSQL 10-14 documentation says unlogged tables; PostgreSQL 15+ says unlogged tables and sequences."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "quote-all-identifiers",
@@ -1134,7 +1362,13 @@
         "property": "QuoteAllIdentifiers",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "section",
@@ -1165,7 +1399,13 @@
       "notes": [
         "Default is all sections.",
         "PostgreSQL 18 data/post-data section semantics include optimizer statistics when statistics are requested."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "all sections"
+      }
     },
     {
       "id": "serializable-deferrable",
@@ -1188,7 +1428,13 @@
         "property": "SerializableDeferrable",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "snapshot",
@@ -1211,7 +1457,13 @@
         "property": "Snapshot",
         "type": "string"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "option omitted; pg_dump/libpq built-in behavior applies"
+      }
     },
     {
       "id": "strict-names",
@@ -1234,7 +1486,13 @@
         "property": "StrictNames",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "use-set-session-authorization",
@@ -1257,7 +1515,13 @@
         "property": "UseSetSessionAuthorization",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "help",
@@ -1281,7 +1545,13 @@
       },
       "notes": [
         "Not part of PgDumpOptions normal dump execution."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "not part of normal PgDumpOptions execution",
+        "upstream": "not applicable; utility command"
+      }
     },
     {
       "id": "dbname",
@@ -1306,7 +1576,13 @@
       },
       "notes": [
         "Equivalent to positional dbname; connection-string parameters override conflicting command-line connection options."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "libpq resolves database from connection parameters/environment/default user rules"
+      }
     },
     {
       "id": "host",
@@ -1329,7 +1605,13 @@
         "property": "Host",
         "type": "string"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "libpq default host/socket resolution"
+      }
     },
     {
       "id": "port",
@@ -1352,7 +1634,13 @@
         "property": "Port",
         "type": "int?"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "libpq default port (normally 5432 unless configured otherwise)"
+      }
     },
     {
       "id": "username",
@@ -1375,7 +1663,13 @@
         "property": "Username",
         "type": "string"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "libpq default user resolution"
+      }
     },
     {
       "id": "no-password",
@@ -1398,7 +1692,13 @@
         "property": "PasswordPrompt",
         "type": "PgPasswordPromptMode"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "libpq/pg_dump prompts automatically when authentication requires it"
+      }
     },
     {
       "id": "password",
@@ -1421,7 +1721,13 @@
         "property": "PasswordPrompt",
         "type": "PgPasswordPromptMode"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "Default",
+        "upstream": "libpq/pg_dump prompts automatically when authentication requires it"
+      }
     },
     {
       "id": "role",
@@ -1444,7 +1750,13 @@
         "property": "Role",
         "type": "string"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "no SET ROLE"
+      }
     },
     {
       "id": "load-via-partition-root",
@@ -1467,7 +1779,13 @@
         "property": "LoadViaPartitionRoot",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-comments",
@@ -1490,7 +1808,13 @@
         "property": "NoComments",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "extra-float-digits",
@@ -1513,7 +1837,13 @@
         "property": "ExtraFloatDigits",
         "type": "int?"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "pg_dump's version-specific built-in/default output behavior; no explicit override"
+      }
     },
     {
       "id": "on-conflict-do-nothing",
@@ -1538,7 +1868,13 @@
         "property": "OnConflictDoNothing",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "rows-per-insert",
@@ -1565,7 +1901,13 @@
       },
       "notes": [
         "Implies INSERT output."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "not active; COPY is used unless INSERT output is requested"
+      }
     },
     {
       "id": "include-foreign-data",
@@ -1590,7 +1932,13 @@
         "property": "IncludedForeignData",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "restrict-key",
@@ -1626,7 +1974,13 @@
       },
       "notes": [
         "Backported in the 2025-08-14 security updates for CVE-2025-8714; major-only availability is insufficient."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "for supported patched versions, pg_dump generates a random restrict key for plain output when omitted"
+      }
     },
     {
       "id": "extension",
@@ -1649,7 +2003,13 @@
         "property": "Extensions",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "no-toast-compression",
@@ -1672,7 +2032,13 @@
         "property": "NoToastCompression",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-table-access-method",
@@ -1697,7 +2063,13 @@
       },
       "notes": [
         "Ignored when emitting archive formats."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "table-and-children",
@@ -1720,7 +2092,13 @@
         "property": "TablesAndChildren",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "exclude-table-and-children",
@@ -1743,7 +2121,13 @@
         "property": "ExcludedTablesAndChildren",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "exclude-table-data-and-children",
@@ -1766,7 +2150,13 @@
         "property": "ExcludedTableDataAndChildren",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "exclude-extension",
@@ -1789,7 +2179,13 @@
         "property": "ExcludedExtensions",
         "type": "IList<string>"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no occurrences"
+      }
     },
     {
       "id": "filter",
@@ -1814,7 +2210,13 @@
       },
       "notes": [
         "Filename '-' reads filter rules from stdin. PgCliSharp must therefore support stdin streaming when StandardInput is selected."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "empty ordered collection; option not emitted",
+        "upstream": "no filter file"
+      }
     },
     {
       "id": "sync-method",
@@ -1843,7 +2245,13 @@
       },
       "notes": [
         "Meaningful for directory format; has no effect with --no-sync or non-directory output. syncfs is Linux-specific."
-      ]
+      ],
+      "optionRequired": false,
+      "argumentMode": "required",
+      "defaults": {
+        "wrapper": "null/unset; option not emitted",
+        "upstream": "fsync"
+      }
     },
     {
       "id": "no-data",
@@ -1868,7 +2276,13 @@
         "property": "NoData",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-policies",
@@ -1891,7 +2305,13 @@
         "property": "NoPolicies",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-schema",
@@ -1916,7 +2336,13 @@
         "property": "NoSchema",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "no-statistics",
@@ -1942,7 +2368,13 @@
         "property": "NoStatistics",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "no explicit exclusion flag; PostgreSQL 18 still omits statistics by default unless requested"
+      }
     },
     {
       "id": "sequence-data",
@@ -1965,7 +2397,13 @@
         "property": "SequenceData",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "disabled when the option is omitted"
+      }
     },
     {
       "id": "statistics",
@@ -1990,7 +2428,13 @@
         "property": "Statistics",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "optimizer statistics are not dumped in PostgreSQL 18 unless requested"
+      }
     },
     {
       "id": "statistics-only",
@@ -2017,7 +2461,13 @@
         "property": "StatisticsOnly",
         "type": "bool"
       },
-      "notes": []
+      "notes": [],
+      "optionRequired": false,
+      "argumentMode": "none",
+      "defaults": {
+        "wrapper": "false; option not emitted",
+        "upstream": "normal schema/data selection; statistics-only mode is inactive"
+      }
     }
   ],
   "versions": {
@@ -2817,5 +3267,10 @@
       "help": "Help is a utility command and is intentionally not part of normal PgDumpOptions execution."
     },
     "argumentGeneration": "Every spec entry mapped to a PgDumpOptions property is represented by the deterministic argument builder; output/version/help use the special bindings above."
+  },
+  "commandSyntax": {
+    "databaseArgument": "The database can be supplied by -d/--dbname or the positional dbname form upstream. PgCliSharp uses the typed Database property and emits --dbname. If omitted, libpq environment/default resolution applies.",
+    "optionArguments": "All pg_dump options in PostgreSQL 10-18 either take no argument or a required argument; this inventory records that explicitly in argumentMode.",
+    "optionalOptionArguments": "none"
   }
 }
