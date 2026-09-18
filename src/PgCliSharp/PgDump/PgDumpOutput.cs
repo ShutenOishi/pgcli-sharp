@@ -38,10 +38,14 @@ public sealed class PgDumpOutput
     /// <returns><para>EN: The output destination.</para><para>JA: 出力先です。</para></returns>
     public static PgDumpOutput ToStream(Stream destination)
     {
+#if NETSTANDARD2_0
         if (destination is null)
         {
             throw new ArgumentNullException(nameof(destination));
         }
+#else
+        ArgumentNullException.ThrowIfNull(destination);
+#endif
 
         if (!destination.CanWrite)
         {
