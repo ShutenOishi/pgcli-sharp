@@ -123,146 +123,36 @@ internal static class PgDumpValidator
         PostgreSqlMajorVersion selectedVersion,
         PostgreSqlExecutableVersion executableVersion)
     {
-        if (options.IncludeOids)
-        {
-            PgDumpOptionAvailability.EnsureMajor(
-                selectedVersion,
-                "--oids",
-                PostgreSqlMajorVersion.V10,
-                PostgreSqlMajorVersion.V11);
-        }
-
-        if (options.NoSynchronizedSnapshots)
-        {
-            PgDumpOptionAvailability.EnsureMajor(
-                selectedVersion,
-                "--no-synchronized-snapshots",
-                PostgreSqlMajorVersion.V10,
-                PostgreSqlMajorVersion.V14);
-        }
-
-        if (options.LoadViaPartitionRoot)
-        {
-            EnsureSince(selectedVersion, "--load-via-partition-root", PostgreSqlMajorVersion.V11);
-        }
-
-        if (options.NoComments)
-        {
-            EnsureSince(selectedVersion, "--no-comments", PostgreSqlMajorVersion.V11);
-        }
-
-        if (options.ExtraFloatDigits.HasValue)
-        {
-            EnsureSince(selectedVersion, "--extra-float-digits", PostgreSqlMajorVersion.V12);
-        }
-
-        if (options.OnConflictDoNothing)
-        {
-            EnsureSince(selectedVersion, "--on-conflict-do-nothing", PostgreSqlMajorVersion.V12);
-        }
-
-        if (options.RowsPerInsert.HasValue)
-        {
-            EnsureSince(selectedVersion, "--rows-per-insert", PostgreSqlMajorVersion.V12);
-        }
-
-        if (options.IncludedForeignData.Count > 0)
-        {
-            EnsureSince(selectedVersion, "--include-foreign-data", PostgreSqlMajorVersion.V13);
-        }
-
-        if (options.RestrictKey is not null)
-        {
-            PgDumpOptionAvailability.EnsureRestrictKey(
-                selectedVersion,
-                executableVersion);
-        }
-
-        if (options.Extensions.Count > 0)
-        {
-            EnsureSince(selectedVersion, "--extension", PostgreSqlMajorVersion.V14);
-        }
-
-        if (options.NoToastCompression)
-        {
-            EnsureSince(selectedVersion, "--no-toast-compression", PostgreSqlMajorVersion.V14);
-        }
-
-        if (options.NoTableAccessMethod)
-        {
-            EnsureSince(selectedVersion, "--no-table-access-method", PostgreSqlMajorVersion.V15);
-        }
-
-        if (options.Compression is not null &&
-            !options.Compression.IsLevelOnly)
-        {
-            EnsureSince(selectedVersion, "--compress=method[:detail]", PostgreSqlMajorVersion.V16);
-        }
-
-        if (options.TablesAndChildren.Count > 0)
-        {
-            EnsureSince(selectedVersion, "--table-and-children", PostgreSqlMajorVersion.V16);
-        }
-
-        if (options.ExcludedTablesAndChildren.Count > 0)
-        {
-            EnsureSince(selectedVersion, "--exclude-table-and-children", PostgreSqlMajorVersion.V16);
-        }
-
-        if (options.ExcludedTableDataAndChildren.Count > 0)
-        {
-            EnsureSince(selectedVersion, "--exclude-table-data-and-children", PostgreSqlMajorVersion.V16);
-        }
-
-        if (options.ExcludedExtensions.Count > 0)
-        {
-            EnsureSince(selectedVersion, "--exclude-extension", PostgreSqlMajorVersion.V17);
-        }
-
-        if (options.Filters.Count > 0)
-        {
-            EnsureSince(selectedVersion, "--filter", PostgreSqlMajorVersion.V17);
-        }
-
-        if (options.SyncMethod.HasValue)
-        {
-            EnsureSince(selectedVersion, "--sync-method", PostgreSqlMajorVersion.V17);
-        }
-
-        if (options.NoData)
-        {
-            EnsureSince(selectedVersion, "--no-data", PostgreSqlMajorVersion.V18);
-        }
-
-        if (options.NoPolicies)
-        {
-            EnsureSince(selectedVersion, "--no-policies", PostgreSqlMajorVersion.V18);
-        }
-
-        if (options.NoSchema)
-        {
-            EnsureSince(selectedVersion, "--no-schema", PostgreSqlMajorVersion.V18);
-        }
-
-        if (options.NoStatistics)
-        {
-            EnsureSince(selectedVersion, "--no-statistics", PostgreSqlMajorVersion.V18);
-        }
-
-        if (options.SequenceData)
-        {
-            EnsureSince(selectedVersion, "--sequence-data", PostgreSqlMajorVersion.V18);
-        }
-
-        if (options.Statistics)
-        {
-            EnsureSince(selectedVersion, "--statistics", PostgreSqlMajorVersion.V18);
-        }
-
-        if (options.StatisticsOnly)
-        {
-            EnsureSince(selectedVersion, "--statistics-only", PostgreSqlMajorVersion.V18);
-        }
+        EnsureIf(options.IncludeOids, PgDumpOptionAvailabilityCatalog.Oids, selectedVersion, executableVersion);
+        EnsureIf(options.NoSynchronizedSnapshots, PgDumpOptionAvailabilityCatalog.NoSynchronizedSnapshots, selectedVersion, executableVersion);
+        EnsureIf(options.LoadViaPartitionRoot, PgDumpOptionAvailabilityCatalog.LoadViaPartitionRoot, selectedVersion, executableVersion);
+        EnsureIf(options.NoComments, PgDumpOptionAvailabilityCatalog.NoComments, selectedVersion, executableVersion);
+        EnsureIf(options.ExtraFloatDigits.HasValue, PgDumpOptionAvailabilityCatalog.ExtraFloatDigits, selectedVersion, executableVersion);
+        EnsureIf(options.OnConflictDoNothing, PgDumpOptionAvailabilityCatalog.OnConflictDoNothing, selectedVersion, executableVersion);
+        EnsureIf(options.RowsPerInsert.HasValue, PgDumpOptionAvailabilityCatalog.RowsPerInsert, selectedVersion, executableVersion);
+        EnsureIf(options.IncludedForeignData.Count > 0, PgDumpOptionAvailabilityCatalog.IncludeForeignData, selectedVersion, executableVersion);
+        EnsureIf(options.RestrictKey is not null, PgDumpOptionAvailabilityCatalog.RestrictKey, selectedVersion, executableVersion);
+        EnsureIf(options.Extensions.Count > 0, PgDumpOptionAvailabilityCatalog.Extension, selectedVersion, executableVersion);
+        EnsureIf(options.NoToastCompression, PgDumpOptionAvailabilityCatalog.NoToastCompression, selectedVersion, executableVersion);
+        EnsureIf(options.NoTableAccessMethod, PgDumpOptionAvailabilityCatalog.NoTableAccessMethod, selectedVersion, executableVersion);
+        EnsureIf(
+            options.Compression is not null && !options.Compression.IsLevelOnly,
+            PgDumpOptionAvailabilityCatalog.MethodCompression,
+            selectedVersion,
+            executableVersion);
+        EnsureIf(options.TablesAndChildren.Count > 0, PgDumpOptionAvailabilityCatalog.TableAndChildren, selectedVersion, executableVersion);
+        EnsureIf(options.ExcludedTablesAndChildren.Count > 0, PgDumpOptionAvailabilityCatalog.ExcludeTableAndChildren, selectedVersion, executableVersion);
+        EnsureIf(options.ExcludedTableDataAndChildren.Count > 0, PgDumpOptionAvailabilityCatalog.ExcludeTableDataAndChildren, selectedVersion, executableVersion);
+        EnsureIf(options.ExcludedExtensions.Count > 0, PgDumpOptionAvailabilityCatalog.ExcludeExtension, selectedVersion, executableVersion);
+        EnsureIf(options.Filters.Count > 0, PgDumpOptionAvailabilityCatalog.Filter, selectedVersion, executableVersion);
+        EnsureIf(options.SyncMethod.HasValue, PgDumpOptionAvailabilityCatalog.SyncMethod, selectedVersion, executableVersion);
+        EnsureIf(options.NoData, PgDumpOptionAvailabilityCatalog.NoData, selectedVersion, executableVersion);
+        EnsureIf(options.NoPolicies, PgDumpOptionAvailabilityCatalog.NoPolicies, selectedVersion, executableVersion);
+        EnsureIf(options.NoSchema, PgDumpOptionAvailabilityCatalog.NoSchema, selectedVersion, executableVersion);
+        EnsureIf(options.NoStatistics, PgDumpOptionAvailabilityCatalog.NoStatistics, selectedVersion, executableVersion);
+        EnsureIf(options.SequenceData, PgDumpOptionAvailabilityCatalog.SequenceData, selectedVersion, executableVersion);
+        EnsureIf(options.Statistics, PgDumpOptionAvailabilityCatalog.Statistics, selectedVersion, executableVersion);
+        EnsureIf(options.StatisticsOnly, PgDumpOptionAvailabilityCatalog.StatisticsOnly, selectedVersion, executableVersion);
     }
 
     private static void ValidateOutput(
@@ -430,16 +320,19 @@ internal static class PgDumpValidator
         }
     }
 
-    private static void EnsureSince(
+    private static void EnsureIf(
+        bool requested,
+        PgDumpOptionAvailabilityInfo availability,
         PostgreSqlMajorVersion selectedVersion,
-        string optionName,
-        PostgreSqlMajorVersion since)
+        PostgreSqlExecutableVersion executableVersion)
     {
-        PgDumpOptionAvailability.EnsureMajor(
-            selectedVersion,
-            optionName,
-            since,
-            PostgreSqlMajorVersion.V18);
+        if (requested)
+        {
+            PgDumpOptionAvailability.Ensure(
+                availability,
+                selectedVersion,
+                executableVersion);
+        }
     }
 
     private static void EnsureEnum<T>(
