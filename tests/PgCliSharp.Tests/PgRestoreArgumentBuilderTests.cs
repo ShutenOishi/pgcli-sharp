@@ -89,7 +89,7 @@ public sealed class PgRestoreArgumentBuilderTests
         Assert.Equal("custom", ValueAfter(arguments, "--format"));
         Assert.Equal("25", ValueAfter(arguments, "--transaction-size"));
         Assert.Equal("SafeKey123", ValueAfter(arguments, "--restrict-key"));
-        Assert.Equal("backup.dump", arguments[^1]);
+        Assert.Equal("backup.dump", arguments[arguments.Count - 1]);
 
         AssertOrderedValues(arguments, "--schema", "one", "two");
         AssertOrderedValues(arguments, "--section", "pre-data", "post-data");

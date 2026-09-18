@@ -32,7 +32,7 @@ public sealed class BackupRestoreTrioTests
         Assert.Equal("custom", ValueAfter(dumpArguments, "--format"));
         Assert.Equal("backup.dump", ValueAfter(dumpArguments, "--file"));
         Assert.Equal("custom", ValueAfter(restoreArguments, "--format"));
-        Assert.Equal("backup.dump", restoreArguments[^1]);
+        Assert.Equal("backup.dump", restoreArguments[restoreArguments.Count - 1]);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public sealed class BackupRestoreTrioTests
         Assert.Equal("directory", ValueAfter(dumpArguments, "--format"));
         Assert.Equal("backup-dir", ValueAfter(dumpArguments, "--file"));
         Assert.Equal("directory", ValueAfter(restoreArguments, "--format"));
-        Assert.Equal("backup-dir", restoreArguments[^1]);
+        Assert.Equal("backup-dir", restoreArguments[restoreArguments.Count - 1]);
         Assert.Equal("2", ValueAfter(restoreArguments, "--jobs"));
     }
 

@@ -91,6 +91,10 @@ public sealed class CompatibilitySpecCoverageTests
             Assert.Equal(availability.MajorSince, (int)actual!.Since);
             Assert.Equal(availability.MajorUntil, (int)actual.Until);
 
+            Dictionary<string, string> expectedMinimums =
+                availability.MinimumExecutableVersionByMajor ??
+                new Dictionary<string, string>(StringComparer.Ordinal);
+
             Dictionary<string, string> runtimeMinimums =
                 actual.MinimumVersions.ToDictionary(
                     pair => ((int)pair.Key).ToString(
