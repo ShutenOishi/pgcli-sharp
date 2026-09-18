@@ -11,8 +11,9 @@ PgCliSharp is currently in the design/foundation stage. Initial PostgreSQL compa
 Project-wide decisions are stored in the repository so they can be reused across chats, contributors, and coding agents.
 
 - [AGENTS.md](AGENTS.md) — repository entry point and mandatory working rules
-- [Architecture and compatibility](docs/architecture.md)
-- [Localization and bilingual XML documentation](docs/localization.md)
+- [Architecture Decision Records](docs/adr/README.md) — decision history, status, alternatives, and consequences
+- [Architecture and compatibility](docs/architecture.md) — consolidated current state
+- [Localization and bilingual XML documentation](docs/localization.md) — consolidated current state
 - [Implementation and NuGet roadmap](docs/roadmap.md)
 
-When implementation work changes a project-wide decision, update the relevant canonical document in the same change. Chat history is not the source of truth.
+When implementation work changes a material project-wide decision, add or supersede an ADR and update the relevant consolidated document in the same change. Chat history is not the source of truth.
