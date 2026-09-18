@@ -45,24 +45,25 @@ for spec in "${specs[@]}"; do
     exit 1
   fi
 
-  all_ids="$(jq -r '.options[].id' "$spec")"
-
   for major in {10..18}; do
     major_key="$major"
 
     jq -e --arg major "$major_key" '
       (.sources.perMajorDocumentation[$major] | type == "string" and length > 0) and
       (.versions[$major].documentation | type == "string" and length > 0) and
-      (.versions[$major].optionIdsInCurrentMajorDocumentation | type == "array")
+      (.versions[$major].optionIdsInCurrentMajorDocumentation | type == "array") and
+      (
+        .versions[$major].optionIdsInCurrentMajorDocumentation
+        | length == (unique | length)
+      )
     ' "$spec" >/dev/null
-
-    while IFS= read -r option_id; do
-      if ! grep -Fxq "$option_id" <<<"$all_ids"; then
-        echo "$spec: PostgreSQL $major references unknown option ID '$option_id'." >&2
-        exit 1
-      fi
-    done < <(
-      jq -r --arg major "$major_key"         '.versions[$major].optionIdsInCurrentMajorDocumentation[]'         "$spec"
-    )
   done
+
+  jq -e '
+    (.options | map(.id)) as $ids |
+    all(
+      .versions[].optionIdsInCurrentMajorDocumentation[];
+      . as $id | ($ids | index($id)) != null
+    )
+  ' "$spec" >/dev/null
 done
