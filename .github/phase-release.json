@@ -1,7 +1,7 @@
 {
-  "phase": 2,
-  "tag": "phase-2",
-  "title": "Phase 2 - pg_restore + pg_dumpall / pg_restore・pg_dumpall 型付きラッパー",
-  "notes_file": "docs/releases/phase-2.md",
+  "phase": 3,
+  "tag": "phase-3",
+  "title": "Phase 3 - First NuGet Preview / 初回 NuGet プレビュー",
+  "notes_file": "docs/releases/phase-3.md",
   "prerelease": true
 }
