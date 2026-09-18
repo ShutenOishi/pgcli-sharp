@@ -21,4 +21,6 @@
   <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>pg_dump の出力ストリームは書き込み可能である必要があります。</value></data>
   <data name="FilterPathRequired" xml:space="preserve"><value>空ではない pg_dump フィルターファイルのパスを指定する必要があります。</value></data>
   <data name="FilterInputMustBeReadable" xml:space="preserve"><value>pg_dump のフィルター入力ストリームは読み取り可能である必要があります。</value></data>
+  <data name="CompressionNoneDetailsNotAllowed" xml:space="preserve"><value>圧縮方式 'none' では、圧縮レベルまたは long-distance モードを指定できません。</value></data>
+  <data name="CompressionLongRequiresZstd" xml:space="preserve"><value>long-distance 圧縮モードは zstd でのみ使用できます。</value></data>
 </root>
