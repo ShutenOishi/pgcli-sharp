@@ -62,3 +62,10 @@ bash eng/validate-compatibility-specs.sh
 to validate the repository-local structural invariants.
 
 The structural validator intentionally does not fetch PostgreSQL source from the network. Upstream option-table/parser comparison is performed during research and its result is recorded in the specification so ordinary CI remains deterministic.
+
+
+## Phase 2 tools
+
+[`pg_restore.json`](pg_restore.json) and [`pg_dumpall.json`](pg_dumpall.json) are the Phase 2 compatibility inventories for PostgreSQL 10 through 18.
+
+Both specifications record per-major source-table audits, exact executable-version boundaries for the security-backported `--restrict-key`, input/output semantics, ignored-versus-error behavior, and intended API bindings. Human-readable research is stored in [`docs/pg-restore-phase-2.md`](../../docs/pg-restore-phase-2.md) and [`docs/pg-dumpall-phase-2.md`](../../docs/pg-dumpall-phase-2.md).
