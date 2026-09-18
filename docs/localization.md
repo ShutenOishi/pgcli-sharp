@@ -8,7 +8,7 @@ PgCliSharp supports English and Japanese for:
 
 1. public C# XML documentation;
 2. runtime user-facing diagnostics and exception messages;
-3. project documentation where bilingual content materially helps users.
+3. human-facing project documentation and release surfaces.
 
 Code identifiers remain English.
 
@@ -149,12 +149,31 @@ Tests should verify at minimum:
 - resource lookup works under `en`, `ja`, and a fallback culture;
 - representative exceptions expose identical structured properties regardless of UI culture.
 
-## 10. NuGet documentation
+## 10. Human-facing repository and release content
+
+Prominent content that a human user is expected to read directly must provide both English and Japanese.
+
+This includes at minimum:
+
+- the repository root README;
+- GitHub Release titles and release notes;
+- user-oriented setup/usage guides;
+- prominent notices that affect package consumers.
+
+The root `README.md` may remain primarily English for ecosystem interoperability, but it must place a clear Japanese link near the top. The maintained Japanese document is `README.ja.md`.
+
+Phase release notes under `docs/releases/` must contain both Japanese and English in the same file so the GitHub Release body is bilingual without requiring navigation to another page.
+
+GitHub Release tags, target commits, and attached artifacts remain immutable according to the phase-release ADR. Human-readable Release metadata such as title and notes may be synchronized later when adding/fixing translations or correcting non-semantic documentation errors.
+
+Internal engineering documents such as ADRs may remain English-first unless a Japanese version materially improves usability. They are not required to duplicate every paragraph in both languages.
+
+## 11. NuGet documentation
 
 NuGet packages should include generated XML documentation files.
 
-The README may primarily use English with Japanese sections or links as the project evolves, but public IntelliSense documentation remains bilingual according to this policy.
+The package README should expose a conspicuous path to Japanese documentation. Public IntelliSense documentation remains bilingual according to this policy.
 
-## 11. Updating localization policy
+## 12. Updating localization policy
 
 If IDE rendering or package tooling demonstrates a better way to deliver language-specific XML IntelliSense, this policy can be revised. Any material change to the Accepted localization decision must use the ADR superseding workflow in `docs/adr/README.md`, and this consolidated document must be updated in the same change.

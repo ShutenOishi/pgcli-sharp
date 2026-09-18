@@ -1,10 +1,10 @@
 # ADR-0009: Record every completed phase as a GitHub Release with immutable artifacts
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-09-18
 - Decision owners: PgCliSharp maintainers
 - Supersedes: None
-- Superseded by: None
+- Superseded by: ADR-0010
 
 ## Context
 

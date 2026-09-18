@@ -28,11 +28,12 @@ If an Accepted decision changes, create a new superseding ADR instead of rewriti
 - Use `ProcessStartInfo.ArgumentList` on modern targets. The `netstandard2.0` compatibility backend uses CliWrap according to ADR-0008. Do not execute PostgreSQL tools through `cmd.exe`, PowerShell, `bash -c`, or another shell.
 - Keep the core package free of unnecessary runtime dependencies.
 - Public APIs must have bilingual English/Japanese XML documentation according to `docs/localization.md`.
+- Human-facing project surfaces must provide Japanese as well as English. This includes the repository README, GitHub Release titles/notes, user-oriented guides, and other prominent public documentation. The root README may link prominently to a maintained `README.ja.md` instead of duplicating the full text inline.
 - User-facing diagnostics and exception messages must be localizable in English and Japanese using resources; do not hard-code localized strings throughout the implementation.
 - Tests must cover version-specific argument generation and validation.
 - Changes to PostgreSQL compatibility claims must be backed by PostgreSQL official documentation and/or executable integration tests.
 - NuGet releases use Semantic Versioning and GitHub Actions. Trusted Publishing/OIDC is preferred over long-lived NuGet API keys.
-- Every completed roadmap Phase must be recorded as a GitHub Release according to ADR-0009. A Phase-completion PR must update `.github/phase-release.json` and add/update the matching `docs/releases/phase-N.md` release notes.
+- Every completed roadmap Phase must be recorded as a bilingual GitHub Release according to ADR-0010. A Phase-completion PR must update `.github/phase-release.json` and add/update the matching `docs/releases/phase-N.md` release notes.
 
 ## Updating project decisions
 
