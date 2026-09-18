@@ -16,6 +16,7 @@ Build a strongly typed .NET API for PostgreSQL command-line tools with explicit 
 - Add localization resources (English neutral + Japanese).
 - Implement common exceptions/diagnostics.
 - Implement process runner abstraction.
+- Use the BCL process backend on modern .NET and a conditional CliWrap backend on `netstandard2.0`.
 - Implement cancellation and timeout behavior.
 - Implement executable version parser/cache.
 - Add PostgreSQL 10-18 version metadata.

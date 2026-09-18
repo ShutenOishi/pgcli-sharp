@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/PgCliSharp/PgCliSharp.csproj" />
+  <Project Path="tests/PgCliSharp.Tests/PgCliSharp.Tests.csproj" />
+</Solution>

@@ -25,7 +25,7 @@ If an Accepted decision changes, create a new superseding ADR instead of rewriti
 - Prefer enums for finite option sets and dedicated value objects for structured values.
 - Do not expose arbitrary command-line strings as the primary API when a typed representation is practical.
 - Validate option availability and incompatible combinations before starting the process.
-- Use `ProcessStartInfo.ArgumentList` where supported; do not execute through `cmd.exe`, PowerShell, `bash -c`, or another shell.
+- Use `ProcessStartInfo.ArgumentList` on modern targets. The `netstandard2.0` compatibility backend uses CliWrap according to ADR-0008. Do not execute PostgreSQL tools through `cmd.exe`, PowerShell, `bash -c`, or another shell.
 - Keep the core package free of unnecessary runtime dependencies.
 - Public APIs must have bilingual English/Japanese XML documentation according to `docs/localization.md`.
 - User-facing diagnostics and exception messages must be localizable in English and Japanese using resources; do not hard-code localized strings throughout the implementation.

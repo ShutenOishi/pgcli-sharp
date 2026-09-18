@@ -1,10 +1,10 @@
 # ADR-0005: Execute tools directly and preserve stream-safe output
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-09-18
 - Decision owners: PgCliSharp maintainers
 - Supersedes: None
-- Superseded by: None
+- Superseded by: ADR-0008
 
 ## Context
 
