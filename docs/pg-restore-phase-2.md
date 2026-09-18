@@ -1,6 +1,6 @@
 # Phase 2 Research - pg_restore
 
-Status: research/specification baseline complete; implementation follows ADR-0011.
+Status: research/specification and implementation complete; completion-gate validation is in progress under ADR-0011.
 
 ## Scope and evidence
 
@@ -48,11 +48,12 @@ The current stable-branch option-table counts (including long aliases but exclud
 
 All entries are represented in the spec, with `--help` and `--version` modeled as explicit utility/version bindings.
 
-## Implementation plan
+## Implementation audit
 
-1. Add typed enums/value objects and dedicated input/output abstractions.
-2. Add centralized option availability including exact `--restrict-key` patch versions.
-3. Validate parser hard errors without converting documented ignored combinations into wrapper errors.
-4. Generate deterministic token lists and preserve repeatable option order.
-5. Stream archive/filter stdin and generated script/list stdout without shell mediation.
-6. Add PG10-18 availability, argument, validation, execution, localization, and pg_dump -> pg_restore integration tests.
+- `PgRestoreOptions` uses typed content/mode/transaction models instead of contradictory switch pairs.
+- `PgRestoreInput` separates file, directory, and archive-stdin input; `PgRestoreOutput` separates direct database restore from generated SQL/list output.
+- Runtime availability is centralized, including exact `--restrict-key` maintenance-release boundaries.
+- Validation covers upstream hard errors and preserves documented ignored cases such as parallel options during script generation.
+- Argument generation is deterministic, repeatable selectors preserve caller order, and stream output emits `--file=-`.
+- Execution forwards archive stdin or filter stdin as a stream, preserves stdout as bytes, and reuses the Phase 0/1 cancellation, timeout, process-tree, stderr, and version-probe infrastructure.
+- Tests cover major/patch availability, argument generation, invalid combinations, ignored-vs-error behavior, binary-safe I/O, execution control, spec/API synchronization, and pg_dump -> pg_restore archive contracts.

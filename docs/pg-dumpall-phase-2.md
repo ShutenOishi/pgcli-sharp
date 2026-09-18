@@ -1,6 +1,6 @@
 # Phase 2 Research - pg_dumpall
 
-Status: research/specification baseline complete; implementation follows ADR-0011.
+Status: research/specification and implementation complete; completion-gate validation is in progress under ADR-0011.
 
 ## Scope and evidence
 
@@ -45,11 +45,12 @@ The current stable-branch `long_options[]` entry counts (including aliases) are:
 
 All entries are represented in the spec, with `--help` and `--version` modeled separately.
 
-## Implementation plan
+## Implementation audit
 
-1. Add a tool-specific options type, `PgDumpAllScope`, restrict-key value object, filter source, and output abstraction.
-2. Centralize availability and patch boundaries.
-3. Validate pg_dumpall hard conflicts and nested pg_dump constraints that can be determined safely before process startup.
-4. Preserve deterministic option ordering and repeatable database exclusions/filters.
-5. Stream SQL script stdout as bytes and filter stdin as bytes; keep file output under pg_dumpall when requested.
-6. Add cross-version tests and trio tests with pg_dump/pg_restore.
+- `PgDumpAllOptions` remains tool-specific; `PgDumpAllScope` represents globals/roles/tablespaces-only as one mutually exclusive state.
+- `ConnectionString` and `InitialDatabase` preserve the distinct upstream meanings of `--dbname` and `--database`.
+- Runtime availability is centralized for PostgreSQL 10-18, including removal of `--oids` and exact security-backport boundaries for `--restrict-key`.
+- Validation covers hard scope/dependency/value conflicts while avoiding errors for options that upstream ignores outside database-dump scope.
+- Argument generation emits canonical alias spellings and preserves repeatable database-exclusion/filter order.
+- SQL-script stdout and filter stdin remain byte streams; file output is delegated to pg_dumpall through `--file`.
+- Tests cover version/patch boundaries, argument generation, scope and PostgreSQL 18 content semantics, execution/I/O, spec/API synchronization, and backup/restore trio relationships. The sibling `pg_dump` version check remains an upstream pg_dumpall invariant and surfaces through its normal non-zero process result.
