@@ -53,6 +53,234 @@ jobs:
           grep -F 'README.ja.md' README.md >/dev/null
           grep -F '## 日本語' "$notes_file" >/dev/null
           grep -F '## English' "$notes_file" >/dev/null
+          english_line="$(grep -n -m1 '^## English >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+      - name: Check release uniqueness
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet restore PgCliSharp.slnx
+
+      - name: Build
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
+
+      - name: Test
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Pack NuGet artifacts
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Create source ZIP
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=zip --output "artifacts/pgcli-sharp-${TAG}.zip" "$GITHUB_SHA"
+
+      - name: Verify release artifacts
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f "artifacts/pgcli-sharp-${TAG}.zip"
+          compgen -G "artifacts/*.nupkg" >/dev/null
+          compgen -G "artifacts/*.snupkg" >/dev/null
+
+          ls -lh artifacts
+
+      - name: Create GitHub Release
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+          TITLE: ${{ steps.phase.outputs.title }}
+          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
+          PRERELEASE: ${{ steps.phase.outputs.prerelease }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          prerelease_args=()
+          if [ "$PRERELEASE" = "true" ]; then
+            prerelease_args+=(--prerelease)
+          fi
+
+          gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "$TITLE"             --notes-file "$NOTES_FILE"             "${prerelease_args[@]}"             "artifacts/pgcli-sharp-${TAG}.zip"             artifacts/*.nupkg             artifacts/*.snupkg
+
+      - name: Synchronize GitHub Release title and notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+          TITLE: ${{ steps.phase.outputs.title }}
+          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Phase tags, target commits, and attached artifacts are immutable.
+          # Human-readable title/notes may be synchronized for translation and typo fixes.
+          gh release edit "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TITLE" \
+            --notes-file "$NOTES_FILE"
+
+      - name: Verify GitHub Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+          echo "$assets"
+
+          grep -Fx "pgcli-sharp-${TAG}.zip" <<< "$assets"
+          grep -E '\.nupkg$' <<< "$assets"
+          grep -E '\.snupkg$' <<< "$assets"
+ "$notes_file" | cut -d: -f1)"
+          japanese_line="$(grep -n -m1 '^## 日本語 >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+      - name: Check release uniqueness
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet restore PgCliSharp.slnx
+
+      - name: Build
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
+
+      - name: Test
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Pack NuGet artifacts
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Create source ZIP
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=zip --output "artifacts/pgcli-sharp-${TAG}.zip" "$GITHUB_SHA"
+
+      - name: Verify release artifacts
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f "artifacts/pgcli-sharp-${TAG}.zip"
+          compgen -G "artifacts/*.nupkg" >/dev/null
+          compgen -G "artifacts/*.snupkg" >/dev/null
+
+          ls -lh artifacts
+
+      - name: Create GitHub Release
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+          TITLE: ${{ steps.phase.outputs.title }}
+          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
+          PRERELEASE: ${{ steps.phase.outputs.prerelease }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          prerelease_args=()
+          if [ "$PRERELEASE" = "true" ]; then
+            prerelease_args+=(--prerelease)
+          fi
+
+          gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "$TITLE"             --notes-file "$NOTES_FILE"             "${prerelease_args[@]}"             "artifacts/pgcli-sharp-${TAG}.zip"             artifacts/*.nupkg             artifacts/*.snupkg
+
+      - name: Synchronize GitHub Release title and notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+          TITLE: ${{ steps.phase.outputs.title }}
+          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Phase tags, target commits, and attached artifacts are immutable.
+          # Human-readable title/notes may be synchronized for translation and typo fixes.
+          gh release edit "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TITLE" \
+            --notes-file "$NOTES_FILE"
+
+      - name: Verify GitHub Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+          echo "$assets"
+
+          grep -Fx "pgcli-sharp-${TAG}.zip" <<< "$assets"
+          grep -E '\.nupkg$' <<< "$assets"
+          grep -E '\.snupkg$' <<< "$assets"
+ "$notes_file" | cut -d: -f1)"
+          test -n "$english_line"
+          test -n "$japanese_line"
+
+          if [ "$phase" -ge 1 ]; then
+            test "$english_line" -lt "$japanese_line"
+          fi
 
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
