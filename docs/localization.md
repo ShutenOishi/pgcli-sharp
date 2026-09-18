@@ -1,5 +1,7 @@
 # Localization and Documentation Policy
 
+> Consolidated current policy. The decision and rationale are recorded in [ADR-0004](adr/0004-bilingual-documentation-and-localized-messages.md).
+
 ## 1. Goals
 
 PgCliSharp supports English and Japanese for:
@@ -155,4 +157,4 @@ The README may primarily use English with Japanese sections or links as the proj
 
 ## 11. Updating localization policy
 
-If IDE rendering or package tooling demonstrates a better way to deliver language-specific XML IntelliSense, this policy can be revised. Any change must preserve easy access to both English and Japanese and should be recorded in this document.
+If IDE rendering or package tooling demonstrates a better way to deliver language-specific XML IntelliSense, this policy can be revised. Any material change to the Accepted localization decision must use the ADR superseding workflow in `docs/adr/README.md`, and this consolidated document must be updated in the same change.
