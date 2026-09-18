@@ -11,4 +11,9 @@
   <data name="ProcessTimedOut" xml:space="preserve"><value>PostgreSQL 実行ファイル '{0}' は設定されたタイムアウト {1} 以内に終了しませんでした。</value></data>
   <data name="OptionNotSupported" xml:space="preserve"><value>オプション '{0}' は PostgreSQL {1} ではサポートされていません。</value></data>
   <data name="InvalidOptionCombination" xml:space="preserve"><value>オプション {0} の組み合わせは PostgreSQL {1} では無効です。</value></data>
+  <data name="InvalidCompressionLevel" xml:space="preserve"><value>圧縮レベル {0} は {1} では使用できません。</value></data>
+  <data name="InvalidCompressionCombination" xml:space="preserve"><value>指定された圧縮設定は無効です: {0}。</value></data>
+  <data name="InvalidRestrictKey" xml:space="preserve"><value>pg_dump の restrict key には、空ではない ASCII 英数字のみを指定できます。</value></data>
+  <data name="OutputPathRequired" xml:space="preserve"><value>空ではない pg_dump の出力パスを指定する必要があります。</value></data>
+  <data name="InvalidOptionValue" xml:space="preserve"><value>値 '{1}' は pg_dump オプション '{0}' では無効です。</value></data>
 </root>
