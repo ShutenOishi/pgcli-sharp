@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 2 のバックアップ／リストア中核まで完了しています。Phase 3 では `PgCliSharp 0.1.0-alpha.1` を最初の公開 NuGet プレビューとして準備し、正確な release commit の全OS CI と NuGet Trusted Publishing/OIDC を公開ゲートにします。
+Phase 2 のバックアップ／リストア中核と、Phase 3 のリリースパイプライン実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期し、Phase 4 の開発へ進みます。
 
 初期対応範囲:
 
@@ -20,13 +20,13 @@ Phase 2 のバックアップ／リストア中核まで完了しています。
 
 ## NuGet プレビュー
 
-最初の公開プレビューは `0.1.0-alpha.1` です。
+準備済みのプレビュー候補は `0.1.0-alpha.1` ですが、現時点では nuget.org に公開していません。下記は最終的に公開する場合の利用形式です。
 
 ```bash
 dotnet add package PgCliSharp --version 0.1.0-alpha.1
 ```
 
-package の target framework は `netstandard2.0`、`net8.0`、`net10.0` です。公開は GitHub Actions から NuGet Trusted Publishing/OIDC を利用して行い、長期 NuGet API key はリポジトリへ保存しません。
+package の target framework は `netstandard2.0`、`net8.0`、`net10.0` です。公開は最終リリース Phase まで延期します。公開を承認する場合は、記録済みの Phase 3 source commit を GitHub Actions で再検証し、NuGet Trusted Publishing/OIDC を使用します。長期 NuGet API key はリポジトリへ保存しません。
 
 ## 主な設計方針
 
