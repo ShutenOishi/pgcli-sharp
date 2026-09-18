@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed the Phase 2 backup/restore core. Phase 3 prepares `PgCliSharp 0.1.0-alpha.1` as the first public NuGet preview, with publication gated by the exact-commit cross-platform CI and NuGet Trusted Publishing/OIDC.
+PgCliSharp has completed the Phase 2 backup/restore core and the Phase 3 release-pipeline implementation. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate is deferred until the final release phase under ADR-0012; development continues with Phase 4.
 
 Initial PostgreSQL compatibility target:
 
@@ -20,13 +20,13 @@ Each completed roadmap phase is preserved as a GitHub Release with an explicit s
 
 ## NuGet preview
 
-The first public preview version is `0.1.0-alpha.1`:
+The prepared preview candidate is `0.1.0-alpha.1`, but it is not currently published to nuget.org. The following command is retained as the intended consumer form for eventual publication:
 
 ```bash
 dotnet add package PgCliSharp --version 0.1.0-alpha.1
 ```
 
-The package targets `netstandard2.0`, `net8.0`, and `net10.0`. Preview publication is performed by GitHub Actions using NuGet Trusted Publishing/OIDC; no long-lived NuGet API key is stored in the repository.
+The package targets `netstandard2.0`, `net8.0`, and `net10.0`. Publication is deferred until the final release phase. When authorized, GitHub Actions will revalidate the recorded Phase 3 source commit and use NuGet Trusted Publishing/OIDC; no long-lived NuGet API key is stored in the repository.
 
 ## pg_dump quick start
 
