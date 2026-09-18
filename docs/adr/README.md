@@ -66,6 +66,7 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0006](0006-nuget-release-and-trusted-publishing.md) | Publish NuGet packages through automated trusted releases | Accepted |
 | [0007](0007-target-framework-matrix.md) | Initial target framework matrix | Accepted |
 | [0008](0008-netstandard20-cliwrap-process-backend.md) | Use a conditional CliWrap backend for .NET Standard 2.0 process execution | Accepted |
+| [0009](0009-phase-release-artifacts.md) | Record every completed phase as a GitHub Release with immutable artifacts | Accepted |
 
 ## Template
 
