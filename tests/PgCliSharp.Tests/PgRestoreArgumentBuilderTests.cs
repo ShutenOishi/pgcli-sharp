@@ -132,7 +132,7 @@ public sealed class PgRestoreArgumentBuilderTests
         Assert.Contains("--single-transaction", arguments);
         Assert.Contains("--no-password", arguments);
         Assert.Equal("appdb", ValueAfter(arguments, "--dbname"));
-        Assert.Equal("backupdir", arguments[^1]);
+        Assert.Equal("backupdir", arguments[arguments.Count - 1]);
     }
 
     private static string ValueAfter(
