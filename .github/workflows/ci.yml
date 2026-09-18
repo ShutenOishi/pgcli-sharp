@@ -1,7 +1,12 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - main
+      - phase-0-foundation
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -30,6 +35,20 @@ jobs:
           dotnet-version: |
             8.0.x
             10.0.x
+
+      - name: Validate phase release manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/phase-release.json
+          test -f "$(jq -r '.notes_file' .github/phase-release.json)"
+          jq -e '
+            (.phase | type == "number") and
+            (.tag | type == "string" and test("^phase-[0-9]+$")) and
+            (.title | type == "string" and length > 0) and
+            (.notes_file | type == "string" and startswith("docs/releases/")) and
+            (.prerelease | type == "boolean")
+          ' .github/phase-release.json >/dev/null
 
       - name: Restore
         run: dotnet restore PgCliSharp.slnx

@@ -8,6 +8,8 @@ Build a strongly typed .NET API for PostgreSQL command-line tools with explicit 
 
 ## Phase 0 - Foundation
 
+**Status: Complete (2026-09-18).** The accepted foundation is implemented and validated on Linux, Windows, and macOS. Windows additionally exercises the `netstandard2.0` asset through a .NET Framework 4.8 consumer test.
+
 - Create solution/project structure.
 - Establish package ID and NuGet metadata.
 - Implement target-framework matrix.
@@ -16,6 +18,7 @@ Build a strongly typed .NET API for PostgreSQL command-line tools with explicit 
 - Add localization resources (English neutral + Japanese).
 - Implement common exceptions/diagnostics.
 - Implement process runner abstraction.
+- Use the BCL process backend on modern .NET and a conditional CliWrap backend on `netstandard2.0`.
 - Implement cancellation and timeout behavior.
 - Implement executable version parser/cache.
 - Add PostgreSQL 10-18 version metadata.
@@ -114,6 +117,10 @@ Tools that can alter or recover data directories require especially explicit doc
 - Complete README/examples.
 - Release candidates followed by `1.0.0`.
 
+## Phase completion releases
+
+Every completed phase is recorded as a GitHub Release under ADR-0009. The phase-completion PR must update `.github/phase-release.json` and add the matching `docs/releases/phase-N.md`. After that change reaches `main`, the Phase Release workflow creates an immutable `phase-N` release containing an explicit source ZIP, `.nupkg`, and `.snupkg` for the exact merge commit. This milestone release does not imply publication to nuget.org.
+
 ## Continuous work
 
 For every phase:
@@ -123,6 +130,7 @@ For every phase:
 - extend compatibility specifications;
 - add regression tests for discovered PostgreSQL/version differences;
 - keep release notes/changelog;
+- update the Phase release manifest and release notes when a phase is completed;
 - avoid relying on chat history as project specification.
 
 ## Future PostgreSQL releases

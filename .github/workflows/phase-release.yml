@@ -1,0 +1,144 @@
+name: Phase Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/phase-release.json
+      - .github/workflows/phase-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish phase artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Read phase manifest
+        id: phase
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          phase="$(jq -r '.phase' .github/phase-release.json)"
+          tag="$(jq -r '.tag' .github/phase-release.json)"
+          title="$(jq -r '.title' .github/phase-release.json)"
+          notes_file="$(jq -r '.notes_file' .github/phase-release.json)"
+          prerelease="$(jq -r '.prerelease // true' .github/phase-release.json)"
+
+          test "$phase" != "null"
+          test -n "$tag"
+          test "$tag" != "null"
+          test -n "$title"
+          test "$title" != "null"
+          test -f "$notes_file"
+
+          echo "phase=$phase" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+      - name: Check release uniqueness
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet restore PgCliSharp.slnx
+
+      - name: Build
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
+
+      - name: Test
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Pack NuGet artifacts
+        if: steps.existing.outputs.exists != 'true'
+        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Create source ZIP
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=zip --output "artifacts/pgcli-sharp-${TAG}.zip" "$GITHUB_SHA"
+
+      - name: Verify release artifacts
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f "artifacts/pgcli-sharp-${TAG}.zip"
+          compgen -G "artifacts/*.nupkg" >/dev/null
+          compgen -G "artifacts/*.snupkg" >/dev/null
+
+          ls -lh artifacts
+
+      - name: Create GitHub Release
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+          TITLE: ${{ steps.phase.outputs.title }}
+          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
+          PRERELEASE: ${{ steps.phase.outputs.prerelease }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          prerelease_args=()
+          if [ "$PRERELEASE" = "true" ]; then
+            prerelease_args+=(--prerelease)
+          fi
+
+          gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "$TITLE"             --notes-file "$NOTES_FILE"             "${prerelease_args[@]}"             "artifacts/pgcli-sharp-${TAG}.zip"             artifacts/*.nupkg             artifacts/*.snupkg
+
+      - name: Verify GitHub Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.phase.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+          echo "$assets"
+
+          grep -Fx "pgcli-sharp-${TAG}.zip" <<< "$assets"
+          grep -E '\.nupkg$' <<< "$assets"
+          grep -E '\.snupkg$' <<< "$assets"

@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0006. ADR-0007 (target framework matrix) remains Proposed until Phase 0 implementation validates it.
+Key accepted decisions currently include ADR-0001 through ADR-0004 and ADR-0006 through ADR-0008. ADR-0005 has been superseded by ADR-0008.
 
 ## 1. Project purpose
 
@@ -114,12 +114,16 @@ Validation is part of the product, not merely test code.
 
 ## 8. Process execution
 
-Core execution uses `System.Diagnostics.Process`.
+Execution uses target-specific internal backends while preserving one PgCliSharp behavior model:
+
+- `net8.0` and `net10.0` use `System.Diagnostics.Process` directly;
+- `netstandard2.0` uses CliWrap 3.10.5 internally as a compatibility backend;
+- CliWrap is referenced only by the `netstandard2.0` package asset and its types do not appear in the public PgCliSharp API.
 
 Requirements:
 
 - no shell mediation;
-- pass individual arguments, preferably using `ProcessStartInfo.ArgumentList` on frameworks that support it;
+- pass individual argument values; modern targets use `ProcessStartInfo.ArgumentList`, while the `netstandard2.0` backend delegates token formatting to CliWrap;
 - redirect stdout/stderr where needed;
 - support binary stdout without converting the entire stream to text;
 - support `CancellationToken`;
@@ -127,7 +131,7 @@ Requirements:
 - attempt to terminate the complete process tree on cancellation/timeout where the target framework supports it;
 - never include passwords or secrets in diagnostic command-line rendering.
 
-A compatibility layer may be required for older target frameworks. Public behavior should remain consistent.
+The `netstandard2.0` compatibility backend must map execution results, cancellation, timeout, and failures back into PgCliSharp's own result/exception model. Public behavior should remain consistent across target frameworks.
 
 ## 9. Output model
 
@@ -184,21 +188,21 @@ Use three logical test layers:
 2. Compatibility tests: supported option inventory by PostgreSQL major version.
 3. Integration tests: invoke real PostgreSQL executables/containers for representative end-to-end behavior.
 
-CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
+Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and CliWrap compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
 
 ## 13. Package and target framework policy
 
 Package ID target: `PgCliSharp`.
 
-Initial target-framework proposal:
+Initial target-framework matrix:
 
 ```xml
 <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
 ```
 
-This is a design target and may be revised if implementation/testing demonstrates that a different matrix gives materially better correctness or maintainability.
+Phase 0 validation confirmed this matrix across Linux, macOS, and Windows CI. Windows also executes a .NET Framework 4.8 test target against the `netstandard2.0` library asset so the legacy compatibility backend is exercised at runtime. Future changes to this accepted matrix require the ADR superseding workflow.
 
-The core package should avoid unnecessary dependencies such as Npgsql, CLI wrapper frameworks, or Microsoft.Extensions packages unless a clear project-wide benefit justifies them.
+The core package should avoid unnecessary dependencies such as Npgsql or Microsoft.Extensions packages unless a clear project-wide benefit justifies them. ADR-0008 allows CliWrap specifically and only for the `netstandard2.0` execution backend because the .NET Standard 2.0 BCL does not provide equivalent argument/process-tree APIs.
 
 ## 14. NuGet and release policy
 

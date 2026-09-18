@@ -4,7 +4,27 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp is currently in the design/foundation stage. Initial PostgreSQL compatibility target is PostgreSQL 10 through 18.
+PgCliSharp has completed its Phase 0 foundation. Phase 1 will implement the first complete typed wrapper, `pg_dump`. Initial PostgreSQL compatibility target is PostgreSQL 10 through 18. Each completed roadmap phase is preserved as a GitHub Release with an explicit source ZIP and NuGet package artifacts.
+
+## Development
+
+The repository uses the XML solution format:
+
+```text
+PgCliSharp.slnx
+```
+
+The repository SDK is pinned through `global.json` to .NET 10 with feature-band roll-forward enabled.
+
+Typical validation commands:
+
+```bash
+dotnet restore PgCliSharp.slnx
+dotnet build PgCliSharp.slnx --configuration Release --no-restore
+dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+```
+
+The initial accepted library target matrix is `netstandard2.0;net8.0;net10.0`. The `netstandard2.0` process backend uses CliWrap internally according to ADR-0008; modern targets use the .NET BCL process APIs directly.
 
 ## Canonical project documents
 
