@@ -1,29 +1,29 @@
 name: Phase Release
 
 concurrency:
-  group: phase-release-${{ github.ref }}
+  group: phase-release
   cancel-in-progress: false
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/phase-release.json
-      - .github/workflows/phase-release.yml
-      - docs/releases/**
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Explicitly authorize external Phase Release publication"
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 jobs:
   release:
+    if: ${{ inputs.publish == true }}
     name: Publish phase artifacts
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout publication control state
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -35,156 +35,98 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Read phase manifest
+      - name: Read and guard phase manifest
         id: phase
         shell: bash
         run: |
           set -euo pipefail
           bash eng/validate-phase-metadata.sh
+          test "$(jq -r '.publication_enabled' .github/phase-release.json)" = "true"
 
-          phase="$(jq -r '.phase' .github/phase-release.json)"
-          tag="$(jq -r '.tag' .github/phase-release.json)"
-          title="$(jq -r '.title' .github/phase-release.json)"
-          notes_file="$(jq -r '.notes_file' .github/phase-release.json)"
-          prerelease="$(jq -r '.prerelease // true' .github/phase-release.json)"
+          echo "phase=$(jq -r '.phase' .github/phase-release.json)" >> "$GITHUB_OUTPUT"
+          echo "tag=$(jq -r '.tag' .github/phase-release.json)" >> "$GITHUB_OUTPUT"
+          echo "title=$(jq -r '.title' .github/phase-release.json)" >> "$GITHUB_OUTPUT"
+          echo "notes_file=$(jq -r '.notes_file' .github/phase-release.json)" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$(jq -r '.prerelease' .github/phase-release.json)" >> "$GITHUB_OUTPUT"
+          echo "source_commit=$(jq -r '.release_source_commit' .github/phase-release.json)" >> "$GITHUB_OUTPUT"
 
-          echo "phase=$phase" >> "$GITHUB_OUTPUT"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "title=$title" >> "$GITHUB_OUTPUT"
-          echo "notes_file=$notes_file" >> "$GITHUB_OUTPUT"
-          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+      - name: Preserve release notes
+        env:
+          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
+        shell: bash
+        run: cp "$NOTES_FILE" "$RUNNER_TEMP/phase-release-notes.md"
+
+      - name: Verify deferred source commit
+        env:
+          SOURCE_COMMIT: ${{ steps.phase.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$SOURCE_COMMIT^{commit}"
+          git merge-base --is-ancestor "$SOURCE_COMMIT" origin/main
+
+      - name: Checkout deferred phase source
+        env:
+          SOURCE_COMMIT: ${{ steps.phase.outputs.source_commit }}
+        shell: bash
+        run: git checkout --detach "$SOURCE_COMMIT"
 
       - name: Validate PostgreSQL compatibility specifications
         shell: bash
         run: bash eng/validate-compatibility-specs.sh
 
-      - name: Validate Phase 3 NuGet publication gate
-        if: steps.phase.outputs.phase == '3'
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Restore
+        run: dotnet restore PgCliSharp.slnx
+
+      - name: Build
+        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Pack NuGet artifacts
+        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Verify NuGet package artifacts
         shell: bash
-        run: |
-          set -euo pipefail
-          bash eng/validate-nuget-release.sh
+        env:
+          EXPECTED_COMMIT: ${{ steps.phase.outputs.source_commit }}
+        run: bash eng/verify-nuget-package.sh artifacts
 
-          nuget_tag="$(jq -r '.tag' .github/nuget-release.json)"
-          if ! gh release view "$nuget_tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Required NuGet version Release $nuget_tag is not complete yet." >&2
-            exit 1
-          fi
+      - name: Create source ZIP
+        env:
+          TAG: ${{ steps.phase.outputs.tag }}
+          SOURCE_COMMIT: ${{ steps.phase.outputs.source_commit }}
+        shell: bash
+        run: git archive --format=zip --output "artifacts/pgcli-sharp-$TAG.zip" "$SOURCE_COMMIT"
 
-          git fetch --force origin "refs/tags/$nuget_tag:refs/tags/$nuget_tag"
-          nuget_commit="$(git rev-list -n1 "$nuget_tag")"
-          if [ "$nuget_commit" != "$GITHUB_SHA" ]; then
-            echo "NuGet version tag $nuget_tag points to $nuget_commit, not $GITHUB_SHA." >&2
-            exit 1
-          fi
-
-      - name: Check release uniqueness
-        id: existing
+      - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.phase.outputs.tag }}
+          TITLE: ${{ steps.phase.outputs.title }}
+          PRERELEASE: ${{ steps.phase.outputs.prerelease }}
+          SOURCE_COMMIT: ${{ steps.phase.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
 
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG already exists; refusing to replace immutable Phase artifacts." >&2
+            exit 1
           fi
-
-      - name: Restore
-        if: steps.existing.outputs.exists != 'true'
-        run: dotnet restore PgCliSharp.slnx
-
-      - name: Build
-        if: steps.existing.outputs.exists != 'true'
-        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
-
-      - name: Test
-        if: steps.existing.outputs.exists != 'true'
-        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
-
-      - name: Pack NuGet artifacts
-        if: steps.existing.outputs.exists != 'true'
-        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
-
-      - name: Verify NuGet package artifacts
-        if: steps.existing.outputs.exists != 'true'
-        shell: bash
-        env:
-          EXPECTED_COMMIT: ${{ github.sha }}
-        run: bash eng/verify-nuget-package.sh artifacts
-
-      - name: Create source ZIP
-        if: steps.existing.outputs.exists != 'true'
-        env:
-          TAG: ${{ steps.phase.outputs.tag }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          git archive --format=zip --output "artifacts/pgcli-sharp-$TAG.zip" "$GITHUB_SHA"
-
-      - name: Verify release artifacts
-        if: steps.existing.outputs.exists != 'true'
-        env:
-          TAG: ${{ steps.phase.outputs.tag }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          test -f "artifacts/pgcli-sharp-$TAG.zip"
-          compgen -G "artifacts/*.nupkg" >/dev/null
-          compgen -G "artifacts/*.snupkg" >/dev/null
-
-          ls -lh artifacts
-
-      - name: Create GitHub Release
-        if: steps.existing.outputs.exists != 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.phase.outputs.tag }}
-          TITLE: ${{ steps.phase.outputs.title }}
-          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
-          PRERELEASE: ${{ steps.phase.outputs.prerelease }}
-        shell: bash
-        run: |
-          set -euo pipefail
 
           prerelease_args=()
           if [ "$PRERELEASE" = "true" ]; then
             prerelease_args+=(--prerelease)
           fi
 
-          gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$GITHUB_SHA"             --title "$TITLE"             --notes-file "$NOTES_FILE"             "${prerelease_args[@]}"             "artifacts/pgcli-sharp-$TAG.zip"             artifacts/*.nupkg             artifacts/*.snupkg
-
-      - name: Synchronize GitHub Release title and notes
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.phase.outputs.tag }}
-          TITLE: ${{ steps.phase.outputs.title }}
-          NOTES_FILE: ${{ steps.phase.outputs.notes_file }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # Phase tags, target commits, and attached artifacts are immutable.
-          # Human-readable title/notes may be synchronized for translation and typo fixes.
-          gh release edit "$TAG"             --repo "$GITHUB_REPOSITORY"             --title "$TITLE"             --notes-file "$NOTES_FILE"
-
-      - name: Verify GitHub Release assets
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.phase.outputs.tag }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
-          echo "$assets"
-
-          grep -Fx "pgcli-sharp-$TAG.zip" <<< "$assets"
-          grep -E '\.nupkg$' <<< "$assets"
-          grep -E '\.snupkg$' <<< "$assets"
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$SOURCE_COMMIT" \
+            --title "$TITLE" \
+            --notes-file "$RUNNER_TEMP/phase-release-notes.md" \
+            "${prerelease_args[@]}" \
+            "artifacts/pgcli-sharp-$TAG.zip" \
+            artifacts/*.nupkg \
+            artifacts/*.snupkg

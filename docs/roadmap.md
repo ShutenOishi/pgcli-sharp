@@ -59,7 +59,7 @@ Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
 
 ## Phase 3 - First NuGet preview
 
-**Status: Release candidate prepared (2026-09-19).** The intended first public package is `PgCliSharp 0.1.0-alpha.1`. Publication remains gated on the exact release commit passing the full Linux/macOS/Windows CI and the NuGet Trusted Publishing exchange succeeding.
+**Status: Implementation complete; external publication deferred (2026-09-19).** The release pipeline and `PgCliSharp 0.1.0-alpha.1` package candidate were validated at source commit `cccf8d9fbe1f2e1104676ab94a7863209c0220dd`. Its exact main CI passed on Linux/macOS/Windows. No NuGet package, `v0.1.0-alpha.1` tag/Release, `phase-3` tag/Release, or Release asset was published. ADR-0012 defers that decision and revalidation to the final release phase.
 
 - Finalize package metadata. **Prepared for `0.1.0-alpha.1`.**
 - Produce `.nupkg` and `.snupkg`. **Validated in CI/release workflows.**
@@ -67,7 +67,7 @@ Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
 - Configure GitHub Actions release workflow. **Implemented in `.github/workflows/release.yml`.**
 - Configure NuGet Trusted Publishing/OIDC. **Workflow uses the `release` environment and `NuGet/login@v1`; nuget.org policy must match the repository/workflow/environment.**
 - Validate package version/tag/source-commit consistency. **Automated by `.github/nuget-release.json` and the release workflow.**
-- Publish first preview. **Pending the protected publication gate.**
+- Publish first preview. **Deferred to the final release phase under ADR-0012. The prepared source commit and package identity are preserved for re-audit.**
 
 ## Phase 4 - Backup and WAL tools
 
@@ -129,9 +129,11 @@ Tools that can alter or recover data directories require especially explicit doc
 - Complete README/examples.
 - Release candidates followed by `1.0.0`.
 
-## Phase completion releases
+## Phase completion and deferred publication
 
-Every completed phase is recorded as a GitHub Release under ADR-0010. The phase-completion PR must update `.github/phase-release.json` and add the matching `docs/releases/phase-N.md`. After that change reaches `main`, the Phase Release workflow creates a `phase-N` release containing an immutable explicit source ZIP, `.nupkg`, and `.snupkg` for the exact merge commit, with English/Japanese title and release notes. Starting with Phase 1, release notes are ordered English first and Japanese second; Phase 0 retains its existing Japanese-first ordering. This milestone release does not imply publication to nuget.org.
+Phase 0-2 retain their existing GitHub Releases. Starting with Phase 3, ADR-0012 separates implementation completion from external publication. A Phase is completed by a reviewed `main` merge, exact-commit Linux/macOS/Windows CI, compatibility/research evidence, and updated repository documentation. New NuGet pushes, GitHub Release tags, Releases, and Release assets are deferred until the final release phase.
+
+The deferred Phase 3 publication manifests remain checked in for provenance, with `publication_enabled: false` and release source commit `cccf8d9fbe1f2e1104676ab94a7863209c0220dd`. The final release phase must revalidate that exact source before deciding whether to publish or explicitly supersede the prepared preview.
 
 ## Continuous work
 
@@ -144,7 +146,7 @@ For every phase:
 - extend compatibility specifications;
 - add regression tests for discovered PostgreSQL/version differences;
 - keep release notes/changelog;
-- update the Phase release manifest and release notes only after implementation/completion documentation has a green all-platform CI run;
+- keep publication manifests disabled during implementation phases; record Phase completion in roadmap/research/completion documentation after a green all-platform CI run;
 - avoid relying on chat history as project specification.
 
 ## Future PostgreSQL releases

@@ -10,7 +10,10 @@ jq -e '
   (.tag | type == "string" and test("^phase-[0-9]+$")) and
   (.title | type == "string" and length > 0) and
   (.notes_file | type == "string" and startswith("docs/releases/")) and
-  (.prerelease | type == "boolean")
+  (.prerelease | type == "boolean") and
+  (.publication_enabled | type == "boolean") and
+  (.release_source_commit | type == "string" and test("^[0-9a-f]{40}$")) and
+  (.deferred_until_phase | type == "number" and . >= 3)
 ' "$manifest" >/dev/null
 
 phase="$(jq -r '.phase' "$manifest")"
@@ -32,4 +35,8 @@ test -n "$japanese_line"
 
 if [ "$phase" -ge 1 ]; then
   test "$english_line" -lt "$japanese_line"
+fi
+
+if [ "$(jq -r '.publication_enabled' "$manifest")" != "true" ]; then
+  echo "Phase external publication: deferred/disabled"
 fi

@@ -38,8 +38,8 @@ If an Accepted decision changes, create a new superseding ADR instead of rewriti
 - Distinguish feature availability from spelling/alias availability. A feature can exist in older majors under different option names.
 - Before implementation is considered complete, the compatibility specification must map every inventory entry to a public/API binding or an explicit special binding, and runtime availability metadata must be covered by tests.
 - Prefer tool-specific public option types. Extract shared internal serializers/validators only after at least two tools demonstrate genuinely identical semantics; do not create speculative public "common options" abstractions.
-- NuGet releases use Semantic Versioning and GitHub Actions. Trusted Publishing/OIDC is preferred over long-lived NuGet API keys.
-- Every completed roadmap Phase must be recorded as a bilingual GitHub Release according to ADR-0010. A Phase-completion PR must update `.github/phase-release.json` and add/update the matching `docs/releases/phase-N.md` release notes.
+- NuGet releases use Semantic Versioning and GitHub Actions. Trusted Publishing/OIDC is preferred over long-lived NuGet API keys. Under ADR-0012, external publication is deferred until the final release phase and release workflows remain manual-only/manifest-disabled during implementation phases.
+- Phase 0-2 keep their existing immutable GitHub Releases. Under ADR-0012, Phase 3 onward is completed by main merge + exact-commit CI + repository evidence; external GitHub Releases and NuGet publication are deferred until the final release phase.
 - Starting with Phase 1, Phase Release Notes must present the `## English` section before the `## 日本語` section. Phase 0 is grandfathered and keeps its existing Japanese-first ordering.
 
 ## Updating project decisions
@@ -64,6 +64,6 @@ Chat conversations are not the canonical record. The repository documents and AD
 - Batch logically related edits into a coherent commit before opening or updating a PR when practical. This reduces redundant CI runs and review noise.
 - Open a Draft PR once the research/spec baseline is coherent enough to review; do not use a Draft PR as a substitute for recording research in the repository.
 - CI cancels superseded runs for the same PR/ref. Do not interpret a cancelled older run as a failure when a newer commit replaced it.
-- Keep Phase completion metadata (`.github/phase-release.json` and `docs/releases/phase-N.md`) unchanged until implementation, tests, and completion documentation have passed CI.
-- After the final Phase metadata change, require a fresh all-platform CI pass before merge.
-- After merge, verify the main CI, Phase Release workflow, `phase-N` tag target, Release target commit, and required source ZIP/`.nupkg`/`.snupkg` assets before declaring the Phase complete.
+- Keep deferred publication manifests disabled during implementation phases. Phase implementation status belongs in roadmap/research/completion documentation; do not enable publication as part of ordinary Phase completion.
+- Before a Phase completion merge, require a fresh all-platform CI pass after final implementation/completion documentation changes.
+- After merge, verify the exact main commit and its CI result. For Phase 3 onward, do not require or create a GitHub Release until the final release phase; ADR-0012 governs deferred publication.

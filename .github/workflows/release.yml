@@ -5,12 +5,13 @@ concurrency:
   cancel-in-progress: false
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/nuget-release.json
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Explicitly authorize external NuGet publication"
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -18,12 +19,13 @@ permissions:
 
 jobs:
   release:
+    if: ${{ inputs.publish == true }}
     name: Publish NuGet preview
     runs-on: ubuntu-latest
     environment: release
 
     steps:
-      - name: Checkout
+      - name: Checkout publication control state
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -39,11 +41,13 @@ jobs:
         shell: bash
         run: bash eng/validate-nuget-release.sh
 
-      - name: Read release manifest
+      - name: Read and guard release manifest
         id: release
         shell: bash
         run: |
           set -euo pipefail
+          test "$(jq -r '.publication_enabled' .github/nuget-release.json)" = "true"
+
           echo "package_id=$(jq -r '.package_id' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
           echo "version=$(jq -r '.version' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
           echo "tag=$(jq -r '.tag' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
@@ -51,33 +55,43 @@ jobs:
           echo "notes_file=$(jq -r '.notes_file' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
           echo "nuget_user=$(jq -r '.nuget_user' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
           echo "prerelease=$(jq -r '.prerelease' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
+          echo "source_commit=$(jq -r '.release_source_commit' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for exact-commit main CI
+      - name: Preserve release notes
         env:
-          GH_TOKEN: ${{ github.token }}
+          NOTES_FILE: ${{ steps.release.outputs.notes_file }}
+        shell: bash
+        run: cp "$NOTES_FILE" "$RUNNER_TEMP/nuget-release-notes.md"
+
+      - name: Verify deferred source commit
+        env:
+          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
-          for attempt in $(seq 1 60); do
-            run_json="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$GITHUB_SHA" --event push --limit 1 --json status,conclusion,databaseId 2>/dev/null || true)"
-            status="$(jq -r '.[0].status // empty' <<<"$run_json")"
-            conclusion="$(jq -r '.[0].conclusion // empty' <<<"$run_json")"
-            run_id="$(jq -r '.[0].databaseId // empty' <<<"$run_json")"
+          git cat-file -e "$SOURCE_COMMIT^{commit}"
+          git merge-base --is-ancestor "$SOURCE_COMMIT" origin/main
 
-            if [ "$status" = "completed" ]; then
-              if [ "$conclusion" = "success" ]; then
-                echo "Exact-commit CI succeeded: $run_id"
-                exit 0
-              fi
-              echo "Exact-commit CI failed: run=$run_id conclusion=$conclusion" >&2
-              exit 1
-            fi
+      - name: Verify exact-source main CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_json="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$SOURCE_COMMIT" --event push --limit 1 --json status,conclusion,databaseId)"
+          status="$(jq -r '.[0].status // empty' <<<"$run_json")"
+          conclusion="$(jq -r '.[0].conclusion // empty' <<<"$run_json")"
+          run_id="$(jq -r '.[0].databaseId // empty' <<<"$run_json")"
+          test "$status" = "completed"
+          test "$conclusion" = "success"
+          echo "Exact-source CI succeeded: $run_id"
 
-            sleep 10
-          done
-
-          echo "Timed out waiting for exact-commit CI." >&2
-          exit 1
+      - name: Checkout deferred release source
+        env:
+          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
+        shell: bash
+        run: git checkout --detach "$SOURCE_COMMIT"
 
       - name: Preflight immutable release identity
         id: preflight
@@ -85,6 +99,7 @@ jobs:
           PACKAGE_ID: ${{ steps.release.outputs.package_id }}
           VERSION: ${{ steps.release.outputs.version }}
           TAG: ${{ steps.release.outputs.tag }}
+          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
@@ -93,11 +108,7 @@ jobs:
           if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
             tag_exists=true
             git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
-            tag_commit="$(git rev-list -n1 "$TAG")"
-            if [ "$tag_commit" != "$GITHUB_SHA" ]; then
-              echo "Tag $TAG already points to $tag_commit, not $GITHUB_SHA." >&2
-              exit 1
-            fi
+            test "$(git rev-list -n1 "$TAG")" = "$SOURCE_COMMIT"
           fi
 
           package_lower="$(tr '[:upper:]' '[:lower:]' <<<"$PACKAGE_ID")"
@@ -112,10 +123,7 @@ jobs:
               curl -fsSL "$package_url" -o /tmp/published.nupkg
               unzip -p /tmp/published.nupkg "$PACKAGE_ID.nuspec" > /tmp/published.nuspec
               repository_line="$(grep -o '<repository[^>]*/>' /tmp/published.nuspec | head -n1)"
-              if ! grep -F "commit=\"$GITHUB_SHA\"" <<<"$repository_line" >/dev/null; then
-                echo "NuGet version $PACKAGE_ID $VERSION already exists but was not built from $GITHUB_SHA." >&2
-                exit 1
-              fi
+              grep -F "commit=\"$SOURCE_COMMIT\"" <<<"$repository_line" >/dev/null
             fi
           elif [ "$status" != "404" ]; then
             echo "Unexpected NuGet index HTTP status: $status" >&2
@@ -144,7 +152,7 @@ jobs:
       - name: Verify NuGet package artifacts
         shell: bash
         env:
-          EXPECTED_COMMIT: ${{ github.sha }}
+          EXPECTED_COMMIT: ${{ steps.release.outputs.source_commit }}
         run: bash eng/verify-nuget-package.sh artifacts
 
       - name: NuGet login with Trusted Publishing
@@ -163,7 +171,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          dotnet nuget push "artifacts/$PACKAGE_ID.$VERSION.nupkg"             --api-key "$NUGET_API_KEY"             --source "https://api.nuget.org/v3/index.json"
+          dotnet nuget push "artifacts/$PACKAGE_ID.$VERSION.nupkg" \
+            --api-key "$NUGET_API_KEY" \
+            --source "https://api.nuget.org/v3/index.json"
 
       - name: Create or verify version GitHub Release
         env:
@@ -172,23 +182,29 @@ jobs:
           VERSION: ${{ steps.release.outputs.version }}
           TAG: ${{ steps.release.outputs.tag }}
           TITLE: ${{ steps.release.outputs.title }}
-          NOTES_FILE: ${{ steps.release.outputs.notes_file }}
           PRERELEASE: ${{ steps.release.outputs.prerelease }}
+          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
 
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
-            tag_commit="$(git rev-list -n1 "$TAG")"
-            test "$tag_commit" = "$GITHUB_SHA"
+            test "$(git rev-list -n1 "$TAG")" = "$SOURCE_COMMIT"
           else
             prerelease_args=()
             if [ "$PRERELEASE" = "true" ]; then
               prerelease_args+=(--prerelease)
             fi
 
-            gh release create "$TAG"               --repo "$GITHUB_REPOSITORY"               --target "$GITHUB_SHA"               --title "$TITLE"               --notes-file "$NOTES_FILE"               "${prerelease_args[@]}"               "artifacts/$PACKAGE_ID.$VERSION.nupkg"               "artifacts/$PACKAGE_ID.$VERSION.snupkg"
+            gh release create "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$SOURCE_COMMIT" \
+              --title "$TITLE" \
+              --notes-file "$RUNNER_TEMP/nuget-release-notes.md" \
+              "${prerelease_args[@]}" \
+              "artifacts/$PACKAGE_ID.$VERSION.nupkg" \
+              "artifacts/$PACKAGE_ID.$VERSION.snupkg"
           fi
 
           assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"

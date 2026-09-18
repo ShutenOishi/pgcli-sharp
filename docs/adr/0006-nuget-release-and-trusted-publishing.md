@@ -1,10 +1,10 @@
 # ADR-0006: Publish NuGet packages through automated trusted releases
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-09-18
 - Decision owners: PgCliSharp maintainers
 - Supersedes: None
-- Superseded by: None
+- Superseded by: ADR-0012
 
 ## Context
 

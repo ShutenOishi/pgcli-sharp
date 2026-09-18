@@ -1,10 +1,10 @@
 # ADR-0010: Provide bilingual human-facing documentation and Phase Releases
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-09-18
 - Decision owners: PgCliSharp maintainers
 - Supersedes: ADR-0009
-- Superseded by: None
+- Superseded by: ADR-0012
 - Complements: ADR-0004, ADR-0006
 
 ## Context

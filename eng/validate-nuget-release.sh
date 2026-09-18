@@ -15,7 +15,10 @@ jq -e '
   (.notes_file | type == "string" and startswith("docs/releases/")) and
   (.nuget_user | type == "string" and length > 0) and
   (.github_environment == "release") and
-  (.prerelease | type == "boolean")
+  (.prerelease | type == "boolean") and
+  (.publication_enabled | type == "boolean") and
+  (.release_source_commit | type == "string" and test("^[0-9a-f]{40}$")) and
+  (.deferred_until_phase | type == "number" and . >= 3)
 ' "$manifest" >/dev/null
 
 package_id="$(jq -r '.package_id' "$manifest")"
@@ -57,4 +60,8 @@ if grep -Eq '<PackageLicense(Expression|File)>' "$project"; then
   echo "NuGet license metadata: configured"
 else
   echo "NuGet license metadata: not configured (no accepted repository license decision exists yet)"
+fi
+
+if [ "$(jq -r '.publication_enabled' "$manifest")" != "true" ]; then
+  echo "NuGet external publication: deferred/disabled"
 fi
