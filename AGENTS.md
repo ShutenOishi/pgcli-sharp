@@ -6,11 +6,14 @@ This file is the entry point for humans and AI coding agents working on this rep
 
 Before making design or implementation changes, read these documents:
 
-1. `docs/architecture.md` - architecture and compatibility policy
-2. `docs/localization.md` - English/Japanese XML documentation and runtime message localization
-3. `docs/roadmap.md` - implementation and NuGet release roadmap
+1. `docs/adr/README.md` - ADR index, statuses, and decision-change workflow
+2. `docs/architecture.md` - consolidated current architecture and compatibility policy
+3. `docs/localization.md` - consolidated English/Japanese documentation and runtime localization policy
+4. `docs/roadmap.md` - current implementation and NuGet release roadmap
 
-These documents are the source of truth for project-wide decisions. When implementation work reveals a better design, update the relevant document in the same change so that future work does not rely on chat history.
+Accepted ADRs preserve the authoritative decision history. The consolidated documents describe the current intended state. Proposed ADRs are not binding until accepted.
+
+If an Accepted decision changes, create a new superseding ADR instead of rewriting the old decision to erase history, then update the consolidated documents in the same change.
 
 ## Core rules
 
@@ -32,11 +35,17 @@ These documents are the source of truth for project-wide decisions. When impleme
 
 ## Updating project decisions
 
+For a material repository-wide design change, follow `docs/adr/README.md`.
+
 If a rule becomes obsolete or implementation uncovers an exception:
 
-1. Update the canonical document first or in the same commit.
-2. Record the reason for the change.
-3. Update tests and examples to match.
-4. Avoid silently changing a project-wide convention only in source code.
+1. Determine whether the change requires a new ADR.
+2. If it replaces an Accepted ADR, create a new ADR with `Supersedes: ADR-NNNN` and mark the old ADR as superseded.
+3. Update the consolidated current-state document in the same change.
+4. Record the reason and consequences.
+5. Update tests and examples to match.
+6. Avoid silently changing a project-wide convention only in source code.
 
-Chat conversations are not the canonical record. The repository documents are.
+Do not rewrite Accepted ADR history merely to make it match new code.
+
+Chat conversations are not the canonical record. The repository documents and ADRs are.
