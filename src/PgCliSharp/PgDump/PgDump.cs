@@ -78,6 +78,7 @@ public sealed class PgDump
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default)
     {
+#if NETSTANDARD2_0
         if (options is null)
         {
             throw new ArgumentNullException(nameof(options));
@@ -87,6 +88,10 @@ public sealed class PgDump
         {
             throw new ArgumentNullException(nameof(output));
         }
+#else
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(output);
+#endif
 
         if (timeout.HasValue && timeout.Value <= TimeSpan.Zero)
         {
@@ -130,8 +135,8 @@ public sealed class PgDump
             standardOutput,
             timeout,
             throwOnNonZeroExitCode: true,
-            environmentVariables,
-            standardInput);
+            environmentVariables: environmentVariables,
+            standardInput: standardInput);
 
         ProcessRunResult result = await _processRunner
             .RunAsync(request, cancellationToken)
