@@ -19,6 +19,8 @@ internal static class MessageKeys
     internal const string OutputStreamMustBeWritable = nameof(OutputStreamMustBeWritable);
     internal const string FilterPathRequired = nameof(FilterPathRequired);
     internal const string FilterInputMustBeReadable = nameof(FilterInputMustBeReadable);
+    internal const string CompressionNoneDetailsNotAllowed = nameof(CompressionNoneDetailsNotAllowed);
+    internal const string CompressionLongRequiresZstd = nameof(CompressionLongRequiresZstd);
 
     internal static readonly string[] All =
     {
@@ -39,5 +41,7 @@ internal static class MessageKeys
         OutputStreamMustBeWritable,
         FilterPathRequired,
         FilterInputMustBeReadable,
+        CompressionNoneDetailsNotAllowed,
+        CompressionLongRequiresZstd,
     };
 }
