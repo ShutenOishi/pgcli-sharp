@@ -57,7 +57,7 @@ public sealed class PgDumpCompression
             throw new ArgumentOutOfRangeException(
                 nameof(level),
                 level,
-                MessageProvider.Format(MessageKeys.InvalidCompressionLevel, level, "pg_dump numeric compression"));
+                MessageProvider.Format(MessageKeys.InvalidCompressionLevel, level, "pg_dump -Z"));
         }
 
         return new PgDumpCompression(null, level, false, true);
@@ -89,18 +89,14 @@ public sealed class PgDumpCompression
         if (method == PgDumpCompressionMethod.None && (level.HasValue || longMode))
         {
             throw new ArgumentException(
-                MessageProvider.Format(
-                    MessageKeys.InvalidCompressionCombination,
-                    "the none method cannot have a level or long mode"),
+                MessageProvider.GetString(MessageKeys.CompressionNoneDetailsNotAllowed),
                 nameof(method));
         }
 
         if (longMode && method != PgDumpCompressionMethod.Zstd)
         {
             throw new ArgumentException(
-                MessageProvider.Format(
-                    MessageKeys.InvalidCompressionCombination,
-                    "long mode is supported only with zstd"),
+                MessageProvider.GetString(MessageKeys.CompressionLongRequiresZstd),
                 nameof(longMode));
         }
 
