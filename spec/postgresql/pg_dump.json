@@ -2806,5 +2806,16 @@
       "17": 70,
       "18": 77
     }
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-18",
+    "inventoryEntries": 75,
+    "result": "All 75 inventory entries have an explicit public-API or wrapper binding.",
+    "specialBindings": {
+      "file": "PgDumpOutput models stdout/file/directory destination rather than PgDumpOptions.",
+      "version": "PgDump probes --version before normal execution.",
+      "help": "Help is a utility command and is intentionally not part of normal PgDumpOptions execution."
+    },
+    "argumentGeneration": "Every spec entry mapped to a PgDumpOptions property is represented by the deterministic argument builder; output/version/help use the special bindings above."
   }
 }
