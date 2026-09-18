@@ -11,4 +11,9 @@
   <data name="ProcessTimedOut" xml:space="preserve"><value>PostgreSQL executable '{0}' did not finish within the configured timeout of {1}.</value></data>
   <data name="OptionNotSupported" xml:space="preserve"><value>Option '{0}' is not supported by PostgreSQL {1}.</value></data>
   <data name="InvalidOptionCombination" xml:space="preserve"><value>Options {0} form an invalid combination for PostgreSQL {1}.</value></data>
+  <data name="InvalidCompressionLevel" xml:space="preserve"><value>Compression level {0} is not valid for {1}.</value></data>
+  <data name="InvalidCompressionCombination" xml:space="preserve"><value>The requested compression settings are not valid: {0}.</value></data>
+  <data name="InvalidRestrictKey" xml:space="preserve"><value>The pg_dump restrict key must be a non-empty ASCII alphanumeric string.</value></data>
+  <data name="OutputPathRequired" xml:space="preserve"><value>A non-empty pg_dump output path is required.</value></data>
+  <data name="InvalidOptionValue" xml:space="preserve"><value>Value '{1}' is invalid for pg_dump option '{0}'.</value></data>
 </root>
