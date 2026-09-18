@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed Phase 1. The first complete typed wrapper, `pg_dump`, supports PostgreSQL 10 through 18 with version-aware validation. Phase 2 will add `pg_restore` and `pg_dumpall`.
+PgCliSharp has completed Phase 1. Phase 2 implementation is now under completion validation: typed `pg_restore` and `pg_dumpall` wrappers have been added alongside `pg_dump`, all targeting PostgreSQL 10 through 18 with version- and patch-aware validation.
 
 Initial PostgreSQL compatibility target:
 
@@ -44,6 +44,34 @@ PgDumpResult result = await pgDump.ExecuteAsync(
 `PgDumpOptions` models the PostgreSQL 10-18 option union with enums, value objects, and ordered collections. PgCliSharp validates the selected executable version, version-specific option availability, and incompatible combinations before starting the dump. Stdout destinations remain binary-safe, and PostgreSQL 17+ `--filter=-` can stream filter rules through stdin.
 
 The maintained compatibility inventory is in [`spec/postgresql/pg_dump.json`](spec/postgresql/pg_dump.json), with human-readable Phase 1 research in [`docs/pg-dump-phase-1.md`](docs/pg-dump-phase-1.md).
+
+## pg_restore and pg_dumpall
+
+Phase 2 keeps archive input, direct-database restore, generated SQL/list output, and cluster-wide SQL-script output explicit rather than reducing them to arbitrary command-line tails.
+
+```csharp
+var pgRestore = new PgRestore(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_restore.exe",
+    PostgreSqlMajorVersion.V18);
+
+await pgRestore.ExecuteAsync(
+    new PgRestoreOptions { Jobs = 4 },
+    PgRestoreInput.FromFile("appdb.dump"),
+    PgRestoreOutput.ToDatabase("appdb"));
+
+var pgDumpAll = new PgDumpAll(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dumpall.exe",
+    PostgreSqlMajorVersion.V18);
+
+await pgDumpAll.ExecuteAsync(
+    new PgDumpAllOptions { InitialDatabase = "postgres" },
+    PgDumpAllOutput.ToFile("cluster.sql"));
+```
+
+`PgRestoreInput` distinguishes archive file, directory, and stdin consumers. `PgRestoreOutput` distinguishes direct database restore from generated SQL/list output, and stream output is normalized with `--file=-` so PostgreSQL 10-18 have one stable wrapper behavior. `PgDumpAllScope` represents the mutually exclusive global/roles/tablespaces-only modes without contradictory boolean pairs.
+
+Machine-readable inventories are maintained in [`spec/postgresql/pg_restore.json`](spec/postgresql/pg_restore.json) and [`spec/postgresql/pg_dumpall.json`](spec/postgresql/pg_dumpall.json). Their research notes are [`docs/pg-restore-phase-2.md`](docs/pg-restore-phase-2.md) and [`docs/pg-dumpall-phase-2.md`](docs/pg-dumpall-phase-2.md).
+
 ## Development
 
 The repository uses the XML solution format:
