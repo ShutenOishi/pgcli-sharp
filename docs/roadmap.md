@@ -42,7 +42,7 @@ This phase defines the design template for later tools.
 
 ## Phase 2 - pg_restore and pg_dumpall
 
-**Status: Implementation complete; completion gate validation in progress (2026-09-18).** The typed `pg_restore` and `pg_dumpall` APIs, PostgreSQL 10-18 compatibility specifications, centralized availability checks, execution/I/O support, and backup/restore trio tests are implemented. Phase release metadata remains intentionally unchanged until the all-platform completion gate is green.
+**Status: Complete (2026-09-18).** The typed `pg_restore` and `pg_dumpall` APIs, PostgreSQL 10-18 compatibility specifications, centralized availability checks, execution/I/O support, backup/restore trio tests, bilingual documentation, and cross-platform completion gate are complete.
 
 Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
 

@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed Phase 1. Phase 2 implementation is now under completion validation: typed `pg_restore` and `pg_dumpall` wrappers have been added alongside `pg_dump`, all targeting PostgreSQL 10 through 18 with version- and patch-aware validation.
+PgCliSharp has completed Phase 2. The backup/restore core now includes typed `pg_dump`, `pg_restore`, and `pg_dumpall` wrappers for PostgreSQL 10 through 18 with version- and patch-aware validation.
 
 Initial PostgreSQL compatibility target:
 

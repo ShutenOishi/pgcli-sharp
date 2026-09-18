@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 1 まで完了しています。Phase 2 は現在、完了判定の検証中です。`pg_dump` に加えて `pg_restore` と `pg_dumpall` の型付きラッパーを実装し、いずれも PostgreSQL 10〜18 のメジャー差・必要なパッチバージョン差を考慮して検証します。
+Phase 2 まで完了しています。バックアップ／リストアの中核として、`pg_dump`、`pg_restore`、`pg_dumpall` の型付きラッパーが揃い、PostgreSQL 10〜18 のメジャー差と必要なパッチバージョン差を考慮して検証します。
 
 初期対応範囲:
 
