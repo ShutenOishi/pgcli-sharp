@@ -74,7 +74,7 @@ public sealed class CompatibilitySpecCoverageTests
             bool varies =
                 availability.MajorSince != 10 ||
                 availability.MajorUntil != 18 ||
-                availability.MinimumExecutableVersionByMajor.Count > 0;
+                (availability.MinimumExecutableVersionByMajor?.Count ?? 0) > 0;
 
             if (!varies)
             {
@@ -99,7 +99,8 @@ public sealed class CompatibilitySpecCoverageTests
                     StringComparer.Ordinal);
 
             Assert.Equal(
-                availability.MinimumExecutableVersionByMajor
+                (availability.MinimumExecutableVersionByMajor ??
+                    new Dictionary<string, string>(StringComparer.Ordinal))
                     .OrderBy(pair => pair.Key),
                 runtimeMinimums.OrderBy(pair => pair.Key));
         }
@@ -190,8 +191,7 @@ public sealed class CompatibilitySpecCoverageTests
         public int MajorUntil { get; set; }
 
         [DataMember(Name = "minimumExecutableVersionByMajor")]
-        public Dictionary<string, string> MinimumExecutableVersionByMajor { get; set; } =
-            new Dictionary<string, string>(StringComparer.Ordinal);
+        public Dictionary<string, string>? MinimumExecutableVersionByMajor { get; set; }
     }
 
     [DataContract]

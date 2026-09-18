@@ -380,8 +380,7 @@
       "default": "not specified",
       "constraints": [],
       "api": {
-        "property": "Output",
-        "type": "PgDumpOutputTarget"
+        "binding": "PgDumpOutput"
       },
       "notes": [
         "Optional for file-based formats; required for directory format; omit to stream stdout."
