@@ -19,7 +19,7 @@ public sealed class PgDumpRestrictKey
     /// <param name="value"><para>EN: Non-empty ASCII alphanumeric key.</para><para>JA: 空ではない ASCII 英数字のキーです。</para></param>
     public PgDumpRestrictKey(string value)
     {
-        if (!IsValid(value))
+        if (string.IsNullOrEmpty(value) || !IsAsciiAlphanumeric(value))
         {
             throw new ArgumentException(
                 MessageProvider.GetString(MessageKeys.InvalidRestrictKey),
@@ -38,13 +38,8 @@ public sealed class PgDumpRestrictKey
         return Value;
     }
 
-    private static bool IsValid(string? value)
+    private static bool IsAsciiAlphanumeric(string value)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            return false;
-        }
-
         foreach (char character in value)
         {
             bool asciiAlphaNumeric =
