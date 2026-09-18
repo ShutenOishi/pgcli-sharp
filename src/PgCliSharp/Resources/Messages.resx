@@ -17,4 +17,8 @@
   <data name="InvalidRestrictKey" xml:space="preserve"><value>The pg_dump restrict key must be a non-empty ASCII alphanumeric string.</value></data>
   <data name="OutputPathRequired" xml:space="preserve"><value>A non-empty pg_dump output path is required.</value></data>
   <data name="InvalidOptionValue" xml:space="preserve"><value>Value '{1}' is invalid for pg_dump option '{0}'.</value></data>
+  <data name="ExecutablePathRequired" xml:space="preserve"><value>A non-empty PostgreSQL executable path is required.</value></data>
+  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>The pg_dump output stream must be writable.</value></data>
+  <data name="FilterPathRequired" xml:space="preserve"><value>A non-empty pg_dump filter file path is required.</value></data>
+  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>The pg_dump filter input stream must be readable.</value></data>
 </root>
