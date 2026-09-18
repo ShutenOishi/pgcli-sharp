@@ -65,7 +65,7 @@ public sealed class PgDumpOptions
     public string? Superuser { get; set; }
 
     /// <summary><para>EN: Gets or sets how many times -v/--verbose is emitted. Zero disables verbose output.</para><para>JA: -v/--verbose を何回出力するかを取得または設定します。0 では verbose 出力を無効にします。</para></summary>
-    public int Verbosity { get; set; } = 0;
+    public int Verbosity { get; set; }
 
     /// <summary><para>EN: Gets or sets whether GRANT/REVOKE commands are omitted.</para><para>JA: GRANT/REVOKE コマンドを省略するかどうかを取得または設定します。</para></summary>
     public bool NoPrivileges { get; set; }
