@@ -67,7 +67,7 @@ Phase 0 validation completed on 2026-09-18.
 - Cancellation and timeout behavior are covered by execution tests.
 - Argument values containing spaces are verified as a single argument token.
 - Binary stdout is verified byte-for-byte without text conversion.
-- A descendant-process integration test verifies process-tree termination after timeout on Windows for the `net48`, `net8.0`, and `net10.0` test targets.
+- A descendant-process integration test waits for a child process to start, then verifies process-tree termination after cancellation on Windows for the `net48`, `net8.0`, and `net10.0` test targets.
 - The `netstandard2.0` dependency trade-off is explicitly documented and accepted by ADR-0008; CliWrap is conditional to that target and is not exposed in the public API.
 - NuGet package creation succeeds in CI with XML documentation, symbols, and SourceLink enabled.
 
