@@ -17,4 +17,8 @@
   <data name="InvalidRestrictKey" xml:space="preserve"><value>pg_dump の restrict key には、空ではない ASCII 英数字のみを指定できます。</value></data>
   <data name="OutputPathRequired" xml:space="preserve"><value>空ではない pg_dump の出力パスを指定する必要があります。</value></data>
   <data name="InvalidOptionValue" xml:space="preserve"><value>値 '{1}' は pg_dump オプション '{0}' では無効です。</value></data>
+  <data name="ExecutablePathRequired" xml:space="preserve"><value>空ではない PostgreSQL 実行ファイルのパスを指定する必要があります。</value></data>
+  <data name="OutputStreamMustBeWritable" xml:space="preserve"><value>pg_dump の出力ストリームは書き込み可能である必要があります。</value></data>
+  <data name="FilterPathRequired" xml:space="preserve"><value>空ではない pg_dump フィルターファイルのパスを指定する必要があります。</value></data>
+  <data name="FilterInputMustBeReadable" xml:space="preserve"><value>pg_dump のフィルター入力ストリームは読み取り可能である必要があります。</value></data>
 </root>
