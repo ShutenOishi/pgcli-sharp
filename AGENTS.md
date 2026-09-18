@@ -32,6 +32,7 @@ If an Accepted decision changes, create a new superseding ADR instead of rewriti
 - Tests must cover version-specific argument generation and validation.
 - Changes to PostgreSQL compatibility claims must be backed by PostgreSQL official documentation and/or executable integration tests.
 - NuGet releases use Semantic Versioning and GitHub Actions. Trusted Publishing/OIDC is preferred over long-lived NuGet API keys.
+- Every completed roadmap Phase must be recorded as a GitHub Release according to ADR-0009. A Phase-completion PR must update `.github/phase-release.json` and add/update the matching `docs/releases/phase-N.md` release notes.
 
 ## Updating project decisions
 
