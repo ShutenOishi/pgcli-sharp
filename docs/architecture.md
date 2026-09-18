@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0006, and ADR-0008. ADR-0005 has been superseded by ADR-0008. ADR-0007 (target framework matrix) remains Proposed until Phase 0 implementation validates it.
+Key accepted decisions currently include ADR-0001 through ADR-0004 and ADR-0006 through ADR-0008. ADR-0005 has been superseded by ADR-0008.
 
 ## 1. Project purpose
 
@@ -194,13 +194,13 @@ Windows CI should also execute tests through a .NET Framework consumer target so
 
 Package ID target: `PgCliSharp`.
 
-Initial target-framework proposal:
+Initial target-framework matrix:
 
 ```xml
 <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
 ```
 
-This is a design target and may be revised if implementation/testing demonstrates that a different matrix gives materially better correctness or maintainability.
+Phase 0 validation confirmed this matrix across Linux, macOS, and Windows CI. Windows also executes a .NET Framework 4.8 test target against the `netstandard2.0` library asset so the legacy compatibility backend is exercised at runtime. Future changes to this accepted matrix require the ADR superseding workflow.
 
 The core package should avoid unnecessary dependencies such as Npgsql or Microsoft.Extensions packages unless a clear project-wide benefit justifies them. ADR-0008 allows CliWrap specifically and only for the `netstandard2.0` execution backend because the .NET Standard 2.0 BCL does not provide equivalent argument/process-tree APIs.
 
