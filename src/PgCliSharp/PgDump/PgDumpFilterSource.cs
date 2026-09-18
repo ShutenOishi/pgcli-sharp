@@ -1,3 +1,5 @@
+using PgCliSharp.Internal.Localization;
+
 namespace PgCliSharp;
 
 /// <summary>
@@ -48,7 +50,9 @@ public sealed class PgDumpFilterSource
     {
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new ArgumentException("A non-empty pg_dump filter file path is required.", nameof(path));
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.FilterPathRequired),
+                nameof(path));
         }
 
         return new PgDumpFilterSource(PgDumpFilterSourceKind.File, path, null);
@@ -69,7 +73,9 @@ public sealed class PgDumpFilterSource
 
         if (!input.CanRead)
         {
-            throw new ArgumentException("The pg_dump filter input stream must be readable.", nameof(input));
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.FilterInputMustBeReadable),
+                nameof(input));
         }
 
         return new PgDumpFilterSource(PgDumpFilterSourceKind.StandardInput, null, input);
