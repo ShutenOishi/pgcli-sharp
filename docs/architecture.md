@@ -1,5 +1,9 @@
 # Architecture and Compatibility
 
+> This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
+
+Key accepted decisions currently include ADR-0001 through ADR-0006. ADR-0007 (target framework matrix) remains Proposed until Phase 0 implementation validates it.
+
 ## 1. Project purpose
 
 PgCliSharp is a strongly typed .NET wrapper for PostgreSQL command-line tools such as `pg_dump`, `pg_restore`, `pg_dumpall`, and later the wider PostgreSQL client/server tool set.
@@ -231,15 +235,17 @@ Long-lived NuGet API keys should not be the preferred design.
 9. Server applications in a clearly separated namespace/category.
 10. Public API review and 1.0 stabilization.
 
-## 16. Living specification policy
+## 16. Living specification and ADR policy
 
-This document is intentionally a living specification.
+This document is intentionally a living, consolidated specification.
 
 When a better design is discovered:
 
-- update this file in the same PR/commit as the implementation change;
-- explain the reason in the commit/PR;
+- follow the ADR workflow in `docs/adr/README.md` for material repository-wide decisions;
+- do not rewrite an old Accepted ADR to hide the previous decision;
+- create a superseding ADR when an Accepted decision changes;
+- update this consolidated document in the same PR/commit;
 - update tests and examples;
-- keep old chat discussions non-authoritative.
+- keep chat discussions non-authoritative.
 
-The repository, not conversation history, is the durable project context.
+The repository, including its ADR history, not conversation history, is the durable project context.
