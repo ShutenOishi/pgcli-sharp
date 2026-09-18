@@ -113,11 +113,17 @@ public sealed class PostgreSqlExecutableVersionProviderTests
             Assert.Equal("--version", request.Arguments[0]);
             Assert.NotNull(request.StandardOutput);
 
+#if NET8_0_OR_GREATER
+            await request.StandardOutput.WriteAsync(
+                _versionOutput.AsMemory(),
+                cancellationToken);
+#else
             await request.StandardOutput.WriteAsync(
                 _versionOutput,
                 0,
                 _versionOutput.Length,
                 cancellationToken);
+#endif
 
             return new ProcessRunResult(0, TimeSpan.Zero, string.Empty);
         }
