@@ -243,7 +243,8 @@ public sealed class Phase4ArgumentAndValidationTests
         PgCombineBackupValidator.Validate(options, PostgreSqlMajorVersion.V18);
         IReadOnlyList<string> args = PgCombineBackupArgumentBuilder.Build(options, PostgreSqlMajorVersion.V18);
         Assert.Contains("--link", args);
-        Assert.Equal(new[] { "full", "incremental" }, args.Skip(args.Count - 2));
+        Assert.Equal("full", args[args.Count - 2]);
+        Assert.Equal("incremental", args[args.Count - 1]);
     }
 
     [Fact]
