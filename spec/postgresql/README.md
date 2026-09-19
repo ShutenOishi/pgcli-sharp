@@ -69,3 +69,7 @@ The structural validator intentionally does not fetch PostgreSQL source from the
 [`pg_restore.json`](pg_restore.json) and [`pg_dumpall.json`](pg_dumpall.json) are the Phase 2 compatibility inventories for PostgreSQL 10 through 18.
 
 Both specifications record per-major source-table audits, exact executable-version boundaries for the security-backported `--restrict-key`, input/output semantics, ignored-versus-error behavior, and intended API bindings. Human-readable research is stored in [`docs/pg-restore-phase-2.md`](../../docs/pg-restore-phase-2.md) and [`docs/pg-dumpall-phase-2.md`](../../docs/pg-dumpall-phase-2.md).
+
+## Phase 4 tools
+
+Phase 4 adds machine-readable inventories for `pg_basebackup`, `pg_receivewal`, `pg_recvlogical`, `pg_verifybackup`, and `pg_combinebackup`. The specs explicitly record tool-level availability (pg_verifybackup 13+, pg_combinebackup 17+), per-major option tables, source-audit counts, and intended typed bindings. Human-readable research is in [`docs/backup-wal-phase-4.md`](../../docs/backup-wal-phase-4.md).

@@ -27,4 +27,4 @@
   <data name="InputStreamMustBeReadable" xml:space="preserve"><value>PostgreSQL ツールの入力ストリームは読み取り可能である必要があります。</value></data>
   <data name="DatabaseNameRequired" xml:space="preserve"><value>空ではないデータベース名または接続文字列を指定する必要があります。</value></data>
   <data name="PositiveValueRequired" xml:space="preserve"><value>値は 0 より大きい必要があります。</value></data>
-</root>
+  <data name="ToolNotSupported" xml:space="preserve"><value>PostgreSQL ツール '{0}' は PostgreSQL {1} では利用できません。PostgreSQL {2} 以降で利用できます。</value></data>\n</root>

@@ -206,6 +206,10 @@ Phase 1 stores the complete pg_dump compatibility inventory in `spec/postgresql/
 
 Phase 2 applies the same specification-first contract to `spec/postgresql/pg_restore.json` and `spec/postgresql/pg_dumpall.json`. Runtime availability catalogs cover major-version differences and the maintenance-release boundaries for security-backported `--restrict-key`. Spec-to-runtime/API coverage tests keep option inventories, public bindings, and centralized availability metadata synchronized.
 
+Phase 4 extends the same contract to `pg_basebackup`, `pg_receivewal`, `pg_recvlogical`, `pg_verifybackup`, and `pg_combinebackup`. Whole-tool availability is explicit: `pg_verifybackup` is supported from PostgreSQL 13 and `pg_combinebackup` from PostgreSQL 17, with unsupported major versions rejected before process startup. Version-varying options use centralized runtime availability catalogs, while shared structured values such as WAL LSNs, tablespace mappings, manifest checksum algorithms, and filesystem sync methods are reused only where semantics are demonstrably identical.
+
+Phase 4 also preserves explicit I/O models: pg_basebackup tar stdout and pg_recvlogical streaming output can flow directly into caller-owned streams without whole-payload buffering. Windows CI continues to compile and test the Phase 4 surface under the .NET Framework 4.8 test target so the `netstandard2.0` compatibility contract is exercised alongside Linux/macOS modern targets.
+
 ## 13. Test layers
 
 Use three logical test layers:

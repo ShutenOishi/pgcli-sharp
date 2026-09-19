@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 2 のバックアップ／リストア中核と、Phase 3 のリリースパイプライン実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期し、Phase 4 の開発へ進みます。
+Phase 2 のバックアップ／リストア中核と Phase 3 のリリースパイプラインに加え、Phase 4 の Backup/WAL ツール実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期したまま、Phase 5 の開発へ進みます。
 
 初期対応範囲:
 
@@ -16,7 +16,7 @@ Phase 2 のバックアップ／リストア中核と、Phase 3 のリリース�
 - `net8.0`
 - `net10.0`
 
-ロードマップ上の各 Phase が完了するたびに GitHub Release を作成し、その時点のソース ZIP と NuGet パッケージ成果物を保存します。
+Phase 0〜2 の既存 GitHub Release は維持します。ADR-0012 により Phase 3 以降は、review 済みの `main` merge と exact-commit CI を完了条件とし、新しい GitHub Release、tag、Release asset、NuGet 公開は最終リリース Phase まで延期します。
 
 ## NuGet プレビュー
 
@@ -92,6 +92,16 @@ await pgDumpAll.ExecuteAsync(
 
 機械可読な互換性仕様は [`spec/postgresql/pg_restore.json`](spec/postgresql/pg_restore.json) と [`spec/postgresql/pg_dumpall.json`](spec/postgresql/pg_dumpall.json)、調査記録は [`docs/pg-restore-phase-2.md`](docs/pg-restore-phase-2.md) と [`docs/pg-dumpall-phase-2.md`](docs/pg-dumpall-phase-2.md) に保存しています。
 
+## Backup / WAL ツール
+
+Phase 4 では、`pg_basebackup`、`pg_receivewal`、`pg_recvlogical`、`pg_verifybackup`、`pg_combinebackup` の型付き wrapper を追加しました。
+
+`pg_basebackup`、`pg_receivewal`、`pg_recvlogical` は PostgreSQL 10〜18、`pg_verifybackup` は PostgreSQL 13 以降、`pg_combinebackup` は PostgreSQL 17 以降を対象にします。ツール自体が存在しない古い major version を選択した場合は、process 起動前に `PgUnsupportedToolException` で拒否します。
+
+Phase 4 の API は出力先と streaming を明示的に表現します。pg_basebackup の tar stdout や pg_recvlogical の stdout は全量を buffer 化せず呼び出し側所有の stream へ直接渡し、version 固有 option や不正な組み合わせは実行前に検証します。
+
+機械可読な互換性仕様は `spec/postgresql/pg_basebackup.json`、`pg_receivewal.json`、`pg_recvlogical.json`、`pg_verifybackup.json`、`pg_combinebackup.json` に保存しています。調査・実装記録は [`docs/backup-wal-phase-4.md`](docs/backup-wal-phase-4.md) を参照してください。
+
 ## 開発
 
 ソリューションは XML 形式の `.slnx` を使用します。
@@ -117,16 +127,9 @@ dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
 
 ## Releases
 
-[GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases) に、完了した Phase ごとの成果物を保存します。
+[GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases) には、Phase 0〜2 の既存 milestone Release を維持します。
 
-各 Phase Release には次を添付します。
-
-- その Phase の正確なコミットから作成したソース ZIP
-- `.nupkg`
-- `.snupkg`
-- 英語・日本語を併記した Release Notes
-
-Phase Release は開発上のマイルストーンです。nuget.org への公開は別途ロードマップと ADR-0006 に従って行います。
+Phase 3 以降は ADR-0012 により、実装完了と外部公開を分離します。Phase 完了条件は、review 済みの `main` merge、exact-commit の Linux/macOS/Windows CI、互換性・調査 evidence、repository documentation 更新です。新しい GitHub Release tag、Release、Release asset、NuGet push は最終リリース Phase まで延期します。
 
 ## プロジェクト文書
 

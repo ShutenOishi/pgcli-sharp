@@ -1,0 +1,824 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_receivewal",
+  "researchedAt": "2026-09-19",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pgreceivewal.html",
+      "11": "https://www.postgresql.org/docs/11/app-pgreceivewal.html",
+      "12": "https://www.postgresql.org/docs/12/app-pgreceivewal.html",
+      "13": "https://www.postgresql.org/docs/13/app-pgreceivewal.html",
+      "14": "https://www.postgresql.org/docs/14/app-pgreceivewal.html",
+      "15": "https://www.postgresql.org/docs/15/app-pgreceivewal.html",
+      "16": "https://www.postgresql.org/docs/16/app-pgreceivewal.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgreceivewal.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgreceivewal.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_basebackup/pg_receivewal.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_basebackup/pg_receivewal.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "directory",
+      "spellings": {
+        "short": "-D",
+        "long": [
+          "--directory"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Directory",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "dbname",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--dbname"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ConnectionString",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "endpos",
+      "spellings": {
+        "short": "-E",
+        "long": [
+          "--endpos"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "EndPosition",
+        "type": "PgLogSequenceNumber?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-loop",
+      "spellings": {
+        "short": "-n",
+        "long": [
+          "--no-loop"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoLoop",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-password",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--no-password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "password",
+      "spellings": {
+        "short": "-W",
+        "long": [
+          "--password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "status-interval",
+      "spellings": {
+        "short": "-s",
+        "long": [
+          "--status-interval"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "StatusInterval",
+        "type": "TimeSpan?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "slot",
+      "spellings": {
+        "short": "-S",
+        "long": [
+          "--slot"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Slot",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "verbose",
+      "spellings": {
+        "short": "-v",
+        "long": [
+          "--verbose"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Verbose",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "compress",
+      "spellings": {
+        "short": "-Z",
+        "long": [
+          "--compress"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Compression",
+        "type": "PgReceiveWalCompression?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "create-slot",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--create-slot"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Action",
+        "type": "PgReceiveWalAction"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "drop-slot",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--drop-slot"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Action",
+        "type": "PgReceiveWalAction"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "if-not-exists",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--if-not-exists"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IfNotExists",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "synchronous",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--synchronous"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Synchronous",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoSync",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": [
+        "added --endpos and --no-sync"
+      ]
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": [
+        "compression syntax expanded to method[:detail] including lz4; zstd remains rejected by pg_receivewal"
+      ]
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgreceivewal.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "directory",
+        "dbname",
+        "endpos",
+        "host",
+        "port",
+        "username",
+        "no-loop",
+        "no-password",
+        "password",
+        "status-interval",
+        "slot",
+        "verbose",
+        "compress",
+        "create-slot",
+        "drop-slot",
+        "if-not-exists",
+        "synchronous",
+        "no-sync"
+      ],
+      "changesFromPreviousMajor": []
+    }
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-19",
+    "method": "Compared long_options[]/getopt parser in src/bin/pg_basebackup/pg_receivewal.c across REL_10_STABLE..REL_18_STABLE.",
+    "result": "No unexplained source/spec option inventory differences remain.",
+    "sourceLongOptionCountsByMajor": {
+      "10": 18,
+      "11": 20,
+      "12": 20,
+      "13": 20,
+      "14": 20,
+      "15": 20,
+      "16": 20,
+      "17": 20,
+      "18": 20
+    }
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Option tables and hard validation branches audited for supported majors."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Every option has a typed property or explicit wrapper binding; CI reflection/runtime availability coverage is required."
+  }
+}

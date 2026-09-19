@@ -1,0 +1,508 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_verifybackup",
+  "researchedAt": "2026-09-19",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 13,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/reference-client.html",
+      "11": "https://www.postgresql.org/docs/11/reference-client.html",
+      "12": "https://www.postgresql.org/docs/12/reference-client.html",
+      "13": "https://www.postgresql.org/docs/13/app-pgverifybackup.html",
+      "14": "https://www.postgresql.org/docs/14/app-pgverifybackup.html",
+      "15": "https://www.postgresql.org/docs/15/app-pgverifybackup.html",
+      "16": "https://www.postgresql.org/docs/16/app-pgverifybackup.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgverifybackup.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgverifybackup.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_verifybackup/pg_verifybackup.c"
+    }
+  },
+  "options": [
+    {
+      "id": "exit-on-error",
+      "spellings": {
+        "short": "-e",
+        "long": [
+          "--exit-on-error"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ExitOnError",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "format",
+      "spellings": {
+        "short": "-F",
+        "long": [
+          "--format"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Format",
+        "type": "PgVerifyBackupFormat?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "ignore",
+      "spellings": {
+        "short": "-i",
+        "long": [
+          "--ignore"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IgnoredPaths",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "manifest-path",
+      "spellings": {
+        "short": "-m",
+        "long": [
+          "--manifest-path"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ManifestPath",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-parse-wal",
+      "spellings": {
+        "short": "-n",
+        "long": [
+          "--no-parse-wal"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoParseWal",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "progress",
+      "spellings": {
+        "short": "-P",
+        "long": [
+          "--progress"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Progress",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "quiet",
+      "spellings": {
+        "short": "-q",
+        "long": [
+          "--quiet"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Quiet",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "skip-checksums",
+      "spellings": {
+        "short": "-s",
+        "long": [
+          "--skip-checksums"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "SkipChecksums",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "wal-directory",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--wal-directory"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "WalDirectory",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "backup-directory",
+      "spellings": {
+        "short": null,
+        "long": [
+          "<backup-directory>"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "PgVerifyBackupInput"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pgverifybackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "exit-on-error",
+        "ignore",
+        "manifest-path",
+        "no-parse-wal",
+        "quiet",
+        "skip-checksums",
+        "wal-directory",
+        "version",
+        "help",
+        "backup-directory"
+      ],
+      "changesFromPreviousMajor": [
+        "tool introduced"
+      ]
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pgverifybackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "exit-on-error",
+        "ignore",
+        "manifest-path",
+        "no-parse-wal",
+        "quiet",
+        "skip-checksums",
+        "wal-directory",
+        "version",
+        "help",
+        "backup-directory"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pgverifybackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "exit-on-error",
+        "ignore",
+        "manifest-path",
+        "no-parse-wal",
+        "quiet",
+        "skip-checksums",
+        "wal-directory",
+        "version",
+        "help",
+        "backup-directory"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pgverifybackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "exit-on-error",
+        "ignore",
+        "manifest-path",
+        "no-parse-wal",
+        "progress",
+        "quiet",
+        "skip-checksums",
+        "wal-directory",
+        "version",
+        "help",
+        "backup-directory"
+      ],
+      "changesFromPreviousMajor": [
+        "added --progress"
+      ]
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgverifybackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "exit-on-error",
+        "ignore",
+        "manifest-path",
+        "no-parse-wal",
+        "progress",
+        "quiet",
+        "skip-checksums",
+        "wal-directory",
+        "version",
+        "help",
+        "backup-directory"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgverifybackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "exit-on-error",
+        "format",
+        "ignore",
+        "manifest-path",
+        "no-parse-wal",
+        "progress",
+        "quiet",
+        "skip-checksums",
+        "wal-directory",
+        "version",
+        "help",
+        "backup-directory"
+      ],
+      "changesFromPreviousMajor": [
+        "added --format and tar-format verification"
+      ]
+    }
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-19",
+    "method": "Compared long_options[]/getopt parser in src/bin/pg_verifybackup/pg_verifybackup.c across REL_10_STABLE..REL_18_STABLE.",
+    "result": "No unexplained source/spec option inventory differences remain.",
+    "sourceLongOptionCountsByMajor": {
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 7,
+      "14": 7,
+      "15": 7,
+      "16": 8,
+      "17": 8,
+      "18": 9
+    }
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Option tables and hard validation branches audited for supported majors."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Every option has a typed property or explicit wrapper binding; CI reflection/runtime availability coverage is required."
+  }
+}

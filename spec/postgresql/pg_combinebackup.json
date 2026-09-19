@@ -1,0 +1,543 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_combinebackup",
+  "researchedAt": "2026-09-19",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 17,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/reference-client.html",
+      "11": "https://www.postgresql.org/docs/11/reference-client.html",
+      "12": "https://www.postgresql.org/docs/12/reference-client.html",
+      "13": "https://www.postgresql.org/docs/13/reference-client.html",
+      "14": "https://www.postgresql.org/docs/14/reference-client.html",
+      "15": "https://www.postgresql.org/docs/15/reference-client.html",
+      "16": "https://www.postgresql.org/docs/16/reference-client.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgcombinebackup.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgcombinebackup.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_combinebackup/pg_combinebackup.c"
+    }
+  },
+  "options": [
+    {
+      "id": "debug",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--debug"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Debug",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "dry-run",
+      "spellings": {
+        "short": "-n",
+        "long": [
+          "--dry-run"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "DryRun",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": "-N",
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoSync",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "output",
+      "spellings": {
+        "short": "-o",
+        "long": [
+          "--output"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "OutputDirectory",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "tablespace-mapping",
+      "spellings": {
+        "short": "-T",
+        "long": [
+          "--tablespace-mapping"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "TablespaceMappings",
+        "type": "IList<PgTablespaceMapping>"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "link",
+      "spellings": {
+        "short": "-k",
+        "long": [
+          "--link"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CopyMethod",
+        "type": "PgCombineBackupCopyMethod"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "manifest-checksums",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--manifest-checksums"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ManifestChecksums",
+        "type": "PgBackupManifestChecksum?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "no-manifest",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-manifest"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoManifest",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "sync-method",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--sync-method"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "SyncMethod",
+        "type": "PgBackupSyncMethod?"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "clone",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--clone"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CopyMethod",
+        "type": "PgCombineBackupCopyMethod"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "copy",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--copy"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CopyMethod",
+        "type": "PgCombineBackupCopyMethod"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "copy-file-range",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--copy-file-range"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CopyMethod",
+        "type": "PgCombineBackupCopyMethod"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    },
+    {
+      "id": "backup-directories",
+      "spellings": {
+        "short": null,
+        "long": [
+          "<backup-directory>..."
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "InputDirectories",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major documentation and REL_<major>_STABLE option table/parser.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/reference-client.html",
+      "toolAvailable": false,
+      "inventoryBasis": "Tool not present in this PostgreSQL major.",
+      "optionIdsInCurrentMajorDocumentation": [],
+      "changesFromPreviousMajor": []
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgcombinebackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "debug",
+        "dry-run",
+        "no-sync",
+        "output",
+        "tablespace-mapping",
+        "manifest-checksums",
+        "no-manifest",
+        "sync-method",
+        "clone",
+        "copy",
+        "copy-file-range",
+        "version",
+        "help",
+        "backup-directories"
+      ],
+      "changesFromPreviousMajor": [
+        "tool introduced for incremental backup chains"
+      ]
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgcombinebackup.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "debug",
+        "dry-run",
+        "no-sync",
+        "output",
+        "tablespace-mapping",
+        "link",
+        "manifest-checksums",
+        "no-manifest",
+        "sync-method",
+        "clone",
+        "copy",
+        "copy-file-range",
+        "version",
+        "help",
+        "backup-directories"
+      ],
+      "changesFromPreviousMajor": [
+        "added -k/--link hard-link copy method"
+      ]
+    }
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-19",
+    "method": "Compared long_options[]/getopt parser in src/bin/pg_combinebackup/pg_combinebackup.c across REL_10_STABLE..REL_18_STABLE.",
+    "result": "No unexplained source/spec option inventory differences remain.",
+    "sourceLongOptionCountsByMajor": {
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0,
+      "16": 0,
+      "17": 11,
+      "18": 12
+    }
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Option tables and hard validation branches audited for supported majors."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Every option has a typed property or explicit wrapper binding; CI reflection/runtime availability coverage is required."
+  }
+}

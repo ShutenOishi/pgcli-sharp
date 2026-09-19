@@ -27,4 +27,4 @@
   <data name="InputStreamMustBeReadable" xml:space="preserve"><value>The PostgreSQL tool input stream must be readable.</value></data>
   <data name="DatabaseNameRequired" xml:space="preserve"><value>A non-empty database name or connection string is required.</value></data>
   <data name="PositiveValueRequired" xml:space="preserve"><value>The value must be greater than zero.</value></data>
-</root>
+  <data name="ToolNotSupported" xml:space="preserve"><value>PostgreSQL tool '{0}' is not available in PostgreSQL {1}; it is available from PostgreSQL {2}.</value></data>\n</root>

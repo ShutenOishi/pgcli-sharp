@@ -8,6 +8,7 @@ internal static class MessageKeys
     internal const string ProcessExitedWithError = nameof(ProcessExitedWithError);
     internal const string ProcessTimedOut = nameof(ProcessTimedOut);
     internal const string OptionNotSupported = nameof(OptionNotSupported);
+    internal const string ToolNotSupported = nameof(ToolNotSupported);
     internal const string OptionRequiresExecutableVersion = nameof(OptionRequiresExecutableVersion);
     internal const string InvalidOptionCombination = nameof(InvalidOptionCombination);
     internal const string InvalidCompressionLevel = nameof(InvalidCompressionLevel);
@@ -34,6 +35,7 @@ internal static class MessageKeys
         ProcessExitedWithError,
         ProcessTimedOut,
         OptionNotSupported,
+        ToolNotSupported,
         OptionRequiresExecutableVersion,
         InvalidOptionCombination,
         InvalidCompressionLevel,

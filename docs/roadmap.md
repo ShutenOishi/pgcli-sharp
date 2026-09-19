@@ -71,15 +71,18 @@ Phase 2 follows ADR-0011 and `docs/tool-implementation-workflow.md`.
 
 ## Phase 4 - Backup and WAL tools
 
-Examples:
+**Status: Complete (2026-09-19).** Specification-first research, typed APIs, runtime availability/validation, deterministic argument and I/O handling, execution tests, bilingual documentation, and the Linux/macOS/Windows completion gate are implemented. The maintained compatibility specifications are the five Phase 4 JSON files under `spec/postgresql/`.
 
-- `pg_basebackup`
-- `pg_verifybackup`
-- `pg_receivewal`
-- `pg_recvlogical`
-- `pg_combinebackup` where available
+- `pg_basebackup` — PostgreSQL 10-18.
+- `pg_receivewal` — PostgreSQL 10-18.
+- `pg_recvlogical` — PostgreSQL 10-18.
+- `pg_verifybackup` — PostgreSQL 13-18; earlier majors are rejected before process startup.
+- `pg_combinebackup` — PostgreSQL 17-18; earlier majors are rejected before process startup.
+- Model option and whole-tool availability explicitly and test the supported/unsupported boundaries.
+- Preserve binary-safe stdout for pg_basebackup tar output and pg_recvlogical streaming.
+- Keep Windows .NET Framework 4.8 coverage so the `netstandard2.0` compatibility asset remains validated.
 
-Model version/tool availability explicitly.
+External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase 4 completion is recorded by the reviewed main merge and exact-commit CI rather than a new tag or Release.
 
 ## Phase 5 - Database management and maintenance tools
 
