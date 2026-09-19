@@ -104,7 +104,9 @@ public sealed class Phase4ExecutionTests
 
         Assert.Equal("combined", ValueAfter(runner.LastRequest!.Arguments, "--output"));
         Assert.Contains("--copy", runner.LastRequest.Arguments);
-        Assert.Equal(new[] { "full", "inc1", "inc2" }, runner.LastRequest.Arguments.Skip(runner.LastRequest.Arguments.Count - 3));
+        Assert.Equal("full", runner.LastRequest.Arguments[runner.LastRequest.Arguments.Count - 3]);
+        Assert.Equal("inc1", runner.LastRequest.Arguments[runner.LastRequest.Arguments.Count - 2]);
+        Assert.Equal("inc2", runner.LastRequest.Arguments[runner.LastRequest.Arguments.Count - 1]);
     }
 
     [Fact]
