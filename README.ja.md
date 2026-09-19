@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 2 のバックアップ／リストア中核と、Phase 3 のリリースパイプライン実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期し、Phase 4 の開発へ進みます。
+Phase 2 のバックアップ／リストア中核と Phase 3 のリリースパイプラインに加え、Phase 4 の Backup/WAL ツール実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期したまま、Phase 5 の開発へ進みます。
 
 初期対応範囲:
 
@@ -91,6 +91,16 @@ await pgDumpAll.ExecuteAsync(
 `PgRestoreInput` はアーカイブのファイル・ディレクトリ・stdin を区別します。`PgRestoreOutput` はデータベースへの直接復元と生成 SQL・一覧出力を区別し、ストリーム出力では `--file=-` を使用して PostgreSQL 10〜18 で一貫したラッパー動作にします。`PgDumpAllScope` は globals/roles/tablespaces-only の排他的な状態を矛盾する bool の組み合わせなしで表現します。
 
 機械可読な互換性仕様は [`spec/postgresql/pg_restore.json`](spec/postgresql/pg_restore.json) と [`spec/postgresql/pg_dumpall.json`](spec/postgresql/pg_dumpall.json)、調査記録は [`docs/pg-restore-phase-2.md`](docs/pg-restore-phase-2.md) と [`docs/pg-dumpall-phase-2.md`](docs/pg-dumpall-phase-2.md) に保存しています。
+
+## Backup / WAL ツール
+
+Phase 4 では、`pg_basebackup`、`pg_receivewal`、`pg_recvlogical`、`pg_verifybackup`、`pg_combinebackup` の型付き wrapper を追加しました。
+
+`pg_basebackup`、`pg_receivewal`、`pg_recvlogical` は PostgreSQL 10〜18、`pg_verifybackup` は PostgreSQL 13 以降、`pg_combinebackup` は PostgreSQL 17 以降を対象にします。ツール自体が存在しない古い major version を選択した場合は、process 起動前に `PgUnsupportedToolException` で拒否します。
+
+Phase 4 の API は出力先と streaming を明示的に表現します。pg_basebackup の tar stdout や pg_recvlogical の stdout は全量を buffer 化せず呼び出し側所有の stream へ直接渡し、version 固有 option や不正な組み合わせは実行前に検証します。
+
+機械可読な互換性仕様は `spec/postgresql/pg_basebackup.json`、`pg_receivewal.json`、`pg_recvlogical.json`、`pg_verifybackup.json`、`pg_combinebackup.json` に保存しています。調査・実装記録は [`docs/backup-wal-phase-4.md`](docs/backup-wal-phase-4.md) を参照してください。
 
 ## 開発
 
