@@ -39,7 +39,7 @@ internal static class PgCombineBackupArgumentBuilder
                 args.Add("--link");
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(options.CopyMethod));
+                throw new ArgumentOutOfRangeException(nameof(options));
         }
 
         if (options.ManifestChecksums.HasValue)
