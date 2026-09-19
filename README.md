@@ -16,7 +16,7 @@ Initial PostgreSQL compatibility target:
 - `net8.0`
 - `net10.0`
 
-Each completed roadmap phase is preserved as a GitHub Release with an explicit source ZIP and NuGet package artifacts.
+Phase 0-2 retain their existing GitHub Releases. Under ADR-0012, Phase 3 onward is completed by a reviewed `main` merge plus exact-commit CI; new GitHub Releases, tags, Release assets, and NuGet publication are deferred until the final release phase.
 
 ## NuGet preview
 
@@ -114,16 +114,9 @@ The `netstandard2.0` process backend uses CliWrap internally according to ADR-00
 
 ## Releases
 
-Completed implementation phases are recorded under [GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases).
+[GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases) preserves the existing Phase 0-2 milestone releases.
 
-Each Phase Release contains:
-
-- an explicit source ZIP;
-- the `.nupkg`;
-- the `.snupkg`;
-- release notes in English and Japanese.
-
-Phase Releases are development milestones. Publication to nuget.org is handled separately according to the release roadmap.
+Starting with Phase 3, ADR-0012 separates implementation completion from external publication. A phase is completed by a reviewed `main` merge, exact-commit Linux/macOS/Windows CI, compatibility/research evidence, and updated repository documentation. New GitHub Release tags, Releases, Release assets, and NuGet pushes remain deferred until the final release phase.
 
 ## Project documents
 
