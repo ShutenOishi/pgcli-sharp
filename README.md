@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed the Phase 2 backup/restore core and the Phase 3 release-pipeline implementation. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate is deferred until the final release phase under ADR-0012; development continues with Phase 4.
+PgCliSharp has completed the Phase 4 Backup/WAL implementation on top of the Phase 2 backup/restore core and Phase 3 release-pipeline work. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred until the final release phase under ADR-0012; development continues with Phase 5.
 
 Initial PostgreSQL compatibility target:
 
@@ -81,6 +81,16 @@ await pgDumpAll.ExecuteAsync(
 `PgRestoreInput` distinguishes archive file, directory, and stdin consumers. `PgRestoreOutput` distinguishes direct database restore from generated SQL/list output, and stream output is normalized with `--file=-` so PostgreSQL 10-18 have one stable wrapper behavior. `PgDumpAllScope` represents the mutually exclusive global/roles/tablespaces-only modes without contradictory boolean pairs.
 
 Machine-readable inventories are maintained in [`spec/postgresql/pg_restore.json`](spec/postgresql/pg_restore.json) and [`spec/postgresql/pg_dumpall.json`](spec/postgresql/pg_dumpall.json). Their research notes are [`docs/pg-restore-phase-2.md`](docs/pg-restore-phase-2.md) and [`docs/pg-dumpall-phase-2.md`](docs/pg-dumpall-phase-2.md).
+
+## Backup and WAL tools
+
+Phase 4 adds typed wrappers for `pg_basebackup`, `pg_receivewal`, `pg_recvlogical`, `pg_verifybackup`, and `pg_combinebackup`.
+
+`pg_basebackup`, `pg_receivewal`, and `pg_recvlogical` are modeled for PostgreSQL 10-18. `pg_verifybackup` is available from PostgreSQL 13 and `pg_combinebackup` from PostgreSQL 17; selecting an earlier major fails before process startup with `PgUnsupportedToolException`.
+
+The Phase 4 APIs keep destinations and streaming explicit. For example, pg_basebackup tar output and pg_recvlogical stdout can be sent directly to caller-owned streams without whole-payload buffering, while version-specific options and incompatible combinations are validated before execution.
+
+Machine-readable inventories are maintained in `spec/postgresql/pg_basebackup.json`, `pg_receivewal.json`, `pg_recvlogical.json`, `pg_verifybackup.json`, and `pg_combinebackup.json`. Research and implementation notes are in [`docs/backup-wal-phase-4.md`](docs/backup-wal-phase-4.md).
 
 ## Development
 
