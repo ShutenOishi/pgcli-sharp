@@ -30,7 +30,7 @@ public sealed class PgLogSequenceNumber
 
     private static bool IsValid(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (value is null || string.IsNullOrWhiteSpace(value))
         {
             return false;
         }
