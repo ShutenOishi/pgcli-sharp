@@ -16,7 +16,7 @@ Phase 2 のバックアップ／リストア中核と Phase 3 のリリースパ
 - `net8.0`
 - `net10.0`
 
-ロードマップ上の各 Phase が完了するたびに GitHub Release を作成し、その時点のソース ZIP と NuGet パッケージ成果物を保存します。
+Phase 0〜2 の既存 GitHub Release は維持します。ADR-0012 により Phase 3 以降は、review 済みの `main` merge と exact-commit CI を完了条件とし、新しい GitHub Release、tag、Release asset、NuGet 公開は最終リリース Phase まで延期します。
 
 ## NuGet プレビュー
 
@@ -127,16 +127,9 @@ dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
 
 ## Releases
 
-[GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases) に、完了した Phase ごとの成果物を保存します。
+[GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases) には、Phase 0〜2 の既存 milestone Release を維持します。
 
-各 Phase Release には次を添付します。
-
-- その Phase の正確なコミットから作成したソース ZIP
-- `.nupkg`
-- `.snupkg`
-- 英語・日本語を併記した Release Notes
-
-Phase Release は開発上のマイルストーンです。nuget.org への公開は別途ロードマップと ADR-0006 に従って行います。
+Phase 3 以降は ADR-0012 により、実装完了と外部公開を分離します。Phase 完了条件は、review 済みの `main` merge、exact-commit の Linux/macOS/Windows CI、互換性・調査 evidence、repository documentation 更新です。新しい GitHub Release tag、Release、Release asset、NuGet push は最終リリース Phase まで延期します。
 
 ## プロジェクト文書
 
