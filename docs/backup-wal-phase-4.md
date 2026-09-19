@@ -1,6 +1,6 @@
 # Phase 4 Research - Backup and WAL tools
 
-Status: research/specification baseline complete; implementation follows ADR-0011.
+Status: implementation complete; final Phase completion requires the reviewed PR merge and exact-main-commit CI under ADR-0011 and ADR-0012.
 
 ## Scope
 
@@ -84,15 +84,18 @@ Copy modes are mutually exclusive: regular copy (default), clone, copy_file_rang
 - pg_verifybackup and pg_combinebackup enforce executable-level tool availability before normal execution.
 - Arbitrary shell command tails are not exposed.
 
-## Completion audit requirements
+## Completion audit
 
-Before Phase 4 is complete:
+The implementation satisfies the Phase 4 audit contract:
 
-1. every spec inventory entry must resolve to a public property or explicit special binding;
-2. every major-varying option must have runtime availability metadata;
-3. pg_verifybackup/pg_combinebackup tool availability must be tested at the unsupported/supported boundary;
-4. argument order and repeatable options must be deterministic;
-5. binary/text streams must not be unnecessarily buffered;
-6. cancellation, timeout, environment forwarding, version mismatch, and nonzero exit behavior must reuse the established process model;
-7. all tests must pass on Linux, macOS, and Windows, including the existing .NET Framework 4.8 consumer tests;
-8. external publication manifests remain disabled under ADR-0012.
+1. every spec inventory entry resolves to a public property or explicit special binding through compatibility coverage tests;
+2. major-varying options are represented in runtime availability metadata and checked against the machine specifications;
+3. pg_verifybackup/pg_combinebackup tool availability is tested at the unsupported/supported boundary;
+4. argument order and repeatable options are covered by deterministic argument tests;
+5. pg_basebackup tar stdout and pg_recvlogical stdout stream directly to caller-owned streams without whole-payload buffering;
+6. cancellation, timeout, environment forwarding, version mismatch, and process execution reuse the established execution model;
+7. implementation-head CI run 35410482613 passed on Linux, macOS, and Windows, with Windows exercising the net48 test target;
+8. a fresh all-platform CI run is required after final completion-documentation changes and before merge;
+9. external publication remains deferred under ADR-0012; no Phase 4 tag, GitHub Release, Release asset, or NuGet push is part of completion.
+
+Repository completion evidence is summarized in [`phase-4-completion.md`](phase-4-completion.md). GitHub PR #9 and its final checks remain the direct authority for the pre-merge gate.
