@@ -19,7 +19,7 @@ public sealed class PgLogSequenceNumber
                 nameof(value));
         }
 
-        Value = value.ToUpperInvariant();
+        Value = value!.ToUpperInvariant();
     }
 
     /// <summary><para>EN: Gets the normalized hexadecimal location.</para><para>JA: 正規化された16進位置を取得します。</para></summary>
