@@ -73,3 +73,7 @@ Both specifications record per-major source-table audits, exact executable-versi
 ## Phase 4 tools
 
 Phase 4 adds machine-readable inventories for `pg_basebackup`, `pg_receivewal`, `pg_recvlogical`, `pg_verifybackup`, and `pg_combinebackup`. The specs explicitly record tool-level availability (pg_verifybackup 13+, pg_combinebackup 17+), per-major option tables, source-audit counts, and intended typed bindings. Human-readable research is in [`docs/backup-wal-phase-4.md`](../../docs/backup-wal-phase-4.md).
+
+## Phase 5 tools
+
+Phase 5 adds machine-readable inventories for `createdb`, `dropdb`, `createuser`, `dropuser`, `vacuumdb`, `reindexdb`, `clusterdb`, `pg_isready`, and `pg_amcheck`. The specifications record PostgreSQL 10-18 per-major inventories, with whole-tool availability for `pg_amcheck` beginning at PostgreSQL 14. Phase 5 also extends `argumentMode` with `optional` for upstream options such as `pg_amcheck --install-missing[=SCHEMA]`. Research notes are in [`docs/database-maintenance-phase-5.md`](../../docs/database-maintenance-phase-5.md).

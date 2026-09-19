@@ -1,0 +1,1249 @@
+{
+  "schemaVersion": 1,
+  "tool": "createuser",
+  "researchedAt": "2026-09-19",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-createuser.html",
+      "11": "https://www.postgresql.org/docs/11/app-createuser.html",
+      "12": "https://www.postgresql.org/docs/12/app-createuser.html",
+      "13": "https://www.postgresql.org/docs/13/app-createuser.html",
+      "14": "https://www.postgresql.org/docs/14/app-createuser.html",
+      "15": "https://www.postgresql.org/docs/15/app-createuser.html",
+      "16": "https://www.postgresql.org/docs/16/app-createuser.html",
+      "17": "https://www.postgresql.org/docs/17/app-createuser.html",
+      "18": "https://www.postgresql.org/docs/18/app-createuser.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/scripts/createuser.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/scripts/createuser.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/scripts/createuser.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/scripts/createuser.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/scripts/createuser.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/scripts/createuser.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/scripts/createuser.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/scripts/createuser.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/scripts/createuser.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-password",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--no-password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "password",
+      "spellings": {
+        "short": "-W",
+        "long": [
+          "--password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "echo",
+      "spellings": {
+        "short": "-e",
+        "long": [
+          "--echo"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Echo",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "createdb",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--createdb"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CanCreateDatabase",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-createdb",
+      "spellings": {
+        "short": "-D",
+        "long": [
+          "--no-createdb"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CanCreateDatabase",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "superuser",
+      "spellings": {
+        "short": "-s",
+        "long": [
+          "--superuser"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IsSuperuser",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-superuser",
+      "spellings": {
+        "short": "-S",
+        "long": [
+          "--no-superuser"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IsSuperuser",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "adduser-alias",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--adduser"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 12
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IsSuperuser",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Deprecated alias of --superuser. Wrapper emits canonical spelling."
+      ]
+    },
+    {
+      "id": "no-adduser-alias",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-adduser"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 12
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IsSuperuser",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Deprecated alias of --no-superuser. Wrapper emits canonical spelling."
+      ]
+    },
+    {
+      "id": "createrole",
+      "spellings": {
+        "short": "-r",
+        "long": [
+          "--createrole"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CanCreateRole",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-createrole",
+      "spellings": {
+        "short": "-R",
+        "long": [
+          "--no-createrole"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "CanCreateRole",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "inherit",
+      "spellings": {
+        "short": "-i",
+        "long": [
+          "--inherit"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Inherit",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-inherit",
+      "spellings": {
+        "short": "-I",
+        "long": [
+          "--no-inherit"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Inherit",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "login",
+      "spellings": {
+        "short": "-l",
+        "long": [
+          "--login"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Login",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-login",
+      "spellings": {
+        "short": "-L",
+        "long": [
+          "--no-login"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Login",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "replication",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--replication"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Replication",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-replication",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-replication"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Replication",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "interactive",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--interactive"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Interactive",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "connection-limit",
+      "spellings": {
+        "short": "-c",
+        "long": [
+          "--connection-limit"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ConnectionLimit",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "pwprompt",
+      "spellings": {
+        "short": "-P",
+        "long": [
+          "--pwprompt"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PromptForRolePassword",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "encrypted",
+      "spellings": {
+        "short": "-E",
+        "long": [
+          "--encrypted"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Encrypted",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "role",
+      "spellings": {
+        "short": "-g",
+        "long": [
+          "--role"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MemberOfRoles",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Canonical spelling through PostgreSQL 15; retained as alias in 16+."
+      ]
+    },
+    {
+      "id": "member-of",
+      "spellings": {
+        "short": "-g",
+        "long": [
+          "--member-of"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MemberOfRoles",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "with-admin",
+      "spellings": {
+        "short": "-a",
+        "long": [
+          "--with-admin"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "AdminOfRoles",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "with-member",
+      "spellings": {
+        "short": "-m",
+        "long": [
+          "--with-member"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Members",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "valid-until",
+      "spellings": {
+        "short": "-v",
+        "long": [
+          "--valid-until"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ValidUntil",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "bypassrls",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--bypassrls"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "BypassRls",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-bypassrls",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-bypassrls"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "BypassRls",
+        "type": "bool?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "role-name",
+      "spellings": {
+        "short": null,
+        "long": [
+          "<rolename>"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "RoleName",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "adduser-alias",
+        "no-adduser-alias",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "adduser-alias",
+        "no-adduser-alias",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "adduser-alias",
+        "no-adduser-alias",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": [
+        "removed deprecated --adduser/--no-adduser aliases"
+      ]
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "member-of",
+        "with-admin",
+        "with-member",
+        "valid-until",
+        "bypassrls",
+        "no-bypassrls",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added membership controls, --valid-until, and BYPASSRLS controls; --member-of becomes canonical membership spelling"
+      ]
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "member-of",
+        "with-admin",
+        "with-member",
+        "valid-until",
+        "bypassrls",
+        "no-bypassrls",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-createuser.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "createdb",
+        "no-createdb",
+        "superuser",
+        "no-superuser",
+        "createrole",
+        "no-createrole",
+        "inherit",
+        "no-inherit",
+        "login",
+        "no-login",
+        "replication",
+        "no-replication",
+        "interactive",
+        "connection-limit",
+        "pwprompt",
+        "encrypted",
+        "role",
+        "member-of",
+        "with-admin",
+        "with-member",
+        "valid-until",
+        "bypassrls",
+        "no-bypassrls",
+        "role-name"
+      ],
+      "changesFromPreviousMajor": []
+    }
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-19",
+    "method": "Compared option tables/parser in src/bin/scripts/createuser.c across REL_10_STABLE..REL_18_STABLE where the tool exists.",
+    "result": "No unexplained source/spec inventory differences remain."
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Hard validation, positional arguments, aliases, defaults, and mode-specific behavior audited at version boundaries."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Every inventory entry has an intended typed property or explicit special binding; CI reflection/runtime coverage is required."
+  }
+}

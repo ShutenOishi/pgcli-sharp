@@ -1,0 +1,1272 @@
+{
+  "schemaVersion": 1,
+  "tool": "vacuumdb",
+  "researchedAt": "2026-09-19",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-vacuumdb.html",
+      "11": "https://www.postgresql.org/docs/11/app-vacuumdb.html",
+      "12": "https://www.postgresql.org/docs/12/app-vacuumdb.html",
+      "13": "https://www.postgresql.org/docs/13/app-vacuumdb.html",
+      "14": "https://www.postgresql.org/docs/14/app-vacuumdb.html",
+      "15": "https://www.postgresql.org/docs/15/app-vacuumdb.html",
+      "16": "https://www.postgresql.org/docs/16/app-vacuumdb.html",
+      "17": "https://www.postgresql.org/docs/17/app-vacuumdb.html",
+      "18": "https://www.postgresql.org/docs/18/app-vacuumdb.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/scripts/vacuumdb.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/scripts/vacuumdb.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/scripts/vacuumdb.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/scripts/vacuumdb.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/scripts/vacuumdb.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/scripts/vacuumdb.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/scripts/vacuumdb.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/scripts/vacuumdb.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/scripts/vacuumdb.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-password",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--no-password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "password",
+      "spellings": {
+        "short": "-W",
+        "long": [
+          "--password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "echo",
+      "spellings": {
+        "short": "-e",
+        "long": [
+          "--echo"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Echo",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "quiet",
+      "spellings": {
+        "short": "-q",
+        "long": [
+          "--quiet"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Quiet",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "dbname",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--dbname"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "DatabaseName",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "analyze",
+      "spellings": {
+        "short": "-z",
+        "long": [
+          "--analyze"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Analyze",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "analyze-only",
+      "spellings": {
+        "short": "-Z",
+        "long": [
+          "--analyze-only"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "AnalyzeOnly",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "freeze",
+      "spellings": {
+        "short": "-F",
+        "long": [
+          "--freeze"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Freeze",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "all",
+      "spellings": {
+        "short": "-a",
+        "long": [
+          "--all"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "AllDatabases",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "table",
+      "spellings": {
+        "short": "-t",
+        "long": [
+          "--table"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Tables",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "full",
+      "spellings": {
+        "short": "-f",
+        "long": [
+          "--full"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Full",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "verbose",
+      "spellings": {
+        "short": "-v",
+        "long": [
+          "--verbose"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Verbose",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "jobs",
+      "spellings": {
+        "short": "-j",
+        "long": [
+          "--jobs"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Jobs",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "parallel",
+      "spellings": {
+        "short": "-P",
+        "long": [
+          "--parallel"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ParallelWorkers",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "schema",
+      "spellings": {
+        "short": "-n",
+        "long": [
+          "--schema"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Schemas",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "exclude-schema",
+      "spellings": {
+        "short": "-N",
+        "long": [
+          "--exclude-schema"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ExcludedSchemas",
+        "type": "IList<string>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "maintenance-db",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--maintenance-db"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MaintenanceDatabase",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "analyze-in-stages",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--analyze-in-stages"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "AnalyzeInStages",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "disable-page-skipping",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--disable-page-skipping"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "DisablePageSkipping",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "skip-locked",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--skip-locked"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "SkipLocked",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "min-xid-age",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--min-xid-age"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MinXidAge",
+        "type": "uint?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "min-mxid-age",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--min-mxid-age"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MinMultiXactIdAge",
+        "type": "uint?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-index-cleanup",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-index-cleanup"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IndexCleanup",
+        "type": "PgVacuumIndexCleanup?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "force-index-cleanup",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--force-index-cleanup"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IndexCleanup",
+        "type": "PgVacuumIndexCleanup?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-truncate",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-truncate"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoTruncate",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-process-toast",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-process-toast"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoProcessToast",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-process-main",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--no-process-main"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoProcessMain",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "buffer-usage-limit",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--buffer-usage-limit"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "BufferUsageLimit",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "missing-stats-only",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--missing-stats-only"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MissingStatsOnly",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "database-name",
+      "spellings": {
+        "short": null,
+        "long": [
+          "<dbname>"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "DatabaseName",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "maintenance-db",
+        "analyze-in-stages",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "maintenance-db",
+        "analyze-in-stages",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "maintenance-db",
+        "analyze-in-stages",
+        "disable-page-skipping",
+        "skip-locked",
+        "min-xid-age",
+        "min-mxid-age",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added page-skipping/skip-locked/age controls"
+      ]
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "parallel",
+        "maintenance-db",
+        "analyze-in-stages",
+        "disable-page-skipping",
+        "skip-locked",
+        "min-xid-age",
+        "min-mxid-age",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added --parallel"
+      ]
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "parallel",
+        "maintenance-db",
+        "analyze-in-stages",
+        "disable-page-skipping",
+        "skip-locked",
+        "min-xid-age",
+        "min-mxid-age",
+        "no-index-cleanup",
+        "force-index-cleanup",
+        "no-truncate",
+        "no-process-toast",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added index-cleanup/truncate/process-toast controls"
+      ]
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "parallel",
+        "maintenance-db",
+        "analyze-in-stages",
+        "disable-page-skipping",
+        "skip-locked",
+        "min-xid-age",
+        "min-mxid-age",
+        "no-index-cleanup",
+        "force-index-cleanup",
+        "no-truncate",
+        "no-process-toast",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "parallel",
+        "schema",
+        "exclude-schema",
+        "maintenance-db",
+        "analyze-in-stages",
+        "disable-page-skipping",
+        "skip-locked",
+        "min-xid-age",
+        "min-mxid-age",
+        "no-index-cleanup",
+        "force-index-cleanup",
+        "no-truncate",
+        "no-process-toast",
+        "no-process-main",
+        "buffer-usage-limit",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added schema filters, --no-process-main, --buffer-usage-limit"
+      ]
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "parallel",
+        "schema",
+        "exclude-schema",
+        "maintenance-db",
+        "analyze-in-stages",
+        "disable-page-skipping",
+        "skip-locked",
+        "min-xid-age",
+        "min-mxid-age",
+        "no-index-cleanup",
+        "force-index-cleanup",
+        "no-truncate",
+        "no-process-toast",
+        "no-process-main",
+        "buffer-usage-limit",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-vacuumdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "quiet",
+        "dbname",
+        "analyze",
+        "analyze-only",
+        "freeze",
+        "all",
+        "table",
+        "full",
+        "verbose",
+        "jobs",
+        "parallel",
+        "schema",
+        "exclude-schema",
+        "maintenance-db",
+        "analyze-in-stages",
+        "disable-page-skipping",
+        "skip-locked",
+        "min-xid-age",
+        "min-mxid-age",
+        "no-index-cleanup",
+        "force-index-cleanup",
+        "no-truncate",
+        "no-process-toast",
+        "no-process-main",
+        "buffer-usage-limit",
+        "missing-stats-only",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added --missing-stats-only"
+      ]
+    }
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-19",
+    "method": "Compared option tables/parser in src/bin/scripts/vacuumdb.c across REL_10_STABLE..REL_18_STABLE where the tool exists.",
+    "result": "No unexplained source/spec inventory differences remain."
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Hard validation, positional arguments, aliases, defaults, and mode-specific behavior audited at version boundaries."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Every inventory entry has an intended typed property or explicit special binding; CI reflection/runtime coverage is required."
+  }
+}
