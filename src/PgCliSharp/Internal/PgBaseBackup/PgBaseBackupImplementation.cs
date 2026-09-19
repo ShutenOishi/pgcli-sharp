@@ -67,7 +67,7 @@ internal static class PgBaseBackupArgumentBuilder
                 PgBaseBackupWalMethod.None => "none",
                 PgBaseBackupWalMethod.Fetch => "fetch",
                 PgBaseBackupWalMethod.Stream => "stream",
-                _ => throw new ArgumentOutOfRangeException(nameof(options.WalMethod)),
+                _ => throw new ArgumentOutOfRangeException(nameof(options)),
             });
 
         if (options.Compression is not null)
