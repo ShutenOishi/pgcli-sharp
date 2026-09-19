@@ -1,0 +1,891 @@
+{
+  "schemaVersion": 1,
+  "tool": "createdb",
+  "researchedAt": "2026-09-19",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-createdb.html",
+      "11": "https://www.postgresql.org/docs/11/app-createdb.html",
+      "12": "https://www.postgresql.org/docs/12/app-createdb.html",
+      "13": "https://www.postgresql.org/docs/13/app-createdb.html",
+      "14": "https://www.postgresql.org/docs/14/app-createdb.html",
+      "15": "https://www.postgresql.org/docs/15/app-createdb.html",
+      "16": "https://www.postgresql.org/docs/16/app-createdb.html",
+      "17": "https://www.postgresql.org/docs/17/app-createdb.html",
+      "18": "https://www.postgresql.org/docs/18/app-createdb.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/scripts/createdb.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/scripts/createdb.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/scripts/createdb.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/scripts/createdb.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/scripts/createdb.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/scripts/createdb.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/scripts/createdb.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/scripts/createdb.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/scripts/createdb.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-password",
+      "spellings": {
+        "short": "-w",
+        "long": [
+          "--no-password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "password",
+      "spellings": {
+        "short": "-W",
+        "long": [
+          "--password"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PasswordPrompt",
+        "type": "PgPasswordPromptMode"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "echo",
+      "spellings": {
+        "short": "-e",
+        "long": [
+          "--echo"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Echo",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "owner",
+      "spellings": {
+        "short": "-O",
+        "long": [
+          "--owner"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Owner",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "tablespace",
+      "spellings": {
+        "short": "-D",
+        "long": [
+          "--tablespace"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Tablespace",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "template",
+      "spellings": {
+        "short": "-T",
+        "long": [
+          "--template"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Template",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "encoding",
+      "spellings": {
+        "short": "-E",
+        "long": [
+          "--encoding"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Encoding",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "strategy",
+      "spellings": {
+        "short": "-S",
+        "long": [
+          "--strategy"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Strategy",
+        "type": "PgCreateDbStrategy?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "lc-collate",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--lc-collate"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "LcCollate",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "lc-ctype",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--lc-ctype"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "LcCtype",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "locale",
+      "spellings": {
+        "short": "-l",
+        "long": [
+          "--locale"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Locale",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "maintenance-db",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--maintenance-db"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MaintenanceDatabase",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "locale-provider",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--locale-provider"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "LocaleProvider",
+        "type": "PgCreateDbLocaleProvider?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "builtin-locale",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--builtin-locale"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "BuiltinLocale",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "icu-locale",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--icu-locale"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IcuLocale",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "icu-rules",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--icu-rules"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IcuRules",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "database-name",
+      "spellings": {
+        "short": null,
+        "long": [
+          "<dbname>"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "DatabaseName",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "description",
+      "spellings": {
+        "short": null,
+        "long": [
+          "<description>"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Description",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "strategy",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "locale-provider",
+        "icu-locale",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": [
+        "added --strategy, --locale-provider, --icu-locale"
+      ]
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "strategy",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "locale-provider",
+        "icu-locale",
+        "icu-rules",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": [
+        "added --icu-rules"
+      ]
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "strategy",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "locale-provider",
+        "builtin-locale",
+        "icu-locale",
+        "icu-rules",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": [
+        "added --builtin-locale"
+      ]
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-createdb.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "host",
+        "port",
+        "username",
+        "no-password",
+        "password",
+        "echo",
+        "owner",
+        "tablespace",
+        "template",
+        "encoding",
+        "strategy",
+        "lc-collate",
+        "lc-ctype",
+        "locale",
+        "maintenance-db",
+        "locale-provider",
+        "builtin-locale",
+        "icu-locale",
+        "icu-rules",
+        "database-name",
+        "description"
+      ],
+      "changesFromPreviousMajor": []
+    }
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-19",
+    "method": "Compared option tables/parser in src/bin/scripts/createdb.c across REL_10_STABLE..REL_18_STABLE where the tool exists.",
+    "result": "No unexplained source/spec inventory differences remain."
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Hard validation, positional arguments, aliases, defaults, and mode-specific behavior audited at version boundaries."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Every inventory entry has an intended typed property or explicit special binding; CI reflection/runtime coverage is required."
+  }
+}
