@@ -83,7 +83,7 @@ public sealed class Phase4ExecutionTests
 
         Assert.Equal("tar", ValueAfter(runner.LastRequest!.Arguments, "--format"));
         Assert.Equal("pg_wal/archive_status", ValueAfter(runner.LastRequest.Arguments, "--ignore"));
-        Assert.Equal("backup.tar", runner.LastRequest.Arguments[^1]);
+        Assert.Equal("backup.tar", runner.LastRequest.Arguments[runner.LastRequest.Arguments.Count - 1]);
     }
 
     [Fact]
