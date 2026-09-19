@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_isready",
+  "researchedAt": "2026-09-19",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pg-isready.html",
+      "11": "https://www.postgresql.org/docs/11/app-pg-isready.html",
+      "12": "https://www.postgresql.org/docs/12/app-pg-isready.html",
+      "13": "https://www.postgresql.org/docs/13/app-pg-isready.html",
+      "14": "https://www.postgresql.org/docs/14/app-pg-isready.html",
+      "15": "https://www.postgresql.org/docs/15/app-pg-isready.html",
+      "16": "https://www.postgresql.org/docs/16/app-pg-isready.html",
+      "17": "https://www.postgresql.org/docs/17/app-pg-isready.html",
+      "18": "https://www.postgresql.org/docs/18/app-pg-isready.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/scripts/pg_isready.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/scripts/pg_isready.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/scripts/pg_isready.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/scripts/pg_isready.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/scripts/pg_isready.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/scripts/pg_isready.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/scripts/pg_isready.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/scripts/pg_isready.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/scripts/pg_isready.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "dbname",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--dbname"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Database",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "quiet",
+      "spellings": {
+        "short": "-q",
+        "long": [
+          "--quiet"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Quiet",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "timeout",
+      "spellings": {
+        "short": "-t",
+        "long": [
+          "--timeout"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ConnectTimeoutSeconds",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pg-isready.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus stable-branch source option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "dbname",
+        "host",
+        "port",
+        "quiet",
+        "timeout",
+        "username"
+      ],
+      "changesFromPreviousMajor": []
+    }
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-19",
+    "method": "Compared option tables/parser in src/bin/scripts/pg_isready.c across REL_10_STABLE..REL_18_STABLE where the tool exists.",
+    "result": "No unexplained source/spec inventory differences remain."
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Hard validation, positional arguments, aliases, defaults, and mode-specific behavior audited at version boundaries."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-19",
+    "result": "Every inventory entry has an intended typed property or explicit special binding; CI reflection/runtime coverage is required."
+  }
+}
