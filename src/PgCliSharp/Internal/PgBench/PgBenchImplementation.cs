@@ -53,29 +53,6 @@ internal static class PgBenchArgumentBuilder
 
         MaintenanceArgument.AddValue(args, "--client", options.Clients);
         MaintenanceArgument.AddFlag(args, "--connect", options.ConnectPerTransaction);
-        if (options.Scripts.Count > 0 &&
-            !options.SelectOnly &&
-            !options.SkipSomeUpdates &&
-            options.Scripts.All(script => script is not null && script.Weight == 0))
-        {
-            throw new PgInvalidOptionValueException(
-                version,
-                "--builtin/--file",
-                "total script weight 0");
-        }
-
-        int scriptCount =
-            options.Scripts.Count +
-            (options.SelectOnly ? 1 : 0) +
-            (options.SkipSomeUpdates ? 1 : 0);
-        if (scriptCount > 128)
-        {
-            throw new PgInvalidOptionValueException(
-                version,
-                "--builtin/--file",
-                scriptCount);
-        }
-
         foreach (PgBenchVariableAssignment variable in options.Variables)
             MaintenanceArgument.AddValue(args, "--define", variable.Name + "=" + variable.Value);
         MaintenanceArgument.AddValue(args, "--jobs", options.Jobs);
@@ -189,8 +166,16 @@ internal static class PgBenchValidator
             throw new PgInvalidOptionValueException(version, "--rate", options.Rate.Value);
         if (options.LatencyLimitMilliseconds.HasValue && options.LatencyLimitMilliseconds.Value <= 0)
             throw new PgInvalidOptionValueException(version, "--latency-limit", options.LatencyLimitMilliseconds.Value);
-        if (options.SamplingRate.HasValue && (options.SamplingRate.Value <= 0 || options.SamplingRate.Value > 1))
-            throw new PgInvalidOptionValueException(version, "--sampling-rate", options.SamplingRate.Value);
+        if (options.SamplingRate.HasValue &&
+            (double.IsNaN(options.SamplingRate.Value) ||
+             options.SamplingRate.Value <= 0 ||
+             options.SamplingRate.Value > 1))
+        {
+            throw new PgInvalidOptionValueException(
+                version,
+                "--sampling-rate",
+                options.SamplingRate.Value);
+        }
         if (options.MaxTries.HasValue && options.MaxTries.Value < 0)
             throw new PgInvalidOptionValueException(version, "--max-tries", options.MaxTries.Value);
 
@@ -249,6 +234,35 @@ internal static class PgBenchValidator
                     version,
                     "--builtin/--file",
                     script?.Value);
+            }
+        }
+
+        int scriptCount =
+            options.Scripts.Count +
+            (options.SelectOnly ? 1 : 0) +
+            (options.SkipSomeUpdates ? 1 : 0);
+        if (scriptCount > 128)
+        {
+            throw new PgInvalidOptionValueException(
+                version,
+                "--builtin/--file",
+                scriptCount);
+        }
+
+        if (scriptCount > 0)
+        {
+            long totalWeight =
+                (options.SelectOnly ? 1L : 0L) +
+                (options.SkipSomeUpdates ? 1L : 0L);
+            foreach (PgBenchScript script in options.Scripts)
+                totalWeight += script.Weight;
+
+            if (totalWeight == 0)
+            {
+                throw new PgInvalidOptionValueException(
+                    version,
+                    "--builtin/--file",
+                    "total script weight 0");
             }
         }
 

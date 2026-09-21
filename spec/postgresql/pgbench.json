@@ -1068,7 +1068,9 @@
         "type": "PgBenchRandomSeed?"
       },
       "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
-      "notes": []
+      "notes": [
+        "PostgreSQL 11-17 parse numeric seeds through C unsigned long; the practical maximum is therefore ABI/platform-dependent. PostgreSQL 18 switches to explicit uint64 parsing. PgCliSharp preserves the documented unsigned-integer API rather than imposing a narrower cross-platform cap."
+      ]
     },
     {
       "id": "show-script",
@@ -1778,7 +1780,7 @@
   },
   "sourceLevelVerification": {
     "verifiedAt": "2026-09-21",
-    "result": "Audited mode-specific options, repeatable scripts/variables, retry constraints, logging/progress/partition hard conflicts, initialization-step value availability (including G from PostgreSQL 13), script-weight semantics, random-seed syntax, and exit-status history (runtime status 2 from PostgreSQL 12)."
+    "result": "Audited mode-specific options, repeatable scripts/variables, retry constraints, logging/progress/partition hard conflicts, initialization-step value availability (including G from PostgreSQL 13), script-weight semantics, random-seed syntax/ABI history, sampling finite-range validation, and exit-status history (runtime status 2 from PostgreSQL 12)."
   },
   "apiCoverageVerification": {
     "verifiedAt": "2026-09-21",
@@ -1824,6 +1826,10 @@
     {
       "id": "script-weights",
       "behavior": "Individual builtin/file script weights may be zero and are then ignored. Negative weights are invalid. If explicit/shortcut scripts are present, total selectable weight must be positive. Upstream limits the combined script set to 128."
+    },
+    {
+      "id": "sampling-finite-range",
+      "behavior": "--sampling-rate must be a finite numeric value in (0,1]; NaN is rejected before process startup."
     }
   ]
 }
