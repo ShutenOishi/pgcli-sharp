@@ -1418,9 +1418,9 @@
     }
   },
   "io": {
-    "batch": "Ordered --command/--file actions and finite stdin use one-shot streaming execution.",
-    "session": "Long-lived redirected duplex session is programmatic pipe I/O, not TTY/PTY emulation.",
-    "stderr": "Caller-owned streaming is supported by the Phase 6 rich-I/O execution contract."
+    "batch": "PsqlIo models finite caller-owned stdin/stdout/stderr. Ordered --command/--file actions use one-shot streaming execution.",
+    "session": "PsqlSessionIo plus PsqlSession model a long-lived redirected duplex session. The session is programmatic pipe I/O, not TTY/PTY emulation.",
+    "stderr": "Caller-owned stderr streaming is optional. When used, PsqlResult.StandardError is empty instead of retaining an unbounded duplicate."
   },
   "exitStatuses": {
     "0": "normal completion",

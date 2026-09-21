@@ -27,7 +27,7 @@ public sealed class Phase6ExecutionTests
 
         PsqlResult result = await tool.ExecuteAsync(
             options,
-            new PgMaintenanceIo(input, output, error));
+            new PsqlIo(input, output, error));
 
         Assert.Equal(PsqlExitStatus.ScriptError, result.Status);
         Assert.Equal(stdoutBytes, output.ToArray());
@@ -89,6 +89,38 @@ public sealed class Phase6ExecutionTests
 
         PgBenchResult result = await pg12.ExecuteAsync(new PgBenchOptions());
         Assert.Equal(PgBenchExitStatus.RuntimeError, result.Status);
+    }
+
+
+    [Fact]
+    public async Task PgBench_ForwardsOutputAndErrorWithoutExposingStdin()
+    {
+        byte[] stdoutBytes = Encoding.UTF8.GetBytes("benchmark summary\n");
+        byte[] stderrBytes = Encoding.UTF8.GetBytes("progress: 5.0 s\n");
+        var runner = new FakeRunner(
+            "pgbench",
+            "18.2",
+            stdoutBytes,
+            stderrBytes,
+            0);
+        var tool = new PgBench(
+            "/fake/pgbench",
+            PostgreSqlMajorVersion.V18,
+            runner);
+        using var output = new MemoryStream();
+        using var error = new MemoryStream();
+
+        PgBenchResult result = await tool.ExecuteAsync(
+            new PgBenchOptions(),
+            new PgBenchIo(output, error));
+
+        Assert.Equal(PgBenchExitStatus.Success, result.Status);
+        Assert.Equal(stdoutBytes, output.ToArray());
+        Assert.Equal(stderrBytes, error.ToArray());
+        Assert.Equal(string.Empty, result.StandardError);
+        Assert.Null(runner.LastRequest!.StandardInput);
+        Assert.Same(output, runner.LastRequest.StandardOutput);
+        Assert.Same(error, runner.LastRequest.StandardError);
     }
 
     [Fact]

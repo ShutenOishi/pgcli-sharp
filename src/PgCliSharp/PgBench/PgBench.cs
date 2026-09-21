@@ -1,5 +1,6 @@
 using PgCliSharp.Internal.DatabaseMaintenance;
 using PgCliSharp.Internal.Execution;
+using PgCliSharp.Internal.Localization;
 using PgCliSharp.Internal.PgBench;
 
 namespace PgCliSharp;
@@ -252,6 +253,43 @@ public sealed class PgBenchOptions
     public IDictionary<string, string> EnvironmentVariables { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 }
 
+
+/// <summary>
+/// <para>EN: Provides caller-owned stdout/stderr destinations for pgbench. pgbench does not expose a standard-input stream in this API.</para>
+/// <para>JA: pgbench の呼び出し側所有 stdout/stderr 出力先を提供します。この API では pgbench の標準入力 stream は公開しません。</para>
+/// </summary>
+public sealed class PgBenchIo
+{
+    /// <summary><para>EN: Creates optional pgbench stdout/stderr destinations. Null stderr preserves captured diagnostics in PgBenchResult.</para><para>JA: pgbench の任意の stdout/stderr 出力先を作成します。stderr が null の場合は PgBenchResult に診断を保持します。</para></summary>
+    public PgBenchIo(
+        Stream? standardOutput = null,
+        Stream? standardError = null)
+    {
+        if (standardOutput is not null && !standardOutput.CanWrite)
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable),
+                nameof(standardOutput));
+        if (standardError is not null && !standardError.CanWrite)
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable),
+                nameof(standardError));
+
+        StandardOutput = standardOutput;
+        StandardError = standardError;
+    }
+
+    /// <summary><para>EN: Gets optional pgbench stdout destination.</para><para>JA: 任意の pgbench stdout 出力先を取得します。</para></summary>
+    public Stream? StandardOutput { get; }
+
+    /// <summary><para>EN: Gets optional pgbench stderr destination. When set, PgBenchResult.StandardError is empty.</para><para>JA: 任意の pgbench stderr 出力先を取得します。指定した場合、PgBenchResult.StandardError は空文字です。</para></summary>
+    public Stream? StandardError { get; }
+
+    internal PgMaintenanceIo ToExecutionIo() =>
+        new PgMaintenanceIo(
+            standardOutput: StandardOutput,
+            standardError: StandardError);
+}
+
 /// <summary><para>EN: Result of one pgbench execution.</para><para>JA: 1 回の pgbench 実行結果です。</para></summary>
 public sealed class PgBenchResult : PgMaintenanceResult
 {
@@ -279,7 +317,7 @@ public sealed class PgBench
     public PostgreSqlMajorVersion Version => _executor.Version;
 
     /// <summary><para>EN: Validates and executes pgbench. Exit codes 0-1 are typed for PostgreSQL 10-11; PostgreSQL 12+ additionally defines runtime-error status 2.</para><para>JA: pgbench を検証して実行します。PostgreSQL 10〜11 は終了コード 0〜1、PostgreSQL 12 以降は実行時 error の 2 も型付き status として返します。</para></summary>
-    public async Task<PgBenchResult> ExecuteAsync(PgBenchOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+    public async Task<PgBenchResult> ExecuteAsync(PgBenchOptions options, PgBenchIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
@@ -290,7 +328,7 @@ public sealed class PgBench
         IReadOnlyList<string> arguments = PgBenchArgumentBuilder.Build(options, Version);
         MaintenanceExecutionInfo info = await _executor.RunAsync(
             arguments,
-            io,
+            io?.ToExecutionIo(),
             options.EnvironmentVariables,
             timeout,
             cancellationToken,

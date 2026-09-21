@@ -1743,9 +1743,9 @@
     }
   },
   "io": {
-    "standardOutput": "Benchmark summaries and progress can be streamed to caller-owned output.",
-    "standardError": "Debug/show-script/diagnostic output can be streamed without mandatory whole-output buffering.",
-    "standardInput": "pgbench is modeled as finite execution; no psql-style duplex session is exposed."
+    "standardOutput": "PgBenchIo streams benchmark summaries to a caller-owned stdout destination when supplied.",
+    "standardError": "PgBenchIo streams progress/debug/diagnostic output to a caller-owned stderr destination without mandatory whole-output buffering.",
+    "standardInput": "No pgbench stdin is exposed in the public I/O type because the audited PostgreSQL 10-18 CLI does not define a standard-input workload contract."
   },
   "exitStatuses": {
     "0": {

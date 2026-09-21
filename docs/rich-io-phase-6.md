@@ -87,11 +87,11 @@ pgbench exit-status behavior also has a historical boundary. PostgreSQL 10-11 us
 
 ## I/O design
 
-The existing one-shot runner remains suitable for finite psql scripts and pgbench. It already forwards finite stdin and caller-owned stdout without converting binary/text output into one mandatory string.
+The existing one-shot runner remains suitable for finite psql scripts and pgbench. Phase 6 exposes tool-specific public I/O models rather than reusing the Phase 5 maintenance type: `PsqlIo` carries optional stdin/stdout/stderr for finite psql runs, while `PgBenchIo` deliberately exposes stdout/stderr only because the audited pgbench CLI has no stdin workload contract. Internally both still use the established process runner.
 
 It is not sufficient for a caller that needs to write commands after psql has started. ADR-0013 therefore adds a separate long-lived redirected-process abstraction. The session must allow writes, explicit EOF, streamed stdout/stderr, cancellation, timeout, and completion metadata.
 
-A redirected psql session is intentionally documented as non-TTY. Native PTY/terminal emulation is not included in the initial Phase 6 contract.
+A redirected psql session is intentionally documented as non-TTY. Native PTY/terminal emulation is not included in the initial Phase 6 contract. `PsqlSessionIo` carries caller-owned stdout/stderr destinations while the running `PsqlSession` exposes its writable stdin stream directly.
 
 ## Audit status
 

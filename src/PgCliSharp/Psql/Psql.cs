@@ -218,6 +218,50 @@ public sealed class PsqlOptions
     public IDictionary<string, string> EnvironmentVariables { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 }
 
+
+/// <summary>
+/// <para>EN: Provides caller-owned streams for a finite psql invocation.</para>
+/// <para>JA: 有限な psql 実行に渡す呼び出し側所有 stream を提供します。</para>
+/// </summary>
+public sealed class PsqlIo
+{
+    /// <summary><para>EN: Creates optional psql standard-input/output/error streams. Null stderr preserves captured diagnostics in PsqlResult.</para><para>JA: psql の任意の標準入力・標準出力・標準エラーストリームを作成します。stderr が null の場合は PsqlResult に診断を保持します。</para></summary>
+    public PsqlIo(
+        Stream? standardInput = null,
+        Stream? standardOutput = null,
+        Stream? standardError = null)
+    {
+        if (standardInput is not null && !standardInput.CanRead)
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.InputStreamMustBeReadable),
+                nameof(standardInput));
+        if (standardOutput is not null && !standardOutput.CanWrite)
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable),
+                nameof(standardOutput));
+        if (standardError is not null && !standardError.CanWrite)
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable),
+                nameof(standardError));
+
+        StandardInput = standardInput;
+        StandardOutput = standardOutput;
+        StandardError = standardError;
+    }
+
+    /// <summary><para>EN: Gets optional psql stdin source.</para><para>JA: 任意の psql stdin source を取得します。</para></summary>
+    public Stream? StandardInput { get; }
+
+    /// <summary><para>EN: Gets optional psql stdout destination.</para><para>JA: 任意の psql stdout 出力先を取得します。</para></summary>
+    public Stream? StandardOutput { get; }
+
+    /// <summary><para>EN: Gets optional psql stderr destination. When set, PsqlResult.StandardError is empty.</para><para>JA: 任意の psql stderr 出力先を取得します。指定した場合、PsqlResult.StandardError は空文字です。</para></summary>
+    public Stream? StandardError { get; }
+
+    internal PgMaintenanceIo ToExecutionIo() =>
+        new PgMaintenanceIo(StandardInput, StandardOutput, StandardError);
+}
+
 /// <summary><para>EN: Result of one finite psql execution.</para><para>JA: 1 回の有限な psql 実行結果です。</para></summary>
 public sealed class PsqlResult : PgMaintenanceResult
 {
@@ -415,7 +459,7 @@ public sealed class Psql
     }
 
     /// <summary><para>EN: Validates and executes a finite psql invocation. Known psql exit codes 0-3 are returned as typed status.</para><para>JA: 有限な psql 実行を検証して実行します。既知の psql 終了コード 0〜3 は型付き status として返します。</para></summary>
-    public async Task<PsqlResult> ExecuteAsync(PsqlOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+    public async Task<PsqlResult> ExecuteAsync(PsqlOptions options, PsqlIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
@@ -426,7 +470,7 @@ public sealed class Psql
         IReadOnlyList<string> arguments = PsqlArgumentBuilder.Build(options);
         MaintenanceExecutionInfo info = await _executor.RunAsync(
             arguments,
-            io,
+            io?.ToExecutionIo(),
             options.EnvironmentVariables,
             timeout,
             cancellationToken,
