@@ -244,7 +244,7 @@ public sealed class Phase5ArgumentAndValidationTests
         return args[index + 1];
     }
 
-    private static IReadOnlyList<string> ValuesAfter(IReadOnlyList<string> args, string option)
+    private static List<string> ValuesAfter(IReadOnlyList<string> args, string option)
     {
         var values = new List<string>();
         for (int index = 0; index < args.Count - 1; index++)
