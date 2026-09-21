@@ -31,7 +31,10 @@ public sealed class Phase6ArgumentAndValidationTests
         Assert.Contains("empty=", ValuesAfter(args, "--set"));
 
         List<string> ordered = ActionValues(args);
-        Assert.Equal(new[] { "C:SELECT 1", "F:script.sql", "C:\\dt" }, ordered);
+        Assert.Equal(3, ordered.Count);
+        Assert.Equal("C:SELECT 1", ordered[0]);
+        Assert.Equal("F:script.sql", ordered[1]);
+        Assert.Equal("C:\\dt", ordered[2]);
     }
 
     [Fact]
@@ -128,7 +131,10 @@ public sealed class Phase6ArgumentAndValidationTests
 
         Assert.Equal("dtG", ValueAfter(args, "--init-steps"));
         Assert.Equal("42", ValueAfter(args, "--random-seed"));
-        Assert.Equal(new[] { "B:select-only@2", "F:custom.sql" }, ScriptValues(args));
+        List<string> scripts = ScriptValues(args);
+        Assert.Equal(2, scripts.Count);
+        Assert.Equal("B:select-only@2", scripts[0]);
+        Assert.Equal("F:custom.sql", scripts[1]);
     }
 
     [Fact]
