@@ -88,11 +88,17 @@ public sealed class Phase6ExecutionTests
             TimeSpan.FromSeconds(9));
 
         byte[] inputBytes = Encoding.UTF8.GetBytes("select 42;\n\\q\n");
+#if NET8_0_OR_GREATER
+        await session.StandardInput.WriteAsync(
+            inputBytes.AsMemory(),
+            CancellationToken.None);
+#else
         await session.StandardInput.WriteAsync(
             inputBytes,
             0,
             inputBytes.Length,
             CancellationToken.None);
+#endif
         session.CompleteInput();
 
         PsqlSessionResult result = await session.Completion;
