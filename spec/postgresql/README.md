@@ -77,3 +77,8 @@ Phase 4 adds machine-readable inventories for `pg_basebackup`, `pg_receivewal`, 
 ## Phase 5 tools
 
 Phase 5 adds machine-readable inventories for `createdb`, `dropdb`, `createuser`, `dropuser`, `vacuumdb`, `reindexdb`, `clusterdb`, `pg_isready`, and `pg_amcheck`. The specifications record PostgreSQL 10-18 per-major inventories, with whole-tool availability for `pg_amcheck` beginning at PostgreSQL 14. Phase 5 also extends `argumentMode` with `optional` for upstream options such as `pg_amcheck --install-missing[=SCHEMA]`. Research notes are in [`docs/database-maintenance-phase-5.md`](../../docs/database-maintenance-phase-5.md).
+
+
+## Phase 6 tools
+
+Phase 6 adds machine-readable inventories for `psql` and `pgbench` across PostgreSQL 10-18. The psql specification records the PostgreSQL 12 `--csv` boundary, ordered command/file actions, redirected-session semantics, and the documented 0-3 exit-status domain. The pgbench specification records option-table changes in PostgreSQL 11, 13, 15, and 17, including the report-option rename and the PostgreSQL 17 `-d` reassignment. Human-readable research is in [`docs/rich-io-phase-6.md`](../../docs/rich-io-phase-6.md).

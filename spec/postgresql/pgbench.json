@@ -1,0 +1,1754 @@
+{
+  "schemaVersion": 1,
+  "tool": "pgbench",
+  "researchedAt": "2026-09-21",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10,
+    "sourcePolicy": "Official per-major PostgreSQL application documentation plus REL_10_STABLE..REL_18_STABLE src/bin/pgbench/pgbench.c option tables/parser source."
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/pgbench.html",
+      "11": "https://www.postgresql.org/docs/11/pgbench.html",
+      "12": "https://www.postgresql.org/docs/12/pgbench.html",
+      "13": "https://www.postgresql.org/docs/13/pgbench.html",
+      "14": "https://www.postgresql.org/docs/14/pgbench.html",
+      "15": "https://www.postgresql.org/docs/15/pgbench.html",
+      "16": "https://www.postgresql.org/docs/16/pgbench.html",
+      "17": "https://www.postgresql.org/docs/17/pgbench.html",
+      "18": "https://www.postgresql.org/docs/18/pgbench.html"
+    },
+    "supplementalUpstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pgbench/pgbench.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pgbench/pgbench.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pgbench/pgbench.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pgbench/pgbench.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pgbench/pgbench.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pgbench/pgbench.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pgbench/pgbench.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pgbench/pgbench.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pgbench/pgbench.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": "-?",
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Utility command"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": "-V",
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "builtin",
+      "spellings": {
+        "short": "-b",
+        "long": [
+          "--builtin"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Scripts",
+        "type": "IList<PgBenchScript>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "client",
+      "spellings": {
+        "short": "-c",
+        "long": [
+          "--client"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Clients",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "connect",
+      "spellings": {
+        "short": "-C",
+        "long": [
+          "--connect"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ConnectPerTransaction",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "dbname",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--dbname"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Database",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Long/short option added in PostgreSQL 17; wrapper may use the portable positional database form across all supported majors."
+      ]
+    },
+    {
+      "id": "debug",
+      "spellings": {
+        "short": "-d",
+        "long": [
+          "--debug"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Debug",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Short -d means debug through PostgreSQL 16; in PostgreSQL 17+ -d means --dbname. Wrapper uses --debug."
+      ],
+      "spellingAvailability": {
+        "short": {
+          "majorSince": 10,
+          "majorUntil": 16
+        },
+        "long": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "define",
+      "spellings": {
+        "short": "-D",
+        "long": [
+          "--define"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Variables",
+        "type": "IList<PgBenchVariableAssignment>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "file",
+      "spellings": {
+        "short": "-f",
+        "long": [
+          "--file"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Scripts",
+        "type": "IList<PgBenchScript>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "fillfactor",
+      "spellings": {
+        "short": "-F",
+        "long": [
+          "--fillfactor"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "FillFactor",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "host",
+      "spellings": {
+        "short": "-h",
+        "long": [
+          "--host"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Host",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "initialize",
+      "spellings": {
+        "short": "-i",
+        "long": [
+          "--initialize"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Initialize",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "init-steps",
+      "spellings": {
+        "short": "-I",
+        "long": [
+          "--init-steps"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "InitializationSteps",
+        "type": "IList<PgBenchInitializationStep>"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "jobs",
+      "spellings": {
+        "short": "-j",
+        "long": [
+          "--jobs"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Jobs",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "log",
+      "spellings": {
+        "short": "-l",
+        "long": [
+          "--log"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "LogTransactions",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "latency-limit",
+      "spellings": {
+        "short": "-L",
+        "long": [
+          "--latency-limit"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "LatencyLimitMilliseconds",
+        "type": "decimal?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "no-vacuum",
+      "spellings": {
+        "short": "-n",
+        "long": [
+          "--no-vacuum"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "NoVacuum",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "port",
+      "spellings": {
+        "short": "-p",
+        "long": [
+          "--port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Port",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "progress",
+      "spellings": {
+        "short": "-P",
+        "long": [
+          "--progress"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ProgressSeconds",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "protocol",
+      "spellings": {
+        "short": "-M",
+        "long": [
+          "--protocol"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Protocol",
+        "type": "PgBenchProtocol?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "quiet",
+      "spellings": {
+        "short": "-q",
+        "long": [
+          "--quiet"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Quiet",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "report-latencies",
+      "spellings": {
+        "short": "-r",
+        "long": [
+          "--report-latencies"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 14
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ReportPerCommand",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Canonical long spelling through PostgreSQL 14."
+      ]
+    },
+    {
+      "id": "report-per-command",
+      "spellings": {
+        "short": "-r",
+        "long": [
+          "--report-per-command"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ReportPerCommand",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Replaces --report-latencies spelling from PostgreSQL 15."
+      ]
+    },
+    {
+      "id": "rate",
+      "spellings": {
+        "short": "-R",
+        "long": [
+          "--rate"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Rate",
+        "type": "decimal?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "scale",
+      "spellings": {
+        "short": "-s",
+        "long": [
+          "--scale"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Scale",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "select-only",
+      "spellings": {
+        "short": "-S",
+        "long": [
+          "--select-only"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "SelectOnly",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "skip-some-updates",
+      "spellings": {
+        "short": "-N",
+        "long": [
+          "--skip-some-updates"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "SkipSomeUpdates",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "time",
+      "spellings": {
+        "short": "-T",
+        "long": [
+          "--time"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "DurationSeconds",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "transactions",
+      "spellings": {
+        "short": "-t",
+        "long": [
+          "--transactions"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "TransactionsPerClient",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": "-U",
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Username",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "vacuum-all",
+      "spellings": {
+        "short": "-v",
+        "long": [
+          "--vacuum-all"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "VacuumAll",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "unlogged-tables",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--unlogged-tables"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "UnloggedTables",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "tablespace",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--tablespace"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Tablespace",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "index-tablespace",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--index-tablespace"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "IndexTablespace",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "sampling-rate",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--sampling-rate"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "SamplingRate",
+        "type": "double?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "aggregate-interval",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--aggregate-interval"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "AggregateIntervalSeconds",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "progress-timestamp",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--progress-timestamp"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ProgressTimestamp",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "log-prefix",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--log-prefix"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "LogPrefix",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "foreign-keys",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--foreign-keys"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ForeignKeys",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "random-seed",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--random-seed"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "RandomSeed",
+        "type": "PgBenchRandomSeed?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "show-script",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--show-script"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ShowScript",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "partitions",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--partitions"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Partitions",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "partition-method",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--partition-method"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "PartitionMethod",
+        "type": "PgBenchPartitionMethod?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "failures-detailed",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--failures-detailed"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "FailuresDetailed",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "max-tries",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--max-tries"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "MaxTries",
+        "type": "int?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Zero means unlimited and requires --latency-limit or --time."
+      ]
+    },
+    {
+      "id": "verbose-errors",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--verbose-errors"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "VerboseErrors",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "exit-on-abort",
+      "spellings": {
+        "short": null,
+        "long": [
+          "--exit-on-abort"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "ExitOnAbort",
+        "type": "bool"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": []
+    },
+    {
+      "id": "database-name",
+      "spellings": {
+        "short": null,
+        "long": [
+          "<dbname>"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "unset; option not emitted",
+        "upstream": "PostgreSQL tool default"
+      },
+      "api": {
+        "property": "Database",
+        "type": "string?"
+      },
+      "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
+      "notes": [
+        "Portable database representation used by the wrapper for PostgreSQL 10-18."
+      ]
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-latencies",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-latencies",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added --init-steps and --random-seed"
+      ]
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-latencies",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-latencies",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "show-script",
+        "partitions",
+        "partition-method",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added --show-script, --partitions, and --partition-method"
+      ]
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-latencies",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "show-script",
+        "partitions",
+        "partition-method",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-per-command",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "show-script",
+        "partitions",
+        "partition-method",
+        "failures-detailed",
+        "max-tries",
+        "verbose-errors",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "renamed --report-latencies to --report-per-command; added --failures-detailed, --max-tries, and --verbose-errors"
+      ]
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-per-command",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "show-script",
+        "partitions",
+        "partition-method",
+        "failures-detailed",
+        "max-tries",
+        "verbose-errors",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "dbname",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-per-command",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "show-script",
+        "partitions",
+        "partition-method",
+        "failures-detailed",
+        "max-tries",
+        "verbose-errors",
+        "exit-on-abort",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": [
+        "added --dbname and --exit-on-abort; -d changed from debug to dbname while --debug remains available"
+      ]
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/pgbench.html",
+      "toolAvailable": true,
+      "inventoryBasis": "Official documentation plus REL_<major>_STABLE src/bin/pgbench/pgbench.c option table/parser.",
+      "optionIdsInCurrentMajorDocumentation": [
+        "help",
+        "version",
+        "builtin",
+        "client",
+        "connect",
+        "dbname",
+        "debug",
+        "define",
+        "file",
+        "fillfactor",
+        "host",
+        "initialize",
+        "init-steps",
+        "jobs",
+        "log",
+        "latency-limit",
+        "no-vacuum",
+        "port",
+        "progress",
+        "protocol",
+        "quiet",
+        "report-per-command",
+        "rate",
+        "scale",
+        "select-only",
+        "skip-some-updates",
+        "time",
+        "transactions",
+        "username",
+        "vacuum-all",
+        "unlogged-tables",
+        "tablespace",
+        "index-tablespace",
+        "sampling-rate",
+        "aggregate-interval",
+        "progress-timestamp",
+        "log-prefix",
+        "foreign-keys",
+        "random-seed",
+        "show-script",
+        "partitions",
+        "partition-method",
+        "failures-detailed",
+        "max-tries",
+        "verbose-errors",
+        "exit-on-abort",
+        "database-name"
+      ],
+      "changesFromPreviousMajor": []
+    }
+  },
+  "io": {
+    "standardOutput": "Benchmark summaries and progress can be streamed to caller-owned output.",
+    "standardError": "Debug/show-script/diagnostic output can be streamed without mandatory whole-output buffering.",
+    "standardInput": "pgbench is modeled as finite execution; no psql-style duplex session is exposed."
+  },
+  "exitStatuses": {
+    "0": "successful run",
+    "1": "static/startup/internal error",
+    "2": "error during benchmark run or script execution"
+  },
+  "inventoryVerification": {
+    "verifiedAt": "2026-09-21",
+    "method": "Compared long_options in src/bin/pgbench/pgbench.c across REL_10_STABLE..REL_18_STABLE and checked utility/positional forms in official per-major docs.",
+    "result": "Version deltas are explicitly recorded for PostgreSQL 11, 13, 15, and 17, including the -d meaning change and report option rename."
+  },
+  "sourceLevelVerification": {
+    "verifiedAt": "2026-09-21",
+    "result": "Audited mode-specific options, repeatable scripts/variables, retry constraints, random-seed syntax, and documented exit statuses at version boundaries."
+  },
+  "apiCoverageVerification": {
+    "verifiedAt": "2026-09-21",
+    "result": "Every inventory entry has an intended typed property or explicit special binding. Phase 6 CI will enforce reflection/runtime coverage."
+  }
+}

@@ -1,0 +1,104 @@
+# Phase 6 Research - psql and pgbench rich I/O
+
+Phase 6 implements the roadmap's rich-I/O clients `psql` and `pgbench` under ADR-0011 and the new ADR-0013.
+
+## Scope
+
+- `psql`: PostgreSQL 10-18
+- `pgbench`: PostgreSQL 10-18
+- explicit executable path and executable-major verification remain mandatory
+- publication stays disabled under ADR-0012
+
+Canonical inventories:
+
+- `spec/postgresql/psql.json`
+- `spec/postgresql/pgbench.json`
+
+## psql findings
+
+The official psql synopsis remains `psql [option...] [dbname [username]]` across the supported family.
+
+The upstream option-table audit found one long-option addition across PostgreSQL 10-18:
+
+- PostgreSQL 12 adds `--csv`.
+
+Important execution semantics:
+
+- `--command` and `--file` are repeatable and can be interleaved; psql processes them in command-line order.
+- Once either action form is used, normal stdin command reading is disabled, except that `--file=-` explicitly reads stdin.
+- `--single-transaction` is meaningful only with the non-interactive action path.
+- `--set` / `--variable` distinguish an unset variable (`name`) from an empty value (`name=`), so a plain dictionary is insufficient for exact modeling.
+- psql decides whether it is interactive using terminal detection. Redirected pipes are therefore not equivalent to a real TTY and must not be marketed as PTY emulation.
+- documented exit statuses are 0 (normal), 1 (fatal psql error), 2 (bad connection in non-interactive mode), and 3 (script error with ON_ERROR_STOP).
+
+API implications:
+
+- one ordered `PsqlAction` collection represents command/file sequencing;
+- `PsqlVariableAssignment` preserves unset versus empty values;
+- literal and zero-byte field/record separators use a typed separator value;
+- output formatting uses a finite typed mode, with CSV rejected before PostgreSQL 12;
+- finite batch execution and a long-lived redirected duplex session are separate APIs.
+
+## pgbench findings
+
+The upstream option table changes materially across the support range.
+
+### PostgreSQL 11
+
+Adds:
+
+- `--init-steps`
+- `--random-seed`
+
+### PostgreSQL 13
+
+Adds:
+
+- `--show-script`
+- `--partitions`
+- `--partition-method`
+
+### PostgreSQL 15
+
+Changes:
+
+- `--report-latencies` becomes `--report-per-command` (the `-r` short form remains);
+- adds `--failures-detailed`;
+- adds `--max-tries`;
+- adds `--verbose-errors`.
+
+### PostgreSQL 17
+
+Changes:
+
+- adds `--dbname` / `-d`;
+- `-d` therefore stops being the short form for debug, while `--debug` remains;
+- adds `--exit-on-abort`.
+
+The wrapper can use the positional database form across PostgreSQL 10-18, avoiding needless spelling variation for the ordinary typed Database property. It uses the stable long form `--debug` so the PostgreSQL 17 short-option reassignment cannot create ambiguity.
+
+pgbench supports weighted builtin/file scripts and repeatable variable definitions. It also has structured values worth typing, especially protocol, partition method, initialization steps, and random seed (`time`, `rand`, or an unsigned integer).
+
+Documented pgbench exit statuses are 0 for success, 1 for static/startup/internal errors, and 2 for errors during the run. Phase 6 preserves these as a typed result status rather than losing the distinction in a generic nonzero exit exception.
+
+## I/O design
+
+The existing one-shot runner remains suitable for finite psql scripts and pgbench. It already forwards finite stdin and caller-owned stdout without converting binary/text output into one mandatory string.
+
+It is not sufficient for a caller that needs to write commands after psql has started. ADR-0013 therefore adds a separate long-lived redirected-process abstraction. The session must allow writes, explicit EOF, streamed stdout/stderr, cancellation, timeout, and completion metadata.
+
+A redirected psql session is intentionally documented as non-TTY. Native PTY/terminal emulation is not included in the initial Phase 6 contract.
+
+## Audit status
+
+Completed before public API implementation:
+
+- official documentation URLs recorded for every PostgreSQL major 10-18;
+- stable-branch source option tables compared for both tools;
+- psql PostgreSQL 12 CSV boundary recorded;
+- pgbench PostgreSQL 11/13/15/17 deltas recorded;
+- psql ordered action and variable-assignment semantics recorded;
+- tool-specific exit-status domains recorded;
+- rich I/O design separated from the one-shot process API.
+
+Implementation must still validate exact value ranges and mode-specific hard conflicts while adding validators/tests; any newly discovered boundary is added to the specifications before Phase 6 completion.

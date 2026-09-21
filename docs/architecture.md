@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, ADR-0011, and ADR-0012. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0013. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -135,6 +135,8 @@ Requirements:
 - never include passwords or secrets in diagnostic command-line rendering.
 
 The `netstandard2.0` compatibility backend must map execution results, cancellation, timeout, and failures back into PgCliSharp's own result/exception model. Public behavior should remain consistent across target frameworks.
+
+Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration.
 
 ## 9. Output model
 
@@ -277,7 +279,7 @@ The NuGet and Phase release workflows are manual-only. They require an explicit 
 5. First NuGet preview and publication pipeline validation.
 6. Backup/WAL tools.
 7. Database-management and maintenance client tools.
-8. `psql`, `pgbench`, and tools with richer stdin/stdout behavior.
+8. `psql`, `pgbench`, and tools with richer stdin/stdout behavior, including ordered psql actions and explicit redirected-session semantics.
 9. Server applications in a clearly separated namespace/category.
 10. Public API review and 1.0 stabilization.
 
