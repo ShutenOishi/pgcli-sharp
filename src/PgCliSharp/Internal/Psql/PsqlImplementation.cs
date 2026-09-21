@@ -81,7 +81,7 @@ internal static class PsqlArgumentBuilder
         return args;
     }
 
-    private static void AddSeparator(ICollection<string> args, PsqlSeparator? separator, string textOption, string zeroOption)
+    private static void AddSeparator(List<string> args, PsqlSeparator? separator, string textOption, string zeroOption)
     {
         if (separator is null) return;
         if (separator.IsZeroByte)

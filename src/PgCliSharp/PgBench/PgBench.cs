@@ -72,14 +72,22 @@ public sealed class PgBenchScript
     /// <summary><para>EN: Creates a builtin script selection.</para><para>JA: builtin script 選択を作成します。</para></summary>
     public static PgBenchScript Builtin(string name, int weight = 1)
     {
+#if NETSTANDARD2_0
         if (name is null) throw new ArgumentNullException(nameof(name));
+#else
+        ArgumentNullException.ThrowIfNull(name);
+#endif
         return new PgBenchScript(PgBenchScriptKind.Builtin, name, weight);
     }
 
     /// <summary><para>EN: Creates a file script selection.</para><para>JA: file script 選択を作成します。</para></summary>
     public static PgBenchScript File(string path, int weight = 1)
     {
+#if NETSTANDARD2_0
         if (path is null) throw new ArgumentNullException(nameof(path));
+#else
+        ArgumentNullException.ThrowIfNull(path);
+#endif
         return new PgBenchScript(PgBenchScriptKind.File, path, weight);
     }
 }
@@ -90,8 +98,15 @@ public sealed class PgBenchVariableAssignment
     /// <summary><para>EN: Creates a variable assignment.</para><para>JA: variable assignment を作成します。</para></summary>
     public PgBenchVariableAssignment(string name, string value)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        Value = value ?? throw new ArgumentNullException(nameof(value));
+#if NETSTANDARD2_0
+        if (name is null) throw new ArgumentNullException(nameof(name));
+        if (value is null) throw new ArgumentNullException(nameof(value));
+#else
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(value);
+#endif
+        Name = name;
+        Value = value;
     }
 
     /// <summary><para>EN: Gets variable name.</para><para>JA: variable 名を取得します。</para></summary>

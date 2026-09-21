@@ -45,7 +45,11 @@ public sealed class PsqlAction
     /// <param name="command"><para>EN: Command text.</para><para>JA: command 文字列です。</para></param>
     public static PsqlAction Command(string command)
     {
+#if NETSTANDARD2_0
         if (command is null) throw new ArgumentNullException(nameof(command));
+#else
+        ArgumentNullException.ThrowIfNull(command);
+#endif
         return new PsqlAction(PsqlActionKind.Command, command);
     }
 
@@ -53,7 +57,11 @@ public sealed class PsqlAction
     /// <param name="fileName"><para>EN: File name or "-".</para><para>JA: file 名または "-" です。</para></param>
     public static PsqlAction File(string fileName)
     {
+#if NETSTANDARD2_0
         if (fileName is null) throw new ArgumentNullException(nameof(fileName));
+#else
+        ArgumentNullException.ThrowIfNull(fileName);
+#endif
         return new PsqlAction(PsqlActionKind.File, fileName);
     }
 }
@@ -80,15 +88,27 @@ public sealed class PsqlVariableAssignment
     /// <summary><para>EN: Creates an assignment that unsets a psql variable.</para><para>JA: psql variable を unset する assignment を作成します。</para></summary>
     public static PsqlVariableAssignment Unset(string name)
     {
+#if NETSTANDARD2_0
         if (name is null) throw new ArgumentNullException(nameof(name));
+#else
+        ArgumentNullException.ThrowIfNull(name);
+#endif
         return new PsqlVariableAssignment(name, null, false);
     }
 
     /// <summary><para>EN: Creates an assignment that sets a value; an empty string remains an explicit empty value.</para><para>JA: 値を設定する assignment を作成します。空文字は明示的な空値として保持されます。</para></summary>
     public static PsqlVariableAssignment Set(string name, string value)
     {
+#if NETSTANDARD2_0
         if (name is null) throw new ArgumentNullException(nameof(name));
-        if (value is null) throw new ArgumentNullException(nameof(value));
+#else
+        ArgumentNullException.ThrowIfNull(name);
+#endif
+        #if NETSTANDARD2_0
+                if (value is null) throw new ArgumentNullException(nameof(value));
+        #else
+                ArgumentNullException.ThrowIfNull(value);
+        #endif
         return new PsqlVariableAssignment(name, value, true);
     }
 }
@@ -111,7 +131,11 @@ public sealed class PsqlSeparator
     /// <summary><para>EN: Creates a literal separator, including an explicitly empty separator.</para><para>JA: 明示的な空文字を含む通常 separator を作成します。</para></summary>
     public static PsqlSeparator Text(string value)
     {
+#if NETSTANDARD2_0
         if (value is null) throw new ArgumentNullException(nameof(value));
+#else
+        ArgumentNullException.ThrowIfNull(value);
+#endif
         return new PsqlSeparator(value, false);
     }
 
