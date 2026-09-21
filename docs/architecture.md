@@ -210,6 +210,14 @@ Phase 4 extends the same contract to `pg_basebackup`, `pg_receivewal`, `pg_recvl
 
 Phase 4 also preserves explicit I/O models: pg_basebackup tar stdout and pg_recvlogical streaming output can flow directly into caller-owned streams without whole-payload buffering. Windows CI continues to compile and test the Phase 4 surface under the .NET Framework 4.8 test target so the `netstandard2.0` compatibility contract is exercised alongside Linux/macOS modern targets.
 
+Phase 5 extends the same specification-first contract to the database-management and maintenance clients `createdb`, `dropdb`, `createuser`, `dropuser`, `vacuumdb`, `reindexdb`, `clusterdb`, `pg_isready`, and `pg_amcheck`. The first eight are modeled for PostgreSQL 10-18; `pg_amcheck` is a PostgreSQL 14+ whole-tool boundary and earlier majors fail before process startup.
+
+Each Phase 5 tool retains a dedicated public Options type. Connection-token serialization and maintenance execution plumbing are shared internally only where the upstream audit established matching behavior. Version-varying options use centralized availability catalogs, repeatable selectors preserve caller order, and upstream-determinable invalid combinations are rejected before normal process startup.
+
+Interactive-capable Phase 5 clients can receive caller-owned stdin and stdout streams through `PgMaintenanceIo`. `pg_isready` is intentionally exceptional: exit codes 0 through 3 are domain statuses (`AcceptingConnections`, `RejectingConnections`, `NoResponse`, and `NoAttempt`) and are not treated as ordinary nonzero execution failures; values outside that semantic range still fail as process execution errors. `pg_amcheck --install-missing[=SCHEMA]` is modeled as an option with an optional argument rather than an arbitrary command-line escape hatch.
+
+Phase 5 completeness tests bind every machine-readable inventory entry to a public property or explicit special binding and bind every version-varying long option to centralized runtime availability metadata. Argument/validation and execution tests cover major version boundaries, repeatable ordering, optional arguments, version mismatch, timeout/environment forwarding, stdin/stdout forwarding, cancellation, and pg_isready semantic exit codes. Windows continues to execute the test suite under .NET Framework 4.8 in addition to modern Linux/macOS targets.
+
 ## 13. Test layers
 
 Use three logical test layers:
