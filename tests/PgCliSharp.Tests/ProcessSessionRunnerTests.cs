@@ -25,6 +25,14 @@ public sealed class ProcessSessionRunnerTests
             request,
             CancellationToken.None);
 
+#if NET8_0_OR_GREATER
+        await session.StandardInput.WriteAsync(
+            first.AsMemory(),
+            CancellationToken.None);
+        await session.StandardInput.WriteAsync(
+            second.AsMemory(),
+            CancellationToken.None);
+#else
         await session.StandardInput.WriteAsync(
             first,
             0,
@@ -35,6 +43,7 @@ public sealed class ProcessSessionRunnerTests
             0,
             second.Length,
             CancellationToken.None);
+#endif
 
         session.CompleteInput();
 
