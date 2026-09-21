@@ -97,7 +97,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
     }
 
 #if NETSTANDARD2_0
-    private static IProcessSession StartWithCliWrap(
+    private static CliWrapProcessSession StartWithCliWrap(
         ProcessSessionStartRequest request,
         CancellationToken cancellationToken)
     {
@@ -127,7 +127,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             cancellationToken);
     }
 #else
-    private static IProcessSession StartWithProcess(
+    private static ModernProcessSession StartWithProcess(
         ProcessSessionStartRequest request,
         CancellationToken cancellationToken)
     {
@@ -211,9 +211,6 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                 _process.StandardInput.Close();
             }
             catch (InvalidOperationException)
-            {
-            }
-            catch (ObjectDisposedException)
             {
             }
         }
@@ -425,7 +422,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
 
         private void DisposeSources()
         {
-            _inputPipe.Complete();
+            _inputPipe.Dispose();
             _forcefulCancellation.Dispose();
             _lifetimeCancellation.Dispose();
             _timeoutCancellation?.Dispose();
@@ -433,11 +430,13 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
         }
     }
 
-    private sealed class SessionInputPipe
+    private sealed class SessionInputPipe : IDisposable
     {
         private readonly ConcurrentQueue<byte[]> _queue = new ConcurrentQueue<byte[]>();
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
+        private readonly object _gate = new object();
         private int _completed;
+        private int _disposed;
 
         internal SessionInputPipe()
         {
@@ -450,19 +449,50 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
 
         internal void Enqueue(byte[] buffer, int offset, int count)
         {
-            if (Volatile.Read(ref _completed) != 0)
-                throw new InvalidOperationException("Standard input has already been completed.");
-
             var copy = new byte[count];
             Buffer.BlockCopy(buffer, offset, copy, 0, count);
-            _queue.Enqueue(copy);
-            _signal.Release();
+
+            lock (_gate)
+            {
+                if (_completed != 0)
+                    throw new InvalidOperationException("Standard input has already been completed.");
+                if (_disposed != 0)
+                    throw new ObjectDisposedException(nameof(SessionInputPipe));
+
+                _queue.Enqueue(copy);
+                _signal.Release();
+            }
         }
 
         internal void Complete()
         {
-            if (Interlocked.Exchange(ref _completed, 1) == 0)
+            lock (_gate)
+            {
+                if (_completed != 0)
+                    return;
+
+                _completed = 1;
                 _signal.Release();
+            }
+        }
+
+        public void Dispose()
+        {
+            lock (_gate)
+            {
+                if (_disposed != 0)
+                    return;
+
+                if (_completed == 0)
+                {
+                    _completed = 1;
+                    _signal.Release();
+                }
+
+                _disposed = 1;
+            }
+
+            _signal.Dispose();
         }
 
         private async Task PumpAsync(
