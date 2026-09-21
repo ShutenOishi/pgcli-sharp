@@ -66,7 +66,7 @@ public sealed class PgBenchScript
     public PgBenchScriptKind Kind { get; }
     /// <summary><para>EN: Gets builtin name or file path.</para><para>JA: builtin 名または file path を取得します。</para></summary>
     public string Value { get; }
-    /// <summary><para>EN: Gets selection weight. One is the upstream default.</para><para>JA: 選択 weight を取得します。1 は upstream 既定値です。</para></summary>
+    /// <summary><para>EN: Gets selection weight. One is the upstream default; zero is accepted and causes the script to be ignored.</para><para>JA: 選択 weight を取得します。1 は upstream 既定値で、0 は許可されその script を選択対象から外します。</para></summary>
     public int Weight { get; }
 
     /// <summary><para>EN: Creates a builtin script selection.</para><para>JA: builtin script 選択を作成します。</para></summary>
@@ -155,7 +155,7 @@ public enum PgBenchExitStatus
     Success = 0,
     /// <summary><para>EN: Static, startup, or internal error.</para><para>JA: static/startup/internal error です。</para></summary>
     StartupOrStaticError = 1,
-    /// <summary><para>EN: Error during benchmark/script execution.</para><para>JA: benchmark/script 実行中の error です。</para></summary>
+    /// <summary><para>EN: PostgreSQL 12+ error during benchmark/script execution.</para><para>JA: PostgreSQL 12 以降の benchmark/script 実行中 error です。</para></summary>
     RuntimeError = 2,
 }
 
@@ -278,7 +278,7 @@ public sealed class PgBench
     /// <summary><para>EN: Gets expected PostgreSQL CLI major version.</para><para>JA: 期待する PostgreSQL CLI major version を取得します。</para></summary>
     public PostgreSqlMajorVersion Version => _executor.Version;
 
-    /// <summary><para>EN: Validates and executes pgbench. Known pgbench exit codes 0-2 are returned as typed status.</para><para>JA: pgbench を検証して実行します。既知の pgbench 終了コード 0〜2 は型付き status として返します。</para></summary>
+    /// <summary><para>EN: Validates and executes pgbench. Exit codes 0-1 are typed for PostgreSQL 10-11; PostgreSQL 12+ additionally defines runtime-error status 2.</para><para>JA: pgbench を検証して実行します。PostgreSQL 10〜11 は終了コード 0〜1、PostgreSQL 12 以降は実行時 error の 2 も型付き status として返します。</para></summary>
     public async Task<PgBenchResult> ExecuteAsync(PgBenchOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
 #if NETSTANDARD2_0
@@ -296,8 +296,16 @@ public sealed class PgBench
             cancellationToken,
             throwOnNonZeroExitCode: false).ConfigureAwait(false);
 
-        if (info.Process.ExitCode < 0 || info.Process.ExitCode > 2)
-            throw new PgProcessExecutionException(ExecutablePath, info.Process.ExitCode, info.Process.StandardError);
+        int maximumSemanticExitCode =
+            (int)Version >= (int)PostgreSqlMajorVersion.V12 ? 2 : 1;
+        if (info.Process.ExitCode < 0 ||
+            info.Process.ExitCode > maximumSemanticExitCode)
+        {
+            throw new PgProcessExecutionException(
+                ExecutablePath,
+                info.Process.ExitCode,
+                info.Process.StandardError);
+        }
 
         return new PgBenchResult(
             info.Process.ExitCode,

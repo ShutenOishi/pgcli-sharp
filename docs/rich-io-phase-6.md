@@ -79,11 +79,11 @@ Changes:
 
 The wrapper can use the positional database form across PostgreSQL 10-18, avoiding needless spelling variation for the ordinary typed Database property. It uses the stable long form `--debug` so the PostgreSQL 17 short-option reassignment cannot create ambiguity.
 
-pgbench supports weighted builtin/file scripts and repeatable variable definitions. It also has structured values worth typing, especially protocol, partition method, initialization steps, and random seed (`time`, `rand`, or an unsigned integer).
+pgbench supports weighted builtin/file scripts and repeatable variable definitions. Individual script weight 0 is legal and means that script is ignored; negative weights and an explicitly configured script set whose total selectable weight is zero are rejected. The upstream script-set limit of 128 is also validated. It also has structured values worth typing, especially protocol, partition method, initialization steps, and random seed (`time`, `rand`, or an unsigned integer).
 
 The source-level parser audit also establishes hard pre-execution constraints: initialization-only and benchmarking-only option groups cannot cross modes; sampling/aggregation/log-prefix depend on transaction logging; sampling and aggregation conflict; timestamped progress requires progress; partition method requires a positive partition count; aggregation must divide a configured duration without exceeding it; and unlimited retries require either a latency limit or duration. `--select-only` and `--skip-some-updates` are not mutually exclusive: upstream adds both as builtin scripts when both are specified.
 
-Documented pgbench exit statuses are 0 for success, 1 for static/startup/internal errors, and 2 for errors during the run. Phase 6 preserves these as a typed result status rather than losing the distinction in a generic nonzero exit exception.
+pgbench exit-status behavior also has a historical boundary. PostgreSQL 10-11 use success/status-1 failure behavior, while PostgreSQL 12 introduces the explicit runtime-error exit path and documents status 2 for errors during the benchmark or script execution. Phase 6 therefore accepts status 2 as a typed `RuntimeError` only for PostgreSQL 12+; status 2 from a PostgreSQL 10-11 executable is treated as an unexpected process failure.
 
 ## I/O design
 

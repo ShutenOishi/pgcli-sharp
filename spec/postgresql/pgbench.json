@@ -1746,9 +1746,30 @@
     "standardInput": "pgbench is modeled as finite execution; no psql-style duplex session is exposed."
   },
   "exitStatuses": {
-    "0": "successful run",
-    "1": "static/startup/internal error",
-    "2": "error during benchmark run or script execution"
+    "0": {
+      "meaning": "successful run",
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      }
+    },
+    "1": {
+      "meaning": "static/startup/internal error",
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      }
+    },
+    "2": {
+      "meaning": "error during benchmark run or script execution",
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "notes": [
+        "PostgreSQL 12 introduced the explicit runtime-error exit path and the documented 0/1/2 exit-status contract."
+      ]
+    }
   },
   "inventoryVerification": {
     "verifiedAt": "2026-09-21",
@@ -1757,7 +1778,7 @@
   },
   "sourceLevelVerification": {
     "verifiedAt": "2026-09-21",
-    "result": "Audited mode-specific options, repeatable scripts/variables, retry constraints, logging/progress/partition hard conflicts, initialization-step value availability (including G from PostgreSQL 13), random-seed syntax, and documented exit statuses at version boundaries."
+    "result": "Audited mode-specific options, repeatable scripts/variables, retry constraints, logging/progress/partition hard conflicts, initialization-step value availability (including G from PostgreSQL 13), script-weight semantics, random-seed syntax, and exit-status history (runtime status 2 from PostgreSQL 12)."
   },
   "apiCoverageVerification": {
     "verifiedAt": "2026-09-21",
@@ -1799,6 +1820,10 @@
     {
       "id": "builtin-shortcuts",
       "behavior": "--select-only and --skip-some-updates may be combined; upstream treats them as additional builtin scripts rather than mutually exclusive modes."
+    },
+    {
+      "id": "script-weights",
+      "behavior": "Individual builtin/file script weights may be zero and are then ignored. Negative weights are invalid. If explicit/shortcut scripts are present, total selectable weight must be positive. Upstream limits the combined script set to 128."
     }
   ]
 }

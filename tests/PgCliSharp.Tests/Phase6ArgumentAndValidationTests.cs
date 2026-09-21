@@ -112,24 +112,42 @@ public sealed class Phase6ArgumentAndValidationTests
     }
 
     [Fact]
-    public void PgBench_OrderedScriptsInitStepsAndRandomSeed_AreSerialized()
+    public void PgBench_InitializationSteps_AreSerializedInCallerOrder()
     {
         var options = new PgBenchOptions
         {
             Initialize = true,
-            RandomSeed = PgBenchRandomSeed.Numeric(42),
             Database = "bench",
         };
         options.InitializationSteps.Add(PgBenchInitializationStep.Drop);
         options.InitializationSteps.Add(PgBenchInitializationStep.CreateTables);
         options.InitializationSteps.Add(PgBenchInitializationStep.GenerateServerSide);
+
+        PgBenchValidator.Validate(options, PostgreSqlMajorVersion.V18);
+        IReadOnlyList<string> args = PgBenchArgumentBuilder.Build(
+            options,
+            PostgreSqlMajorVersion.V18);
+
+        Assert.Equal("dtG", ValueAfter(args, "--init-steps"));
+        Assert.Equal("bench", args[args.Count - 1]);
+    }
+
+    [Fact]
+    public void PgBench_OrderedScriptsAndRandomSeed_AreSerialized()
+    {
+        var options = new PgBenchOptions
+        {
+            RandomSeed = PgBenchRandomSeed.Numeric(42),
+            Database = "bench",
+        };
         options.Scripts.Add(PgBenchScript.Builtin("select-only", 2));
         options.Scripts.Add(PgBenchScript.File("custom.sql"));
 
         PgBenchValidator.Validate(options, PostgreSqlMajorVersion.V18);
-        IReadOnlyList<string> args = PgBenchArgumentBuilder.Build(options, PostgreSqlMajorVersion.V18);
+        IReadOnlyList<string> args = PgBenchArgumentBuilder.Build(
+            options,
+            PostgreSqlMajorVersion.V18);
 
-        Assert.Equal("dtG", ValueAfter(args, "--init-steps"));
         Assert.Equal("42", ValueAfter(args, "--random-seed"));
         List<string> scripts = ScriptValues(args);
         Assert.Equal(2, scripts.Count);
@@ -287,6 +305,32 @@ public sealed class Phase6ArgumentAndValidationTests
 
         Assert.Throws<PgInvalidOptionValueException>(() =>
             PgBenchValidator.Validate(options, PostgreSqlMajorVersion.V18));
+    }
+
+
+    [Fact]
+    public void PgBench_ZeroScriptWeightsAreAllowedButTotalWeightMustRemainPositive()
+    {
+        var mixed = new PgBenchOptions();
+        mixed.Scripts.Add(PgBenchScript.Builtin("select-only", 0));
+        mixed.Scripts.Add(PgBenchScript.File("custom.sql", 2));
+
+        PgBenchValidator.Validate(mixed, PostgreSqlMajorVersion.V18);
+        IReadOnlyList<string> mixedArgs = PgBenchArgumentBuilder.Build(
+            mixed,
+            PostgreSqlMajorVersion.V18);
+        Assert.Equal("select-only@0", ValueAfter(mixedArgs, "--builtin"));
+        Assert.Equal("custom.sql@2", ValueAfter(mixedArgs, "--file"));
+
+        var allZero = new PgBenchOptions();
+        allZero.Scripts.Add(PgBenchScript.Builtin("select-only", 0));
+        Assert.Throws<PgInvalidOptionValueException>(() =>
+            PgBenchValidator.Validate(allZero, PostgreSqlMajorVersion.V18));
+
+        var negative = new PgBenchOptions();
+        negative.Scripts.Add(PgBenchScript.File("custom.sql", -1));
+        Assert.Throws<PgInvalidOptionValueException>(() =>
+            PgBenchValidator.Validate(negative, PostgreSqlMajorVersion.V18));
     }
 
     private static string ValueAfter(IReadOnlyList<string> args, string option)

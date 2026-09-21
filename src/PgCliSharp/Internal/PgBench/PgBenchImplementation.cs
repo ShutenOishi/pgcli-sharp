@@ -53,6 +53,29 @@ internal static class PgBenchArgumentBuilder
 
         MaintenanceArgument.AddValue(args, "--client", options.Clients);
         MaintenanceArgument.AddFlag(args, "--connect", options.ConnectPerTransaction);
+        if (options.Scripts.Count > 0 &&
+            !options.SelectOnly &&
+            !options.SkipSomeUpdates &&
+            options.Scripts.All(script => script is not null && script.Weight == 0))
+        {
+            throw new PgInvalidOptionValueException(
+                version,
+                "--builtin/--file",
+                "total script weight 0");
+        }
+
+        int scriptCount =
+            options.Scripts.Count +
+            (options.SelectOnly ? 1 : 0) +
+            (options.SkipSomeUpdates ? 1 : 0);
+        if (scriptCount > 128)
+        {
+            throw new PgInvalidOptionValueException(
+                version,
+                "--builtin/--file",
+                scriptCount);
+        }
+
         foreach (PgBenchVariableAssignment variable in options.Variables)
             MaintenanceArgument.AddValue(args, "--define", variable.Name + "=" + variable.Value);
         MaintenanceArgument.AddValue(args, "--jobs", options.Jobs);
@@ -218,8 +241,15 @@ internal static class PgBenchValidator
 
         foreach (PgBenchScript script in options.Scripts)
         {
-            if (script is null || string.IsNullOrWhiteSpace(script.Value) || script.Weight <= 0)
-                throw new PgInvalidOptionValueException(version, "--builtin/--file", script?.Value);
+            if (script is null ||
+                string.IsNullOrWhiteSpace(script.Value) ||
+                script.Weight < 0)
+            {
+                throw new PgInvalidOptionValueException(
+                    version,
+                    "--builtin/--file",
+                    script?.Value);
+            }
         }
 
         foreach (PgBenchVariableAssignment variable in options.Variables)

@@ -58,6 +58,39 @@ public sealed class Phase6ExecutionTests
         Assert.False(runner.LastRequest!.ThrowOnNonZeroExitCode);
     }
 
+
+    [Fact]
+    public async Task PgBench_RuntimeExitStatusTwo_BeginsInPostgreSql12()
+    {
+        var pg11Runner = new FakeRunner(
+            "pgbench",
+            "11.22",
+            Array.Empty<byte>(),
+            Encoding.UTF8.GetBytes("legacy failure"),
+            2);
+        var pg11 = new PgBench(
+            "/fake/pgbench11",
+            PostgreSqlMajorVersion.V11,
+            pg11Runner);
+
+        await Assert.ThrowsAsync<PgProcessExecutionException>(
+            () => pg11.ExecuteAsync(new PgBenchOptions()));
+
+        var pg12Runner = new FakeRunner(
+            "pgbench",
+            "12.21",
+            Array.Empty<byte>(),
+            Encoding.UTF8.GetBytes("runtime failure"),
+            2);
+        var pg12 = new PgBench(
+            "/fake/pgbench12",
+            PostgreSqlMajorVersion.V12,
+            pg12Runner);
+
+        PgBenchResult result = await pg12.ExecuteAsync(new PgBenchOptions());
+        Assert.Equal(PgBenchExitStatus.RuntimeError, result.Status);
+    }
+
     [Fact]
     public async Task Psql_Session_ForwardsArgumentsEnvironmentStreamsAndStatus()
     {
