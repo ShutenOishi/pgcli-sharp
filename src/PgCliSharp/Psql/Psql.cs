@@ -1,5 +1,6 @@
 using PgCliSharp.Internal.DatabaseMaintenance;
 using PgCliSharp.Internal.Execution;
+using PgCliSharp.Internal.Localization;
 using PgCliSharp.Internal.Psql;
 
 namespace PgCliSharp;
@@ -238,9 +239,13 @@ public sealed class PsqlSessionIo
     public PsqlSessionIo(Stream? standardOutput = null, Stream? standardError = null)
     {
         if (standardOutput is not null && !standardOutput.CanWrite)
-            throw new ArgumentException("Standard output stream must be writable.", nameof(standardOutput));
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable),
+                nameof(standardOutput));
         if (standardError is not null && !standardError.CanWrite)
-            throw new ArgumentException("Standard error stream must be writable.", nameof(standardError));
+            throw new ArgumentException(
+                MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable),
+                nameof(standardError));
 
         StandardOutput = standardOutput;
         StandardError = standardError;
