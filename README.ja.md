@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 2 のバックアップ／リストア中核と Phase 3 のリリースパイプラインに加え、Phase 4 の Backup/WAL ツール実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期したまま、Phase 5 の開発へ進みます。
+Phase 2 のバックアップ／リストア中核、Phase 3 のリリースパイプライン、Phase 4 の Backup/WAL ツールに加え、Phase 5 のデータベース管理・maintenance ツール実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期したまま、Phase 6 の開発へ進みます。
 
 初期対応範囲:
 
@@ -101,6 +101,29 @@ Phase 4 では、`pg_basebackup`、`pg_receivewal`、`pg_recvlogical`、`pg_veri
 Phase 4 の API は出力先と streaming を明示的に表現します。pg_basebackup の tar stdout や pg_recvlogical の stdout は全量を buffer 化せず呼び出し側所有の stream へ直接渡し、version 固有 option や不正な組み合わせは実行前に検証します。
 
 機械可読な互換性仕様は `spec/postgresql/pg_basebackup.json`、`pg_receivewal.json`、`pg_recvlogical.json`、`pg_verifybackup.json`、`pg_combinebackup.json` に保存しています。調査・実装記録は [`docs/backup-wal-phase-4.md`](docs/backup-wal-phase-4.md) を参照してください。
+
+## データベース管理・maintenance ツール
+
+Phase 5 では `createdb`、`dropdb`、`createuser`、`dropuser`、`vacuumdb`、`reindexdb`、`clusterdb`、`pg_isready`、`pg_amcheck` の型付き wrapper を追加しました。
+
+最初の8ツールは PostgreSQL 10〜18 を対象とします。`pg_amcheck` は PostgreSQL 14 以降で利用でき、PostgreSQL 10〜13 を指定した場合は process 起動前に拒否します。`dropdb --force`、`reindexdb --concurrently`、PostgreSQL 18 の `vacuumdb --missing-stats-only` など、version 固有 option も選択した CLI version に対して実行前検証します。
+
+`PgMaintenanceIo` により、interactive 動作や text streaming に必要な呼び出し側所有の stdin/stdout を転送できます。`pg_isready` の終了コード 0〜3 は通常の非0終了エラーではなく、`PgIsReadyStatus` の意味を持つ状態として返します。
+
+```csharp
+var ready = new PgIsReady(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_isready.exe",
+    PostgreSqlMajorVersion.V18);
+
+PgIsReadyResult status = await ready.ExecuteAsync(new PgIsReadyOptions
+{
+    Host = "localhost",
+    Port = 5432,
+    ConnectTimeoutSeconds = 2,
+});
+```
+
+9ツールの機械可読な互換性仕様は `spec/postgresql/` に保存しています。調査・実装記録は [`docs/database-maintenance-phase-5.md`](docs/database-maintenance-phase-5.md)、完了 evidence は [`docs/phase-5-completion.md`](docs/phase-5-completion.md) を参照してください。
 
 ## 開発
 
