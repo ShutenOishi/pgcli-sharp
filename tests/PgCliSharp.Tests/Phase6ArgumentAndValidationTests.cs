@@ -156,6 +156,139 @@ public sealed class Phase6ArgumentAndValidationTests
                 PostgreSqlMajorVersion.V18));
     }
 
+ 
+    [Fact]
+    public void PgBench_InitStepServerGeneration_BeginsInPostgreSql13()
+    {
+        var options = new PgBenchOptions { Initialize = true };
+        options.InitializationSteps.Add(PgBenchInitializationStep.GenerateServerSide);
+
+        Assert.Throws<PgUnsupportedOptionException>(() =>
+            PgBenchValidator.Validate(options, PostgreSqlMajorVersion.V12));
+
+        PgBenchValidator.Validate(options, PostgreSqlMajorVersion.V13);
+        Assert.Equal(
+            "G",
+            ValueAfter(
+                PgBenchArgumentBuilder.Build(options, PostgreSqlMajorVersion.V13),
+                "--init-steps"));
+    }
+
+    [Fact]
+    public void PgBench_SelectOnlyAndSkipSomeUpdates_CanBeCombinedAsScripts()
+    {
+        var options = new PgBenchOptions
+        {
+            SelectOnly = true,
+            SkipSomeUpdates = true,
+        };
+
+        PgBenchValidator.Validate(options, PostgreSqlMajorVersion.V18);
+        IReadOnlyList<string> args = PgBenchArgumentBuilder.Build(
+            options,
+            PostgreSqlMajorVersion.V18);
+
+        Assert.Contains("--select-only", args);
+        Assert.Contains("--skip-some-updates", args);
+    }
+
+    [Fact]
+    public void PgBench_LoggingAndProgressDependencies_AreValidated()
+    {
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions { SamplingRate = 0.5 },
+                PostgreSqlMajorVersion.V18));
+
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions
+                {
+                    SamplingRate = 0.5,
+                    AggregateIntervalSeconds = 5,
+                    LogTransactions = true,
+                },
+                PostgreSqlMajorVersion.V18));
+
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions { LogPrefix = "benchlog" },
+                PostgreSqlMajorVersion.V18));
+
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions { ProgressTimestamp = true },
+                PostgreSqlMajorVersion.V18));
+    }
+
+    [Fact]
+    public void PgBench_AggregationAndPartitionConstraints_AreValidated()
+    {
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions
+                {
+                    LogTransactions = true,
+                    DurationSeconds = 10,
+                    AggregateIntervalSeconds = 6,
+                },
+                PostgreSqlMajorVersion.V18));
+
+        var zeroPartitions = new PgBenchOptions
+        {
+            Initialize = true,
+            Partitions = 0,
+        };
+        PgBenchValidator.Validate(zeroPartitions, PostgreSqlMajorVersion.V18);
+
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions
+                {
+                    Initialize = true,
+                    Partitions = 0,
+                    PartitionMethod = PgBenchPartitionMethod.Hash,
+                },
+                PostgreSqlMajorVersion.V18));
+    }
+
+    [Fact]
+    public void PgBench_InitializationAndBenchmarkModesRejectOppositeModeOptions()
+    {
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions
+                {
+                    Initialize = true,
+                    Clients = 4,
+                },
+                PostgreSqlMajorVersion.V18));
+
+        Assert.Throws<PgInvalidOptionCombinationException>(() =>
+            PgBenchValidator.Validate(
+                new PgBenchOptions { FillFactor = 90 },
+                PostgreSqlMajorVersion.V18));
+
+        PgBenchValidator.Validate(
+            new PgBenchOptions
+            {
+                Initialize = true,
+                NoVacuum = true,
+                Scale = 10,
+            },
+            PostgreSqlMajorVersion.V18);
+    }
+
+    [Fact]
+    public void PgBench_DefineRequiresANonEmptyValue()
+    {
+        var options = new PgBenchOptions();
+        options.Variables.Add(new PgBenchVariableAssignment("name", string.Empty));
+
+        Assert.Throws<PgInvalidOptionValueException>(() =>
+            PgBenchValidator.Validate(options, PostgreSqlMajorVersion.V18));
+    }
+
     private static string ValueAfter(IReadOnlyList<string> args, string option)
     {
         int index = args.ToList().IndexOf(option);

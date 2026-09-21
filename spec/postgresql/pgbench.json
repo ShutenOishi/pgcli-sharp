@@ -377,7 +377,19 @@
         "type": "IList<PgBenchInitializationStep>"
       },
       "sourceVerification": "Verified against official per-major PostgreSQL documentation and REL_<major>_STABLE option table/parser source.",
-      "notes": []
+      "notes": [
+        "The server-side generation step 'G' is accepted from PostgreSQL 13; PostgreSQL 11-12 accept d/t/g/v/p/f only."
+      ],
+      "valueAvailability": {
+        "d/t/g/v/p/f": {
+          "majorSince": 11,
+          "majorUntil": 18
+        },
+        "G": {
+          "majorSince": 13,
+          "majorUntil": 18
+        }
+      }
     },
     {
       "id": "jobs",
@@ -1745,10 +1757,48 @@
   },
   "sourceLevelVerification": {
     "verifiedAt": "2026-09-21",
-    "result": "Audited mode-specific options, repeatable scripts/variables, retry constraints, random-seed syntax, and documented exit statuses at version boundaries."
+    "result": "Audited mode-specific options, repeatable scripts/variables, retry constraints, logging/progress/partition hard conflicts, initialization-step value availability (including G from PostgreSQL 13), random-seed syntax, and documented exit statuses at version boundaries."
   },
   "apiCoverageVerification": {
     "verifiedAt": "2026-09-21",
     "result": "Every inventory entry has an intended typed property or explicit special binding. Phase 6 CI will enforce reflection/runtime coverage."
-  }
+  },
+  "constraints": [
+    {
+      "id": "mode-separation",
+      "behavior": "Initialization-only options are rejected without --initialize, and benchmarking-only options are rejected with --initialize. Common connection/debug/scale/no-vacuum options remain usable in either mode. PostgreSQL 10 vacuum-all is not marked benchmarking-only upstream; PostgreSQL 11+ marks it benchmarking-only."
+    },
+    {
+      "id": "logging",
+      "behavior": "--sampling-rate, --aggregate-interval, and --log-prefix require --log; --sampling-rate conflicts with --aggregate-interval."
+    },
+    {
+      "id": "aggregation-duration",
+      "behavior": "When --time and --aggregate-interval are both set, aggregate interval must not exceed the duration and duration must be an exact multiple of the aggregate interval."
+    },
+    {
+      "id": "progress-timestamp",
+      "behavior": "--progress-timestamp requires --progress."
+    },
+    {
+      "id": "partition-method",
+      "behavior": "--partition-method requires --partitions greater than zero; --partitions=0 itself is accepted."
+    },
+    {
+      "id": "transactions-time",
+      "behavior": "--transactions and --time are mutually exclusive."
+    },
+    {
+      "id": "unlimited-retries",
+      "behavior": "--max-tries=0 requires --latency-limit or --time."
+    },
+    {
+      "id": "define",
+      "behavior": "--define requires a non-empty variable name and a non-empty value."
+    },
+    {
+      "id": "builtin-shortcuts",
+      "behavior": "--select-only and --skip-some-updates may be combined; upstream treats them as additional builtin scripts rather than mutually exclusive modes."
+    }
+  ]
 }

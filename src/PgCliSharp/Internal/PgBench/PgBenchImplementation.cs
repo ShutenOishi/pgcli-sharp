@@ -129,7 +129,19 @@ internal static class PgBenchValidator
     {
         MaintenanceArgument.ValidatePort(options.Port, version);
 
-        if (options.InitializationSteps.Count > 0) MaintenanceAvailability.Ensure(PgBenchOptionAvailabilityCatalog.InitSteps, version);
+        if (options.InitializationSteps.Count > 0)
+        {
+            MaintenanceAvailability.Ensure(PgBenchOptionAvailabilityCatalog.InitSteps, version);
+            if ((int)version < 13 &&
+                options.InitializationSteps.Contains(PgBenchInitializationStep.GenerateServerSide))
+            {
+                throw new PgUnsupportedOptionException(
+                    version,
+                    "--init-steps=G",
+                    PostgreSqlMajorVersion.V13,
+                    PostgreSqlMajorVersion.V18);
+            }
+        }
         if (options.RandomSeed is not null) MaintenanceAvailability.Ensure(PgBenchOptionAvailabilityCatalog.RandomSeed, version);
         if (options.ShowScript is not null) MaintenanceAvailability.Ensure(PgBenchOptionAvailabilityCatalog.ShowScript, version);
         if (options.Partitions.HasValue) MaintenanceAvailability.Ensure(PgBenchOptionAvailabilityCatalog.Partitions, version);
@@ -145,7 +157,7 @@ internal static class PgBenchValidator
         ValidatePositive(options.Scale, "--scale", version);
         ValidatePositive(options.DurationSeconds, "--time", version);
         ValidatePositive(options.TransactionsPerClient, "--transactions", version);
-        ValidatePositive(options.Partitions, "--partitions", version);
+        ValidateNonNegative(options.Partitions, "--partitions", version);
         ValidatePositive(options.AggregateIntervalSeconds, "--aggregate-interval", version);
 
         if (options.FillFactor.HasValue && (options.FillFactor.Value < 10 || options.FillFactor.Value > 100))
@@ -161,12 +173,48 @@ internal static class PgBenchValidator
 
         if (options.DurationSeconds.HasValue && options.TransactionsPerClient.HasValue)
             throw new PgInvalidOptionCombinationException(version, "--time", "--transactions");
+        if (options.SamplingRate.HasValue && !options.LogTransactions)
+            throw new PgInvalidOptionCombinationException(version, "--sampling-rate", "--log");
+        if (options.SamplingRate.HasValue && options.AggregateIntervalSeconds.HasValue)
+            throw new PgInvalidOptionCombinationException(version, "--sampling-rate", "--aggregate-interval");
         if (options.AggregateIntervalSeconds.HasValue && !options.LogTransactions)
             throw new PgInvalidOptionCombinationException(version, "--aggregate-interval", "--log");
+        if (options.LogPrefix is not null && !options.LogTransactions)
+            throw new PgInvalidOptionCombinationException(version, "--log-prefix", "--log");
+        if (options.ProgressTimestamp && !options.ProgressSeconds.HasValue)
+            throw new PgInvalidOptionCombinationException(version, "--progress-timestamp", "--progress");
+        if (options.PartitionMethod.HasValue &&
+            (!options.Partitions.HasValue || options.Partitions.Value <= 0))
+        {
+            throw new PgInvalidOptionCombinationException(
+                version,
+                "--partition-method",
+                "--partitions");
+        }
+        if (options.DurationSeconds.HasValue && options.AggregateIntervalSeconds.HasValue)
+        {
+            if (options.AggregateIntervalSeconds.Value > options.DurationSeconds.Value ||
+                options.DurationSeconds.Value % options.AggregateIntervalSeconds.Value != 0)
+            {
+                throw new PgInvalidOptionCombinationException(
+                    version,
+                    "--aggregate-interval",
+                    "--time");
+            }
+        }
         if (options.MaxTries == 0 && !options.LatencyLimitMilliseconds.HasValue && !options.DurationSeconds.HasValue)
             throw new PgInvalidOptionCombinationException(version, "--max-tries=0", "--latency-limit/--time");
-        if (options.SelectOnly && options.SkipSomeUpdates)
-            throw new PgInvalidOptionCombinationException(version, "--select-only", "--skip-some-updates");
+
+        string? modeConflict = options.Initialize
+            ? GetFirstBenchmarkingOnlyOption(options, version)
+            : GetFirstInitializationOnlyOption(options);
+        if (modeConflict is not null)
+        {
+            throw new PgInvalidOptionCombinationException(
+                version,
+                "--initialize",
+                modeConflict);
+        }
 
         foreach (PgBenchScript script in options.Scripts)
         {
@@ -176,17 +224,82 @@ internal static class PgBenchValidator
 
         foreach (PgBenchVariableAssignment variable in options.Variables)
         {
-            if (variable is null || string.IsNullOrWhiteSpace(variable.Name))
-                throw new PgInvalidOptionValueException(version, "--define", variable?.Name);
+            if (variable is null ||
+                string.IsNullOrWhiteSpace(variable.Name) ||
+                variable.Value.Length == 0)
+            {
+                throw new PgInvalidOptionValueException(
+                    version,
+                    "--define",
+                    variable is null ? null : variable.Name + "=" + variable.Value);
+            }
         }
 
         if (options.ShowScript is not null && string.IsNullOrWhiteSpace(options.ShowScript))
             throw new PgInvalidOptionValueException(version, "--show-script", options.ShowScript);
     }
 
-    private static void ValidatePositive(int? value, string option, PostgreSqlMajorVersion version)
+    private static string? GetFirstInitializationOnlyOption(PgBenchOptions options)
+    {
+        if (options.InitializationSteps.Count > 0) return "--init-steps";
+        if (options.FillFactor.HasValue) return "--fillfactor";
+        if (options.Quiet) return "--quiet";
+        if (options.ForeignKeys) return "--foreign-keys";
+        if (options.Tablespace is not null) return "--tablespace";
+        if (options.IndexTablespace is not null) return "--index-tablespace";
+        if (options.UnloggedTables) return "--unlogged-tables";
+        if (options.Partitions.HasValue) return "--partitions";
+        if (options.PartitionMethod.HasValue) return "--partition-method";
+        return null;
+    }
+
+    private static string? GetFirstBenchmarkingOnlyOption(
+        PgBenchOptions options,
+        PostgreSqlMajorVersion version)
+    {
+        if (options.Scripts.Count > 0) return "--builtin/--file";
+        if (options.Clients.HasValue) return "--client";
+        if (options.ConnectPerTransaction) return "--connect";
+        if (options.Variables.Count > 0) return "--define";
+        if (options.Jobs.HasValue) return "--jobs";
+        if (options.LogTransactions) return "--log";
+        if (options.LatencyLimitMilliseconds.HasValue) return "--latency-limit";
+        if (options.ProgressSeconds.HasValue) return "--progress";
+        if (options.Protocol.HasValue) return "--protocol";
+        if (options.ReportPerCommand) return "--report-per-command";
+        if (options.Rate.HasValue) return "--rate";
+        if (options.SelectOnly) return "--select-only";
+        if (options.SkipSomeUpdates) return "--skip-some-updates";
+        if (options.DurationSeconds.HasValue) return "--time";
+        if (options.TransactionsPerClient.HasValue) return "--transactions";
+        if (options.VacuumAll && (int)version >= 11) return "--vacuum-all";
+        if (options.SamplingRate.HasValue) return "--sampling-rate";
+        if (options.AggregateIntervalSeconds.HasValue) return "--aggregate-interval";
+        if (options.ProgressTimestamp) return "--progress-timestamp";
+        if (options.LogPrefix is not null) return "--log-prefix";
+        if (options.RandomSeed is not null) return "--random-seed";
+        if (options.FailuresDetailed) return "--failures-detailed";
+        if (options.MaxTries.HasValue) return "--max-tries";
+        if (options.VerboseErrors) return "--verbose-errors";
+        if (options.ExitOnAbort) return "--exit-on-abort";
+        return null;
+    }
+
+    private static void ValidatePositive(
+        int? value,
+        string option,
+        PostgreSqlMajorVersion version)
     {
         if (value.HasValue && value.Value <= 0)
+            throw new PgInvalidOptionValueException(version, option, value.Value);
+    }
+
+    private static void ValidateNonNegative(
+        int? value,
+        string option,
+        PostgreSqlMajorVersion version)
+    {
+        if (value.HasValue && value.Value < 0)
             throw new PgInvalidOptionValueException(version, option, value.Value);
     }
 }

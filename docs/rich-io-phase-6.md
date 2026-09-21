@@ -58,6 +58,8 @@ Adds:
 - `--partitions`
 - `--partition-method`
 
+The `--init-steps` option itself exists from PostgreSQL 11, but its accepted step alphabet changes: PostgreSQL 11-12 support `d/t/g/v/p/f`, while server-side generation `G` is available from PostgreSQL 13.
+
 ### PostgreSQL 15
 
 Changes:
@@ -78,6 +80,8 @@ Changes:
 The wrapper can use the positional database form across PostgreSQL 10-18, avoiding needless spelling variation for the ordinary typed Database property. It uses the stable long form `--debug` so the PostgreSQL 17 short-option reassignment cannot create ambiguity.
 
 pgbench supports weighted builtin/file scripts and repeatable variable definitions. It also has structured values worth typing, especially protocol, partition method, initialization steps, and random seed (`time`, `rand`, or an unsigned integer).
+
+The source-level parser audit also establishes hard pre-execution constraints: initialization-only and benchmarking-only option groups cannot cross modes; sampling/aggregation/log-prefix depend on transaction logging; sampling and aggregation conflict; timestamped progress requires progress; partition method requires a positive partition count; aggregation must divide a configured duration without exceeding it; and unlimited retries require either a latency limit or duration. `--select-only` and `--skip-some-updates` are not mutually exclusive: upstream adds both as builtin scripts when both are specified.
 
 Documented pgbench exit statuses are 0 for success, 1 for static/startup/internal errors, and 2 for errors during the run. Phase 6 preserves these as a typed result status rather than losing the distinction in a generic nonzero exit exception.
 
@@ -101,4 +105,4 @@ Completed before public API implementation:
 - tool-specific exit-status domains recorded;
 - rich I/O design separated from the one-shot process API.
 
-Implementation must still validate exact value ranges and mode-specific hard conflicts while adding validators/tests; any newly discovered boundary is added to the specifications before Phase 6 completion.
+The implementation now mirrors the audited exact value ranges and upstream-determinable hard conflicts described above. Newly discovered boundaries are recorded in the specifications before Phase 6 completion.
