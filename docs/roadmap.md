@@ -86,17 +86,21 @@ External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase
 
 ## Phase 5 - Database management and maintenance tools
 
-Examples:
+**Status: Complete (2026-09-21).** Specification-first research, typed APIs, centralized availability/validation, deterministic argument generation, execution/I/O behavior, completeness tests, bilingual public API documentation, and the Linux/macOS/Windows completion gate are implemented.
 
-- `createdb`
-- `dropdb`
-- `createuser`
-- `dropuser`
-- `vacuumdb`
-- `reindexdb`
-- `clusterdb`
-- `pg_isready`
-- `pg_amcheck` where available
+- `createdb` — PostgreSQL 10-18.
+- `dropdb` — PostgreSQL 10-18; `--force` is modeled from PostgreSQL 13.
+- `createuser` — PostgreSQL 10-18, including version-aware membership aliases and PostgreSQL 16+ role attributes.
+- `dropuser` — PostgreSQL 10-18, including interactive role-name input.
+- `vacuumdb` — PostgreSQL 10-18, including versioned maintenance controls through PostgreSQL 18 `--missing-stats-only`.
+- `reindexdb` — PostgreSQL 10-18, including concurrent/jobs/tablespace version boundaries.
+- `clusterdb` — PostgreSQL 10-18.
+- `pg_isready` — PostgreSQL 10-18; exit codes 0-3 are returned as typed readiness statuses rather than ordinary process failures.
+- `pg_amcheck` — PostgreSQL 14-18; PostgreSQL 10-13 are rejected before process startup.
+
+The nine maintained inventories are under `spec/postgresql/`, with research in `docs/database-maintenance-phase-5.md` and completion evidence in `docs/phase-5-completion.md`. Spec-to-API and spec-to-runtime availability coverage tests, argument/validation tests, and execution tests keep the implementation synchronized with those inventories.
+
+External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase 5 completion is recorded by the reviewed main merge and exact-commit CI rather than a new tag or Release.
 
 ## Phase 6 - Rich I/O tools
 

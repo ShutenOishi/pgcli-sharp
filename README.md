@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed the Phase 4 Backup/WAL implementation on top of the Phase 2 backup/restore core and Phase 3 release-pipeline work. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred until the final release phase under ADR-0012; development continues with Phase 5.
+PgCliSharp has completed the Phase 5 database-management and maintenance implementation on top of the Phase 2 backup/restore core, Phase 3 release-pipeline work, and Phase 4 Backup/WAL tools. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred until the final release phase under ADR-0012; development continues with Phase 6.
 
 Initial PostgreSQL compatibility target:
 
@@ -91,6 +91,29 @@ Phase 4 adds typed wrappers for `pg_basebackup`, `pg_receivewal`, `pg_recvlogica
 The Phase 4 APIs keep destinations and streaming explicit. For example, pg_basebackup tar output and pg_recvlogical stdout can be sent directly to caller-owned streams without whole-payload buffering, while version-specific options and incompatible combinations are validated before execution.
 
 Machine-readable inventories are maintained in `spec/postgresql/pg_basebackup.json`, `pg_receivewal.json`, `pg_recvlogical.json`, `pg_verifybackup.json`, and `pg_combinebackup.json`. Research and implementation notes are in [`docs/backup-wal-phase-4.md`](docs/backup-wal-phase-4.md).
+
+## Database management and maintenance tools
+
+Phase 5 adds typed wrappers for `createdb`, `dropdb`, `createuser`, `dropuser`, `vacuumdb`, `reindexdb`, `clusterdb`, `pg_isready`, and `pg_amcheck`.
+
+The first eight tools are modeled for PostgreSQL 10-18. `pg_amcheck` is available from PostgreSQL 14 and is rejected before process startup for PostgreSQL 10-13. Version-specific options such as `dropdb --force`, `reindexdb --concurrently`, and PostgreSQL 18 `vacuumdb --missing-stats-only` are validated against the selected CLI version.
+
+`PgMaintenanceIo` forwards caller-owned stdin/stdout streams for interactive or streamed text behavior. `pg_isready` preserves its semantic exit codes as `PgIsReadyStatus` values instead of treating codes 1-3 as ordinary command failures.
+
+```csharp
+var ready = new PgIsReady(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_isready.exe",
+    PostgreSqlMajorVersion.V18);
+
+PgIsReadyResult status = await ready.ExecuteAsync(new PgIsReadyOptions
+{
+    Host = "localhost",
+    Port = 5432,
+    ConnectTimeoutSeconds = 2,
+});
+```
+
+The nine compatibility inventories are maintained under `spec/postgresql/`. Research and implementation notes are in [`docs/database-maintenance-phase-5.md`](docs/database-maintenance-phase-5.md), with completion evidence in [`docs/phase-5-completion.md`](docs/phase-5-completion.md).
 
 ## Development
 

@@ -25,7 +25,7 @@ for spec in "${specs[@]}"; do
     all(.options[];
       (.id | type == "string" and length > 0) and
       (.spellings | type == "object") and
-      (.argumentMode == "none" or .argumentMode == "required") and
+      (.argumentMode == "none" or .argumentMode == "required" or .argumentMode == "optional") and
       (.repeatable | type == "boolean") and
       (.availability | type == "object") and
       (.defaults.wrapper | type == "string" and length > 0) and
