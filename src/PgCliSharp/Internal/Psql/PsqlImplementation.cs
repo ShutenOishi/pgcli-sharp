@@ -1,4 +1,6 @@
 using PgCliSharp.Internal.DatabaseMaintenance;
+using PgCliSharp.Internal.Execution;
+using PgCliSharp.Internal.Versioning;
 
 namespace PgCliSharp.Internal.Psql;
 
@@ -91,8 +93,91 @@ internal static class PsqlArgumentBuilder
     }
 }
 
+internal sealed class PsqlSessionStartInfo
+{
+    internal PsqlSessionStartInfo(
+        IProcessSession session,
+        PostgreSqlExecutableVersion executableVersion)
+    {
+        Session = session;
+        ExecutableVersion = executableVersion;
+    }
+
+    internal IProcessSession Session { get; }
+    internal PostgreSqlExecutableVersion ExecutableVersion { get; }
+}
+
+internal sealed class PsqlSessionExecutor
+{
+    private readonly IProcessSessionRunner _sessionRunner;
+    private readonly PostgreSqlExecutableVersionProvider _versionProvider;
+
+    internal PsqlSessionExecutor(
+        string executablePath,
+        PostgreSqlMajorVersion version,
+        IProcessRunner processRunner,
+        IProcessSessionRunner sessionRunner)
+    {
+        ExecutablePath = executablePath;
+        Version = version;
+        _versionProvider = new PostgreSqlExecutableVersionProvider(processRunner);
+        _sessionRunner = sessionRunner;
+    }
+
+    internal string ExecutablePath { get; }
+    internal PostgreSqlMajorVersion Version { get; }
+
+    internal async Task<PsqlSessionStartInfo> StartAsync(
+        IReadOnlyList<string> arguments,
+        PsqlSessionIo? io,
+        IDictionary<string, string> environmentVariables,
+        TimeSpan? timeout,
+        CancellationToken cancellationToken)
+    {
+        if (timeout.HasValue && timeout.Value <= TimeSpan.Zero)
+            throw new ArgumentOutOfRangeException(nameof(timeout));
+
+        PostgreSqlExecutableVersion executableVersion =
+            await _versionProvider.ValidateVersionAsync(
+                    ExecutablePath,
+                    Version,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+        var request = new ProcessSessionStartRequest(
+            ExecutablePath,
+            arguments,
+            io?.StandardOutput ?? Stream.Null,
+            io?.StandardError ?? Stream.Null,
+            timeout,
+            MaintenanceArgument.Environment(environmentVariables));
+
+        IProcessSession session = _sessionRunner.Start(request, cancellationToken);
+        return new PsqlSessionStartInfo(session, executableVersion);
+    }
+}
+
 internal static class PsqlValidator
 {
+    internal static void ValidateForSession(
+        PsqlOptions options,
+        PostgreSqlMajorVersion version)
+    {
+        Validate(options, version);
+
+        if (options.Actions.Count != 0)
+            throw new PgInvalidOptionCombinationException(
+                version,
+                "redirected-session",
+                "--command/--file");
+
+        if (options.ListDatabases)
+            throw new PgInvalidOptionCombinationException(
+                version,
+                "redirected-session",
+                "--list");
+    }
+
     internal static void Validate(PsqlOptions options, PostgreSqlMajorVersion version)
     {
         MaintenanceArgument.ValidatePort(options.Port, version);

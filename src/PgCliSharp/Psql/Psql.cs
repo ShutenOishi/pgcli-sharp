@@ -227,22 +227,187 @@ public sealed class PsqlResult : PgMaintenanceResult
     public PsqlExitStatus Status { get; }
 }
 
-/// <summary><para>EN: Executes finite psql invocations with typed PostgreSQL 10-18 options.</para><para>JA: PostgreSQL 10〜18 の型付きオプションで有限な psql 実行を行います。</para></summary>
+
+/// <summary>
+/// <para>EN: Provides caller-owned psql session output streams. Redirected sessions are pipe-based and are not TTY/PTY terminals.</para>
+/// <para>JA: psql session の呼び出し側所有出力 stream を提供します。redirected session は pipe ベースであり、TTY/PTY terminal ではありません。</para>
+/// </summary>
+public sealed class PsqlSessionIo
+{
+    /// <summary><para>EN: Creates psql session output destinations. Null destinations discard that stream.</para><para>JA: psql session の出力先を作成します。null の出力先はその stream を破棄します。</para></summary>
+    public PsqlSessionIo(Stream? standardOutput = null, Stream? standardError = null)
+    {
+        if (standardOutput is not null && !standardOutput.CanWrite)
+            throw new ArgumentException("Standard output stream must be writable.", nameof(standardOutput));
+        if (standardError is not null && !standardError.CanWrite)
+            throw new ArgumentException("Standard error stream must be writable.", nameof(standardError));
+
+        StandardOutput = standardOutput;
+        StandardError = standardError;
+    }
+
+    /// <summary><para>EN: Gets the writable destination for psql stdout, or null to discard it.</para><para>JA: psql stdout の書き込み先を取得します。null の場合は破棄します。</para></summary>
+    public Stream? StandardOutput { get; }
+
+    /// <summary><para>EN: Gets the writable destination for psql stderr, or null to discard it.</para><para>JA: psql stderr の書き込み先を取得します。null の場合は破棄します。</para></summary>
+    public Stream? StandardError { get; }
+}
+
+/// <summary><para>EN: Completion metadata for a redirected psql session.</para><para>JA: redirected psql session の完了 metadata です。</para></summary>
+public sealed class PsqlSessionResult
+{
+    internal PsqlSessionResult(
+        int exitCode,
+        TimeSpan duration,
+        Version executableVersion,
+        string rawExecutableVersion,
+        PsqlExitStatus status)
+    {
+        ExitCode = exitCode;
+        Duration = duration;
+        ExecutableVersion = executableVersion;
+        RawExecutableVersion = rawExecutableVersion;
+        Status = status;
+    }
+
+    /// <summary><para>EN: Gets the process exit code.</para><para>JA: process 終了コードを取得します。</para></summary>
+    public int ExitCode { get; }
+    /// <summary><para>EN: Gets session process duration.</para><para>JA: session process の実行時間を取得します。</para></summary>
+    public TimeSpan Duration { get; }
+    /// <summary><para>EN: Gets parsed PostgreSQL executable version.</para><para>JA: 解析済み PostgreSQL executable version を取得します。</para></summary>
+    public Version ExecutableVersion { get; }
+    /// <summary><para>EN: Gets raw executable-version text.</para><para>JA: executable version の元文字列を取得します。</para></summary>
+    public string RawExecutableVersion { get; }
+    /// <summary><para>EN: Gets psql's documented exit status.</para><para>JA: psql が定義する終了 status を取得します。</para></summary>
+    public PsqlExitStatus Status { get; }
+}
+
+/// <summary>
+/// <para>EN: Represents a running redirected psql process. Standard input remains writable until completed; this is not a TTY/PTY session.</para>
+/// <para>JA: 実行中の redirected psql process を表します。完了させるまで標準入力へ書き込めますが、TTY/PTY session ではありません。</para>
+/// </summary>
+public sealed class PsqlSession : IDisposable
+{
+    private readonly IProcessSession _session;
+    private readonly string _executablePath;
+    private readonly Version _executableVersion;
+    private readonly string _rawExecutableVersion;
+    private readonly Task<PsqlSessionResult> _completion;
+
+    internal PsqlSession(
+        IProcessSession session,
+        string executablePath,
+        Version executableVersion,
+        string rawExecutableVersion)
+    {
+        _session = session;
+        _executablePath = executablePath;
+        _executableVersion = executableVersion;
+        _rawExecutableVersion = rawExecutableVersion;
+        _completion = CompleteAsync();
+    }
+
+    /// <summary><para>EN: Gets the writable standard-input stream for the running psql process.</para><para>JA: 実行中 psql process の書き込み可能な標準入力 stream を取得します。</para></summary>
+    public Stream StandardInput => _session.StandardInput;
+
+    /// <summary><para>EN: Gets a task that completes when psql exits.</para><para>JA: psql 終了時に完了する task を取得します。</para></summary>
+    public Task<PsqlSessionResult> Completion => _completion;
+
+    /// <summary><para>EN: Closes psql standard input after queued/written bytes, signaling EOF without canceling the process.</para><para>JA: 書き込み済み byte の後で psql 標準入力を閉じ、process を cancel せず EOF を通知します。</para></summary>
+    public void CompleteInput() => _session.CompleteInput();
+
+    /// <summary><para>EN: Requests forceful cancellation of the running psql process tree.</para><para>JA: 実行中 psql process tree の強制 cancellation を要求します。</para></summary>
+    public void Cancel() => _session.Cancel();
+
+    /// <summary><para>EN: Completes input and cancels the session if it is still running.</para><para>JA: input を完了し、まだ実行中なら session を cancel します。</para></summary>
+    public void Dispose() => _session.Dispose();
+
+    private async Task<PsqlSessionResult> CompleteAsync()
+    {
+        ProcessSessionResult process = await _session.Completion.ConfigureAwait(false);
+
+        if (process.ExitCode < 0 || process.ExitCode > 3)
+            throw new PgProcessExecutionException(
+                _executablePath,
+                process.ExitCode,
+                string.Empty);
+
+        return new PsqlSessionResult(
+            process.ExitCode,
+            process.Duration,
+            _executableVersion,
+            _rawExecutableVersion,
+            (PsqlExitStatus)process.ExitCode);
+    }
+}
+
+/// <summary><para>EN: Executes finite psql invocations or starts redirected duplex psql sessions with typed PostgreSQL 10-18 options.</para><para>JA: PostgreSQL 10〜18 の型付きオプションで有限な psql 実行または redirected duplex psql session を開始します。</para></summary>
 public sealed class Psql
 {
     private readonly MaintenanceExecutor _executor;
+    private readonly PsqlSessionExecutor _sessionExecutor;
 
     /// <summary><para>EN: Creates a psql wrapper for an explicit executable path/version.</para><para>JA: 明示的な executable path/version の psql wrapper を作成します。</para></summary>
-    public Psql(string executablePath, PostgreSqlMajorVersion version) : this(executablePath, version, new ProcessRunner()) { }
+    public Psql(string executablePath, PostgreSqlMajorVersion version)
+        : this(executablePath, version, new ProcessRunner(), new ProcessSessionRunner()) { }
 
-    internal Psql(string executablePath, PostgreSqlMajorVersion version, IProcessRunner runner) =>
+    internal Psql(
+        string executablePath,
+        PostgreSqlMajorVersion version,
+        IProcessRunner runner)
+        : this(executablePath, version, runner, new ProcessSessionRunner()) { }
+
+    internal Psql(
+        string executablePath,
+        PostgreSqlMajorVersion version,
+        IProcessRunner runner,
+        IProcessSessionRunner sessionRunner)
+    {
         _executor = new MaintenanceExecutor(executablePath, version, runner);
+        _sessionExecutor = new PsqlSessionExecutor(
+            executablePath,
+            version,
+            runner,
+            sessionRunner);
+    }
 
     /// <summary><para>EN: Gets the selected executable path.</para><para>JA: 選択した executable path を取得します。</para></summary>
     public string ExecutablePath => _executor.ExecutablePath;
 
     /// <summary><para>EN: Gets the expected PostgreSQL CLI major version.</para><para>JA: 期待する PostgreSQL CLI major version を取得します。</para></summary>
     public PostgreSqlMajorVersion Version => _executor.Version;
+
+    /// <summary>
+    /// <para>EN: Starts a long-lived redirected psql session after executable-version validation. The returned pipes are not a terminal/PTY.</para>
+    /// <para>JA: executable version を検証して長寿命の redirected psql session を開始します。返される pipe は terminal/PTY ではありません。</para>
+    /// </summary>
+    public async Task<PsqlSession> StartSessionAsync(
+        PsqlOptions options,
+        PsqlSessionIo? io = null,
+        TimeSpan? timeout = null,
+        CancellationToken cancellationToken = default)
+    {
+#if NETSTANDARD2_0
+        if (options is null) throw new ArgumentNullException(nameof(options));
+#else
+        ArgumentNullException.ThrowIfNull(options);
+#endif
+        PsqlValidator.ValidateForSession(options, Version);
+        IReadOnlyList<string> arguments = PsqlArgumentBuilder.Build(options);
+        PsqlSessionStartInfo info = await _sessionExecutor.StartAsync(
+                arguments,
+                io,
+                options.EnvironmentVariables,
+                timeout,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        return new PsqlSession(
+            info.Session,
+            ExecutablePath,
+            info.ExecutableVersion.NumericVersion,
+            info.ExecutableVersion.RawVersion);
+    }
 
     /// <summary><para>EN: Validates and executes a finite psql invocation. Known psql exit codes 0-3 are returned as typed status.</para><para>JA: 有限な psql 実行を検証して実行します。既知の psql 終了コード 0〜3 は型付き status として返します。</para></summary>
     public async Task<PsqlResult> ExecuteAsync(PsqlOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)

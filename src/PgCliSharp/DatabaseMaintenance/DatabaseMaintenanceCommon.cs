@@ -3,26 +3,30 @@ using PgCliSharp.Internal.Localization;
 namespace PgCliSharp;
 
 /// <summary>
-/// <para>EN: Provides caller-owned standard input/output streams for database-management tools.</para>
-/// <para>JA: データベース管理ツールへ渡す、呼び出し側所有の標準入力・標準出力ストリームを提供します。</para>
+/// <para>EN: Provides caller-owned standard input/output/error streams for PostgreSQL client tools.</para>
+/// <para>JA: PostgreSQL client tool へ渡す、呼び出し側所有の標準入力・標準出力・標準エラーストリームを提供します。</para>
 /// </summary>
 public sealed class PgMaintenanceIo
 {
     /// <summary>
-    /// <para>EN: Creates an optional standard-input/standard-output stream pair. Null streams are not redirected by PgCliSharp.</para>
-    /// <para>JA: 任意の標準入力・標準出力ストリームの組を作成します。null のストリームは PgCliSharp ではリダイレクトしません。</para>
+    /// <para>EN: Creates optional standard-input/output/error streams. A null error stream preserves PgCliSharp's captured stderr behavior.</para>
+    /// <para>JA: 任意の標準入力・標準出力・標準エラーストリームを作成します。標準エラーが null の場合は PgCliSharp が stderr を取得する従来動作を維持します。</para>
     /// </summary>
     /// <param name="standardInput"><para>EN: Optional readable stream forwarded to the tool's standard input.</para><para>JA: ツールの標準入力へ転送する任意の読み取り可能ストリームです。</para></param>
     /// <param name="standardOutput"><para>EN: Optional writable stream receiving the tool's standard output.</para><para>JA: ツールの標準出力を受け取る任意の書き込み可能ストリームです。</para></param>
-    public PgMaintenanceIo(Stream? standardInput = null, Stream? standardOutput = null)
+    /// <param name="standardError"><para>EN: Optional writable stream receiving PostgreSQL stderr instead of buffering it in the result.</para><para>JA: PostgreSQL stderr を結果へ buffer せず受け取る任意の書き込み可能ストリームです。</para></param>
+    public PgMaintenanceIo(Stream? standardInput = null, Stream? standardOutput = null, Stream? standardError = null)
     {
         if (standardInput is not null && !standardInput.CanRead)
             throw new ArgumentException(MessageProvider.GetString(MessageKeys.InputStreamMustBeReadable), nameof(standardInput));
         if (standardOutput is not null && !standardOutput.CanWrite)
             throw new ArgumentException(MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable), nameof(standardOutput));
+        if (standardError is not null && !standardError.CanWrite)
+            throw new ArgumentException(MessageProvider.GetString(MessageKeys.OutputStreamMustBeWritable), nameof(standardError));
 
         StandardInput = standardInput;
         StandardOutput = standardOutput;
+        StandardError = standardError;
     }
 
     /// <summary><para>EN: Gets the caller-owned standard-input stream, if any.</para><para>JA: 指定されている場合、呼び出し側所有の標準入力ストリームを取得します。</para></summary>
@@ -30,6 +34,9 @@ public sealed class PgMaintenanceIo
 
     /// <summary><para>EN: Gets the caller-owned standard-output stream, if any.</para><para>JA: 指定されている場合、呼び出し側所有の標準出力ストリームを取得します。</para></summary>
     public Stream? StandardOutput { get; }
+
+    /// <summary><para>EN: Gets the caller-owned standard-error stream, if any.</para><para>JA: 指定されている場合、呼び出し側所有の標準エラーストリームを取得します。</para></summary>
+    public Stream? StandardError { get; }
 }
 
 /// <summary>
@@ -59,7 +66,7 @@ public class PgMaintenanceResult
     /// <summary><para>EN: Gets the raw numeric executable-version text.</para><para>JA: 実行ファイルの数値バージョン文字列を取得します。</para></summary>
     public string RawExecutableVersion { get; }
 
-    /// <summary><para>EN: Gets original PostgreSQL standard-error text without translation.</para><para>JA: 翻訳していない PostgreSQL の元の標準エラーテキストを取得します。</para></summary>
+    /// <summary><para>EN: Gets original PostgreSQL standard-error text without translation. Empty when stderr was streamed to a caller-owned destination.</para><para>JA: 翻訳していない PostgreSQL の元の標準エラーテキストを取得します。stderr を呼び出し側の stream へ転送した場合は空文字です。</para></summary>
     public string StandardError { get; }
 }
 
