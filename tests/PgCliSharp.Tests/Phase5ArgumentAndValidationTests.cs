@@ -147,7 +147,10 @@ public sealed class Phase5ArgumentAndValidationTests
         VacuumdbValidator.Validate(options, PostgreSqlMajorVersion.V18);
         IReadOnlyList<string> args = VacuumdbArgumentBuilder.Build(options);
 
-        Assert.Equal(new[] { "public.a", "public.b" }, ValuesAfter(args, "--table"));
+        List<string> tableValues = ValuesAfter(args, "--table");
+        Assert.Equal(2, tableValues.Count);
+        Assert.Equal("public.a", tableValues[0]);
+        Assert.Equal("public.b", tableValues[1]);
         Assert.Equal("2", ValueAfter(args, "--jobs"));
     }
 
