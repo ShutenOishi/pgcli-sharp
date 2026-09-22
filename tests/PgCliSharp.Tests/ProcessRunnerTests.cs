@@ -221,6 +221,7 @@ public sealed class ProcessRunnerTests
 
         output.Release();
     }
+#endif
 
 #if NET8_0_OR_GREATER
     [Fact]

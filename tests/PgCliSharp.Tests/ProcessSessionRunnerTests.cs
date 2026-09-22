@@ -130,6 +130,7 @@ public sealed class ProcessSessionRunnerTests
 
         output.Release();
     }
+#endif
 
 #if NET8_0_OR_GREATER
     [Fact]
