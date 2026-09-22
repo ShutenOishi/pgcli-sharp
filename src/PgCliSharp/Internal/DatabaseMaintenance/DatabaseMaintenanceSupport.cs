@@ -184,7 +184,8 @@ internal sealed class MaintenanceExecutor
             timeout,
             throwOnNonZeroExitCode,
             MaintenanceArgument.Environment(environmentVariables),
-            io?.StandardInput);
+            io?.StandardInput,
+            io?.StandardError);
 
         ProcessRunResult process = await _runner.RunAsync(request, cancellationToken).ConfigureAwait(false);
         return new MaintenanceExecutionInfo(process, executableVersion);

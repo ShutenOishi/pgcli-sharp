@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, ADR-0011, and ADR-0012. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0013. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -136,6 +136,8 @@ Requirements:
 
 The `netstandard2.0` compatibility backend must map execution results, cancellation, timeout, and failures back into PgCliSharp's own result/exception model. Public behavior should remain consistent across target frameworks.
 
+Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration.
+
 ## 9. Output model
 
 Do not assume stdout is text. Some PostgreSQL tools can emit binary archives.
@@ -218,6 +220,16 @@ Interactive-capable Phase 5 clients can receive caller-owned stdin and stdout st
 
 Phase 5 completeness tests bind every machine-readable inventory entry to a public property or explicit special binding and bind every version-varying long option to centralized runtime availability metadata. Argument/validation and execution tests cover major version boundaries, repeatable ordering, optional arguments, version mismatch, timeout/environment forwarding, stdin/stdout forwarding, cancellation, and pg_isready semantic exit codes. Windows continues to execute the test suite under .NET Framework 4.8 in addition to modern Linux/macOS targets.
 
+Phase 6 extends the specification-first contract to `psql` and `pgbench`, both modeled for PostgreSQL 10-18. Their canonical inventories are `spec/postgresql/psql.json` and `spec/postgresql/pgbench.json`.
+
+Finite psql execution uses the tool-specific `PsqlIo` model for optional caller-owned stdin/stdout/stderr. Command and file actions share one ordered collection because upstream permits `--command` and `--file` to repeat and interleave. Variable assignments preserve unset versus empty values, and version-specific output features such as PostgreSQL 12+ CSV are validated before process startup. psql's documented exit statuses 0-3 are returned as `PsqlExitStatus` values.
+
+ADR-0013 adds a separate internal long-lived redirected-process lifecycle rather than weakening the one-shot `IProcessRunner`. `PsqlSession` exposes writable stdin after process start, explicit EOF, streamed stdout/stderr, cancellation, timeout/process-tree termination, and asynchronous completion metadata. The modern .NET implementation uses `System.Diagnostics.Process`; `netstandard2.0` uses CliWrap internally while preserving the same PgCliSharp-owned abstraction. Redirected sessions are explicitly pipe based and are not TTY/PTY emulation.
+
+pgbench remains finite execution and uses `PgBenchIo` for caller-owned stdout/stderr; no public stdin contract is exposed because the audited PostgreSQL 10-18 CLI has no stdin workload interface. The wrapper models PostgreSQL 11/13/15/17 option changes, PostgreSQL 13+ server-side initialization step `G`, the report option rename, the PostgreSQL 17 `-d` reassignment while emitting stable `--debug`, script weights and script-count limits, initialization-versus-benchmark mode restrictions, logging/progress/partition/retry constraints, and the historical exit-status boundary where runtime status 2 is defined from PostgreSQL 12.
+
+Phase 6 tests cover spec-to-API/runtime availability, deterministic serialization, semantic exit statuses, caller-owned stderr streaming, executable-version mismatch, and the long-lived session lifecycle. Real process-session tests verify writes after startup, explicit EOF, timeout, and cancellation. Windows executes the suite through .NET Framework 4.8 as well as modern targets, exercising the `netstandard2.0`/CliWrap session backend.
+
 ## 13. Test layers
 
 Use three logical test layers:
@@ -277,7 +289,7 @@ The NuGet and Phase release workflows are manual-only. They require an explicit 
 5. First NuGet preview and publication pipeline validation.
 6. Backup/WAL tools.
 7. Database-management and maintenance client tools.
-8. `psql`, `pgbench`, and tools with richer stdin/stdout behavior.
+8. `psql`, `pgbench`, and tools with richer stdin/stdout behavior, including ordered psql actions and explicit redirected-session semantics.
 9. Server applications in a clearly separated namespace/category.
 10. Public API review and 1.0 stabilization.
 

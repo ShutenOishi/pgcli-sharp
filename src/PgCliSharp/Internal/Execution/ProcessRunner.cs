@@ -36,14 +36,17 @@ internal sealed class ProcessRunner : IProcessRunner
         ProcessRunRequest request,
         CancellationToken cancellationToken)
     {
-        var standardError = new StringBuilder();
+        var standardError = request.StandardError is null ? new StringBuilder() : null;
         Stream standardOutput = request.StandardOutput ?? Stream.Null;
 
         Command command = Cli.Wrap(request.ExecutablePath)
             .WithArguments(request.Arguments)
             .WithValidation(CommandResultValidation.None)
             .WithStandardOutputPipe(PipeTarget.ToStream(standardOutput))
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(standardError));
+            .WithStandardErrorPipe(
+                request.StandardError is null
+                    ? PipeTarget.ToStringBuilder(standardError!)
+                    : PipeTarget.ToStream(request.StandardError));
 
         if (request.StandardInput is not null)
         {
@@ -112,7 +115,7 @@ internal sealed class ProcessRunner : IProcessRunner
         var result = new ProcessRunResult(
             commandResult.ExitCode,
             stopwatch.Elapsed,
-            standardError.ToString());
+            standardError?.ToString() ?? string.Empty);
 
         ThrowForNonZeroExitCodeIfRequested(request, result);
         return result;
@@ -144,8 +147,9 @@ internal sealed class ProcessRunner : IProcessRunner
 
         var stopwatch = Stopwatch.StartNew();
 
-        Task<string> standardErrorTask = process.StandardError.ReadToEndAsync(
-            CancellationToken.None);
+        Task<string> standardErrorTask = ReadOrStreamStandardErrorAsync(
+            process,
+            request.StandardError);
         Stream standardOutput = request.StandardOutput ?? Stream.Null;
         Task standardOutputTask = process.StandardOutput.BaseStream.CopyToAsync(
             standardOutput,
@@ -216,6 +220,24 @@ internal sealed class ProcessRunner : IProcessRunner
 
         ThrowForNonZeroExitCodeIfRequested(request, result);
         return result;
+    }
+
+    private static async Task<string> ReadOrStreamStandardErrorAsync(
+        Process process,
+        Stream? destination)
+    {
+        if (destination is null)
+        {
+            return await process.StandardError.ReadToEndAsync(
+                CancellationToken.None).ConfigureAwait(false);
+        }
+
+        await process.StandardError.BaseStream.CopyToAsync(
+                destination,
+                81920,
+                CancellationToken.None)
+            .ConfigureAwait(false);
+        return string.Empty;
     }
 
     private static async Task CopyStandardInputAsync(

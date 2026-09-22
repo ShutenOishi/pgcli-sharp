@@ -104,12 +104,18 @@ External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase
 
 ## Phase 6 - Rich I/O tools
 
-Examples:
+**Status: Complete (2026-09-22).** Specification-first PostgreSQL 10-18 research, typed APIs, tool-specific rich I/O models, redirected-session infrastructure, upstream-aligned validation, semantic exit statuses, bilingual public documentation, and the Linux/macOS/Windows completion gate are implemented.
 
-- `psql`
-- `pgbench`
+- `psql` — PostgreSQL 10-18, with ordered/interleaved command/file actions, typed variable/separator values, PostgreSQL 12+ CSV output, finite `PsqlIo`, and a long-lived redirected `PsqlSession`.
+- `pgbench` — PostgreSQL 10-18, including PostgreSQL 11/13/15/17 option changes, PostgreSQL 13+ server-side initialization step `G`, PostgreSQL 12+ runtime exit status 2, script-weight semantics, and upstream-determinable mode/logging/progress/partition/retry validation.
+- `PsqlSession` exposes writable stdin after process startup, explicit EOF, cancellation, timeout/process-tree termination, caller-owned stdout/stderr streaming, and completion metadata.
+- Redirected psql sessions are pipe based and explicitly are not TTY/PTY emulation.
+- The internal session lifecycle is separate from the established one-shot process runner. Modern .NET uses `System.Diagnostics.Process`; the `netstandard2.0` path uses CliWrap without leaking dependency types.
+- Windows CI exercises the `netstandard2.0` surface through .NET Framework 4.8 in addition to Linux/macOS modern targets.
 
-Design stdin/stdout/interactive behavior deliberately rather than forcing it through an API designed for pg_dump.
+The maintained inventories are `spec/postgresql/psql.json` and `spec/postgresql/pgbench.json`. Research and implementation notes are in `docs/rich-io-phase-6.md`, the lifecycle decision is ADR-0013, and completion evidence is recorded in `docs/phase-6-completion.md`.
+
+External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase 6 completion is recorded by the reviewed main merge and exact-commit CI rather than a new tag or Release.
 
 ## Phase 7 - Server applications
 

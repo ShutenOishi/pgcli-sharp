@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed the Phase 5 database-management and maintenance implementation on top of the Phase 2 backup/restore core, Phase 3 release-pipeline work, and Phase 4 Backup/WAL tools. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred until the final release phase under ADR-0012; development continues with Phase 6.
+PgCliSharp has completed the Phase 6 rich-I/O implementation for `psql` and `pgbench`, on top of the Phase 2 backup/restore core, Phase 3 release-pipeline work, Phase 4 Backup/WAL tools, and Phase 5 database-management/maintenance tools. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred until the final release phase under ADR-0012; development continues with Phase 7.
 
 Initial PostgreSQL compatibility target:
 
@@ -114,6 +114,58 @@ PgIsReadyResult status = await ready.ExecuteAsync(new PgIsReadyOptions
 ```
 
 The nine compatibility inventories are maintained under `spec/postgresql/`. Research and implementation notes are in [`docs/database-maintenance-phase-5.md`](docs/database-maintenance-phase-5.md), with completion evidence in [`docs/phase-5-completion.md`](docs/phase-5-completion.md).
+
+## psql and pgbench rich I/O
+
+Phase 6 adds typed PostgreSQL 10-18 wrappers for `psql` and `pgbench` without forcing their richer I/O behavior through a dump-style one-shot API.
+
+Finite psql execution uses `PsqlIo` for optional caller-owned stdin/stdout/stderr. Ordered `PsqlAction` values preserve interleaved command/file execution exactly. For a process that must stay alive while the caller writes commands, `StartSessionAsync` returns a `PsqlSession`.
+
+```csharp
+var psql = new Psql(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\psql.exe",
+    PostgreSqlMajorVersion.V18);
+
+using var stdout = new MemoryStream();
+using var stderr = new MemoryStream();
+
+using PsqlSession session = await psql.StartSessionAsync(
+    new PsqlOptions { Database = "appdb", NoPsqlRc = true },
+    new PsqlSessionIo(stdout, stderr),
+    timeout: TimeSpan.FromMinutes(2));
+
+byte[] commands = Encoding.UTF8.GetBytes(
+    "select current_database();\n\\q\n");
+await session.StandardInput.WriteAsync(commands);
+session.CompleteInput();
+PsqlSessionResult sessionResult = await session.Completion;
+```
+
+The session is a redirected pipe session, **not** a TTY/PTY terminal. It deliberately does not promise Readline, history, or other terminal-only behavior.
+
+`pgbench` remains finite execution. `PgBenchIo` exposes caller-owned stdout/stderr destinations so benchmark summaries, progress, debug output, and diagnostics can stream without mandatory whole-output buffering.
+
+```csharp
+var pgBench = new PgBench(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pgbench.exe",
+    PostgreSqlMajorVersion.V18);
+
+await pgBench.ExecuteAsync(
+    new PgBenchOptions
+    {
+        Database = "appdb",
+        Clients = 10,
+        DurationSeconds = 30,
+        ProgressSeconds = 5,
+    },
+    new PgBenchIo(
+        standardOutput: Console.OpenStandardOutput(),
+        standardError: Console.OpenStandardError()));
+```
+
+PgCliSharp validates version-specific pgbench behavior before startup, including PostgreSQL 11/13/15/17 option boundaries, PostgreSQL 13+ server-side initialization step `G`, logging/progress/partition/retry constraints, script-weight rules, and the PostgreSQL 12+ runtime-error exit status.
+
+The compatibility inventories are [`spec/postgresql/psql.json`](spec/postgresql/psql.json) and [`spec/postgresql/pgbench.json`](spec/postgresql/pgbench.json). Research is recorded in [`docs/rich-io-phase-6.md`](docs/rich-io-phase-6.md), ADR-0013 records the session lifecycle decision, and completion evidence is in [`docs/phase-6-completion.md`](docs/phase-6-completion.md).
 
 ## Development
 

@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 2 のバックアップ／リストア中核、Phase 3 のリリースパイプライン、Phase 4 の Backup/WAL ツールに加え、Phase 5 のデータベース管理・maintenance ツール実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期したまま、Phase 6 の開発へ進みます。
+Phase 2 のバックアップ／リストア中核、Phase 3 のリリースパイプライン、Phase 4 の Backup/WAL ツール、Phase 5 のデータベース管理・maintenance ツールに加え、Phase 6 の `psql` / `pgbench` rich-I/O 実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期したまま、Phase 7 の開発へ進みます。
 
 初期対応範囲:
 
@@ -124,6 +124,58 @@ PgIsReadyResult status = await ready.ExecuteAsync(new PgIsReadyOptions
 ```
 
 9ツールの機械可読な互換性仕様は `spec/postgresql/` に保存しています。調査・実装記録は [`docs/database-maintenance-phase-5.md`](docs/database-maintenance-phase-5.md)、完了 evidence は [`docs/phase-5-completion.md`](docs/phase-5-completion.md) を参照してください。
+
+## psql / pgbench の rich I/O
+
+Phase 6 では、`psql` と `pgbench` を PostgreSQL 10〜18 向けの型付き API として追加し、dump 系の one-shot API に rich I/O を無理に押し込みません。
+
+有限な psql 実行では `PsqlIo` に任意の caller-owned stdin/stdout/stderr を渡せます。`PsqlAction` は command/file の混在順序をそのまま保持します。process 起動後も caller から command を送りたい場合は、`StartSessionAsync` で `PsqlSession` を開始します。
+
+```csharp
+var psql = new Psql(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\psql.exe",
+    PostgreSqlMajorVersion.V18);
+
+using var stdout = new MemoryStream();
+using var stderr = new MemoryStream();
+
+using PsqlSession session = await psql.StartSessionAsync(
+    new PsqlOptions { Database = "appdb", NoPsqlRc = true },
+    new PsqlSessionIo(stdout, stderr),
+    timeout: TimeSpan.FromMinutes(2));
+
+byte[] commands = Encoding.UTF8.GetBytes(
+    "select current_database();\n\\q\n");
+await session.StandardInput.WriteAsync(commands);
+session.CompleteInput();
+PsqlSessionResult sessionResult = await session.Completion;
+```
+
+この session は redirected pipe によるもので、**TTY/PTY terminal ではありません**。Readline、history など terminal 専用動作は保証しません。
+
+`pgbench` は有限実行として扱い、`PgBenchIo` で caller-owned stdout/stderr を指定できます。benchmark summary、progress、debug、diagnostic を全量 memory buffer 化せず stream できます。
+
+```csharp
+var pgBench = new PgBench(
+    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pgbench.exe",
+    PostgreSqlMajorVersion.V18);
+
+await pgBench.ExecuteAsync(
+    new PgBenchOptions
+    {
+        Database = "appdb",
+        Clients = 10,
+        DurationSeconds = 30,
+        ProgressSeconds = 5,
+    },
+    new PgBenchIo(
+        standardOutput: Console.OpenStandardOutput(),
+        standardError: Console.OpenStandardError()));
+```
+
+PostgreSQL 11/13/15/17 の option 境界、PostgreSQL 13 以降の server-side initialization step `G`、logging/progress/partition/retry 制約、script weight、PostgreSQL 12 以降の runtime-error exit status などは process 起動前または typed result として扱います。
+
+互換性仕様は [`spec/postgresql/psql.json`](spec/postgresql/psql.json) と [`spec/postgresql/pgbench.json`](spec/postgresql/pgbench.json)、調査記録は [`docs/rich-io-phase-6.md`](docs/rich-io-phase-6.md)、session lifecycle の判断は ADR-0013、完了 evidence は [`docs/phase-6-completion.md`](docs/phase-6-completion.md) に保存しています。
 
 ## 開発
 
