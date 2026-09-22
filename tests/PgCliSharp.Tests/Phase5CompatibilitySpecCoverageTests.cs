@@ -38,6 +38,13 @@ public sealed class Phase5CompatibilitySpecCoverageTests
 
             if (hasProperty)
                 Assert.NotNull(optionsType.GetProperty(option.Api.Property!));
+
+            if (hasBinding)
+            {
+                Assert.True(
+                    option.Api.Binding is "Executable version probe" or "Utility command",
+                    $"Spec option '{tool}:{option.Id}' uses unknown special binding '{option.Api.Binding}'.");
+            }
         }
     }
 

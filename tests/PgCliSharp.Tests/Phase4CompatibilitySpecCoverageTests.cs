@@ -30,8 +30,26 @@ public sealed class Phase4CompatibilitySpecCoverageTests
 
             if (hasProperty)
                 Assert.NotNull(optionsType.GetProperty(option.Api.Property!));
+
+            if (hasBinding)
+            {
+                Assert.True(
+                    IsAllowedSpecialBinding(tool, option.Api.Binding!),
+                    $"Spec option '{tool}:{option.Id}' uses unknown special binding '{option.Api.Binding}'.");
+            }
         }
     }
+
+    private static bool IsAllowedSpecialBinding(string tool, string binding) =>
+        binding switch
+        {
+            "Executable version probe" => true,
+            "Utility command" => true,
+            "PgBaseBackupDestination" => tool == "pg_basebackup",
+            "PgRecvLogicalOutput" => tool == "pg_recvlogical",
+            "PgVerifyBackupInput" => tool == "pg_verifybackup",
+            _ => false,
+        };
 
     [Theory]
     [InlineData("pg_basebackup")]
