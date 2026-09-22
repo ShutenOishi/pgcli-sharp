@@ -136,11 +136,16 @@ Tools that can alter or recover data directories require especially explicit doc
 - Review exception hierarchy and structured diagnostic properties.
 - Verify English/Japanese XML documentation coverage.
 - Verify English/Japanese resource coverage.
-- Run PostgreSQL 10-18 compatibility matrix.
-- Verify Windows/Linux/macOS behavior where applicable.
+- Expand the representative real-PostgreSQL CI introduced by the Phase 0-6 follow-up review into a PostgreSQL 10-18 evidence matrix where reproducible maintained runners are available.
+- Track CLI numeric version, server version, OS/TFM, scenario result, and any exclusion reason; do not count fake-runner tests as real PostgreSQL evidence.
+- Keep backup/restore, finite/redirected psql, and pgbench scenarios as the initial real-executable baseline; isolate destructive/privileged Phase 4/5 scenarios in disposable environments before adding them.
+- Verify Windows/Linux/macOS behavior where applicable and record where legacy PostgreSQL packages prevent a reproducible combination.
 - Freeze breaking API changes.
 - Complete README/examples.
+- Explicitly decide whether the preserved Phase 3 `0.1.0-alpha.1` candidate is published or superseded, then revalidate the selected source/package/notes provenance before enabling any publication manifest.
 - Release candidates followed by `1.0.0`.
+
+See [Real PostgreSQL integration testing](integration-testing.md) for the current representative CI scope and expansion rules.
 
 ## Phase completion and deferred publication
 
