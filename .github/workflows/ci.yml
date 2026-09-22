@@ -136,16 +136,20 @@ jobs:
             sudo pg_ctlcluster "${{ matrix.postgresql }}" main start
           fi
 
+          pg_port="$(sudo pg_lsclusters --no-header | awk -v version="${{ matrix.postgresql }}" '$1 == version && $2 == "main" { print $3; exit }')"
+          test -n "$pg_port"
+
           db_user="$(id -un)"
-          sudo -u postgres createuser --superuser "$db_user"
+          sudo -u postgres createuser -p "$pg_port" --superuser "$db_user"
 
           for database in pgclisharp_source pgclisharp_target pgclisharp_bench; do
-            sudo -u postgres createdb -O "$db_user" "$database"
+            sudo -u postgres createdb -p "$pg_port" -O "$db_user" "$database"
           done
 
           echo "PGCLI_REAL_PG_MAJOR=${{ matrix.postgresql }}" >> "$GITHUB_ENV"
           echo "PGCLI_REAL_PG_BIN=/usr/lib/postgresql/${{ matrix.postgresql }}/bin" >> "$GITHUB_ENV"
           echo "PGCLI_REAL_PG_HOST=/var/run/postgresql" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_PORT=$pg_port" >> "$GITHUB_ENV"
           echo "PGCLI_REAL_PG_USER=$db_user" >> "$GITHUB_ENV"
           echo "PGCLI_REAL_PG_SOURCE_DB=pgclisharp_source" >> "$GITHUB_ENV"
           echo "PGCLI_REAL_PG_TARGET_DB=pgclisharp_target" >> "$GITHUB_ENV"
@@ -155,12 +159,13 @@ jobs:
         shell: bash
         run: |
           "$PGCLI_REAL_PG_BIN/psql" --version
-          server_version="$("$PGCLI_REAL_PG_BIN/psql" -h "$PGCLI_REAL_PG_HOST" -U "$PGCLI_REAL_PG_USER" -d postgres -Atqc 'show server_version')"
+          server_version="$("$PGCLI_REAL_PG_BIN/psql" -h "$PGCLI_REAL_PG_HOST" -p "$PGCLI_REAL_PG_PORT" -U "$PGCLI_REAL_PG_USER" -d postgres -Atqc 'show server_version')"
           {
             echo "### Real PostgreSQL ${{ matrix.postgresql }}"
             echo
             echo "- CLI: $("$PGCLI_REAL_PG_BIN/psql" --version)"
             echo "- Server: $server_version"
+            echo "- Port: $PGCLI_REAL_PG_PORT"
             echo "- OS: ubuntu-latest"
             echo "- TFM: net10.0"
             echo "- Scenarios: PgDump/PgRestore, finite Psql, redirected PsqlSession, PgBench"

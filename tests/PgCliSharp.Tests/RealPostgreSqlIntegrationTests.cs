@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -19,6 +20,9 @@ public sealed class RealPostgreSqlIntegrationTests
 
         PostgreSqlMajorVersion version = (PostgreSqlMajorVersion)major;
         string host = RequiredEnvironment("PGCLI_REAL_PG_HOST");
+        int port = int.Parse(
+            RequiredEnvironment("PGCLI_REAL_PG_PORT"),
+            CultureInfo.InvariantCulture);
         string user = RequiredEnvironment("PGCLI_REAL_PG_USER");
         string sourceDatabase = RequiredEnvironment("PGCLI_REAL_PG_SOURCE_DB");
         string targetDatabase = RequiredEnvironment("PGCLI_REAL_PG_TARGET_DB");
@@ -35,7 +39,7 @@ public sealed class RealPostgreSqlIntegrationTests
         try
         {
             var psql = new Psql(psqlPath, version);
-            var seedOptions = ConnectionOptions(sourceDatabase, host, user);
+            var seedOptions = ConnectionOptions(sourceDatabase, host, port, user);
             seedOptions.Actions.Add(
                 PsqlAction.Command(
                     "CREATE TABLE IF NOT EXISTS pgclisharp_e2e(value integer NOT NULL);" +
@@ -52,6 +56,7 @@ public sealed class RealPostgreSqlIntegrationTests
             {
                 Database = sourceDatabase,
                 Host = host,
+                Port = port,
                 Username = user,
                 Format = PgDumpFormat.Custom,
             };
@@ -65,6 +70,7 @@ public sealed class RealPostgreSqlIntegrationTests
             var restoreOptions = new PgRestoreOptions
             {
                 Host = host,
+                Port = port,
                 Username = user,
                 NoOwner = true,
             };
@@ -76,7 +82,7 @@ public sealed class RealPostgreSqlIntegrationTests
             Assert.Equal(0, restore.ExitCode);
 
             using var verifyOutput = new MemoryStream();
-            var verifyOptions = ConnectionOptions(targetDatabase, host, user);
+            var verifyOptions = ConnectionOptions(targetDatabase, host, port, user);
             verifyOptions.OutputFormat = PsqlOutputFormat.Unaligned;
             verifyOptions.TuplesOnly = true;
             verifyOptions.Actions.Add(
@@ -91,7 +97,7 @@ public sealed class RealPostgreSqlIntegrationTests
 
             using var sessionOutput = new MemoryStream();
             using var sessionError = new MemoryStream();
-            var sessionOptions = ConnectionOptions(targetDatabase, host, user);
+            var sessionOptions = ConnectionOptions(targetDatabase, host, port, user);
             sessionOptions.OutputFormat = PsqlOutputFormat.Unaligned;
             sessionOptions.TuplesOnly = true;
             sessionOptions.NoReadline = true;
@@ -127,6 +133,7 @@ public sealed class RealPostgreSqlIntegrationTests
             {
                 Database = benchDatabase,
                 Host = host,
+                Port = port,
                 Username = user,
                 Initialize = true,
                 Scale = 1,
@@ -141,6 +148,7 @@ public sealed class RealPostgreSqlIntegrationTests
             {
                 Database = benchDatabase,
                 Host = host,
+                Port = port,
                 Username = user,
                 Clients = 1,
                 TransactionsPerClient = 1,
@@ -162,11 +170,13 @@ public sealed class RealPostgreSqlIntegrationTests
     private static PsqlOptions ConnectionOptions(
         string database,
         string host,
+        int port,
         string user) =>
         new PsqlOptions
         {
             Database = database,
             Host = host,
+            Port = port,
             Username = user,
             NoPsqlRc = true,
         };
