@@ -71,12 +71,109 @@ jobs:
           EXPECTED_COMMIT: ${{ github.sha }}
         run: bash eng/verify-nuget-package.sh artifacts
 
-      - name: Upload package artifacts
+      - name: Record development package provenance
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          DEVELOPMENT_SOURCE_COMMIT: ${{ github.sha }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          cat > artifacts/DEVELOPMENT-PACKAGE-PROVENANCE.txt <<EOF
+          development_artifact=true
+          publication_candidate=false
+          source_commit=$DEVELOPMENT_SOURCE_COMMIT
+          workflow_run_id=$WORKFLOW_RUN_ID
+          preserved_publication_source=cccf8d9fbe1f2e1104676ab94a7863209c0220dd
+          EOF
+
+      - name: Upload development package artifacts
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
-          name: pgclisharp-packages
+          name: pgclisharp-development-packages-${{ github.sha }}
           path: |
             artifacts/*.nupkg
             artifacts/*.snupkg
+            artifacts/DEVELOPMENT-PACKAGE-PROVENANCE.txt
           if-no-files-found: error
+
+  real-postgresql:
+    name: Real PostgreSQL ${{ matrix.postgresql }} (Linux/net10.0)
+    needs: build-test-pack
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        postgresql:
+          - 16
+          - 18
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install PostgreSQL
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get update
+          sudo apt-get install -y "postgresql-${{ matrix.postgresql }}" "postgresql-client-${{ matrix.postgresql }}"
+
+          if ! sudo pg_lsclusters --no-header | grep -E "^${{ matrix.postgresql }}[[:space:]]+main[[:space:]]" >/dev/null; then
+            sudo pg_createcluster "${{ matrix.postgresql }}" main
+          fi
+
+          if ! sudo pg_ctlcluster "${{ matrix.postgresql }}" main status >/dev/null 2>&1; then
+            sudo pg_ctlcluster "${{ matrix.postgresql }}" main start
+          fi
+
+          pg_port="$(sudo pg_lsclusters --no-header | awk -v version="${{ matrix.postgresql }}" '$1 == version && $2 == "main" { print $3; exit }')"
+          test -n "$pg_port"
+
+          db_user="$(id -un)"
+          sudo -u postgres createuser -p "$pg_port" --superuser "$db_user"
+
+          for database in pgclisharp_source pgclisharp_target pgclisharp_bench; do
+            sudo -u postgres createdb -p "$pg_port" -O "$db_user" "$database"
+          done
+
+          echo "PGCLI_REAL_PG_MAJOR=${{ matrix.postgresql }}" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_BIN=/usr/lib/postgresql/${{ matrix.postgresql }}/bin" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_HOST=/var/run/postgresql" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_PORT=$pg_port" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_USER=$db_user" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_SOURCE_DB=pgclisharp_source" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_TARGET_DB=pgclisharp_target" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_BENCH_DB=pgclisharp_bench" >> "$GITHUB_ENV"
+
+      - name: Record PostgreSQL versions
+        shell: bash
+        run: |
+          "$PGCLI_REAL_PG_BIN/psql" --version
+          server_version="$("$PGCLI_REAL_PG_BIN/psql" -h "$PGCLI_REAL_PG_HOST" -p "$PGCLI_REAL_PG_PORT" -U "$PGCLI_REAL_PG_USER" -d postgres -Atqc 'show server_version')"
+          {
+            echo "### Real PostgreSQL ${{ matrix.postgresql }}"
+            echo
+            echo "- CLI: $("$PGCLI_REAL_PG_BIN/psql" --version)"
+            echo "- Server: $server_version"
+            echo "- Port: $PGCLI_REAL_PG_PORT"
+            echo "- OS: ubuntu-latest"
+            echo "- TFM: net10.0"
+            echo "- Scenarios: PgDump/PgRestore, finite Psql, redirected PsqlSession, PgBench"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run real PostgreSQL wrapper integration
+        run: >
+          dotnet test tests/PgCliSharp.Tests/PgCliSharp.Tests.csproj
+          --framework net10.0
+          --configuration Release
+          --filter FullyQualifiedName~RealPostgreSqlIntegrationTests

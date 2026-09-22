@@ -71,6 +71,7 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0011](0011-specification-first-tool-implementation.md) | Use a specification-first workflow for PostgreSQL CLI tools | Accepted |
 | [0012](0012-defer-external-publication-until-final-phase.md) | Defer external publication until the final release phase | Accepted |
 | [0013](0013-rich-io-process-sessions.md) | Separate rich redirected sessions from one-shot process execution | Accepted |
+| [0014](0014-supervise-process-io-and-bound-session-input.md) | Supervise process I/O and bound redirected session input | Accepted |
 
 ## Template
 

@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0013. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0014. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -132,11 +132,15 @@ Requirements:
 - support `CancellationToken`;
 - support timeout configuration;
 - attempt to terminate the complete process tree on cancellation/timeout where the target framework supports it;
+- supervise modern stdout/stderr transfer faults as lifecycle outcomes rather than waiting only for process exit;
+- keep the configured cancellation/timeout deadline active while redirected output drains after process exit;
+- bound abnormal cleanup after a best-effort termination attempt rather than waiting indefinitely for process exit or a caller-owned stream;
+- never dispose caller-owned streams or claim that arbitrary cancellation-noncooperative stream implementations can be forcibly stopped;
 - never include passwords or secrets in diagnostic command-line rendering.
 
 The `netstandard2.0` compatibility backend must map execution results, cancellation, timeout, and failures back into PgCliSharp's own result/exception model. Public behavior should remain consistent across target frameworks.
 
-Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration.
+Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration. ADR-0014 makes modern session output faults part of lifecycle supervision and bounds the `netstandard2.0` CliWrap input bridge to approximately 1 MiB. Legacy `WriteAsync` therefore applies cancellation-aware backpressure; successful write completion means acceptance into the bounded delivery buffer, while `CompleteInput` drains already accepted bytes before EOF.
 
 ## 9. Output model
 
@@ -202,7 +206,7 @@ This data can drive:
 
 The authoritative source for CLI semantics is PostgreSQL official documentation and executable behavior.
 
-CI performs structural validation for all top-level tool specification JSON files under `spec/postgresql/`. Source-level option-table comparison is a research-time audit whose result is recorded in the specification because CI should not depend on live upstream source availability.
+CI performs structural validation for all top-level tool specification JSON files under `spec/postgresql/`. Source-level option-table comparison is a research-time audit whose result is recorded in the specification because CI should not depend on live upstream source availability. Runtime coverage tests also bind the pg_dump specification directly to its availability catalog, including maintenance-release boundaries, and reject unknown explicit special-binding names.
 
 Phase 1 stores the complete pg_dump compatibility inventory in `spec/postgresql/pg_dump.json`. It records per-major resolved option sets, short/long spellings, spelling availability, repeatability, required option arguments, wrapper/upstream defaults, format and compression rules, and patch-level availability. The inventory has also been compared mechanically against the official `REL_10_STABLE` through `REL_18_STABLE` pg_dump source option tables.
 
@@ -237,6 +241,8 @@ Use three logical test layers:
 1. Unit tests: typed options -> expected argument tokens, validation, parsing.
 2. Compatibility tests: supported option inventory by PostgreSQL major version.
 3. Integration tests: invoke real PostgreSQL executables/containers for representative end-to-end behavior.
+
+The CI baseline includes disposable Linux PostgreSQL 16 and 18 environments for public-wrapper backup/restore, finite and redirected psql, and pgbench execution. This is representative real-executable evidence, not a claim that the full PostgreSQL 10-18 matrix is already complete. Phase 8 expands and records the matrix according to `docs/integration-testing.md`.
 
 Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and CliWrap compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
 
@@ -280,13 +286,15 @@ ADR-0012 defers all new external publication from Phase 3 until the final releas
 
 The NuGet and Phase release workflows are manual-only. They require an explicit dispatch confirmation and `publication_enabled: true` in the reviewed manifest. When eventual publication is authorized, the workflows rebuild and revalidate the recorded source commit rather than silently packaging whichever commit happens to be current. Trusted Publishing/OIDC remains the preferred NuGet credential mechanism.
 
+Ordinary CI packages are development artifacts, not publication candidates. Their artifact name and provenance record include the exact CI source SHA and explicitly state `publication_candidate=false`; package verification still checks SourceLink/repository commit against that source. This does not change the preserved Phase 3 manifest source or package version.
+
 ## 16. Planned implementation order
 
 1. Project/solution and execution infrastructure.
 2. Version parsing/validation for PostgreSQL 10-18.
 3. Full `pg_dump` typed option coverage.
 4. Full typed `pg_restore` and `pg_dumpall` coverage, including archive/script I/O and cross-tool backup/restore contracts.
-5. First NuGet preview and publication pipeline validation.
+5. First NuGet preview/package-pipeline validation; external publication remains deferred by ADR-0012.
 6. Backup/WAL tools.
 7. Database-management and maintenance client tools.
 8. `psql`, `pgbench`, and tools with richer stdin/stdout behavior, including ordered psql actions and explicit redirected-session semantics.

@@ -356,13 +356,19 @@ public sealed class PsqlSession : IDisposable
         _completion = CompleteAsync();
     }
 
-    /// <summary><para>EN: Gets the writable standard-input stream for the running psql process.</para><para>JA: 実行中 psql process の書き込み可能な標準入力 stream を取得します。</para></summary>
+    /// <summary>
+    /// <para>EN: Gets the writable standard-input stream for the running psql process. On the netstandard2.0 backend, writes use bounded buffering and may apply backpressure; completion means accepted for delivery, not consumed by psql.</para>
+    /// <para>JA: 実行中 psql process の書き込み可能な標準入力 stream を取得します。netstandard2.0 backend では bounded buffer により backpressure が発生することがあり、write 完了は配送用 buffer への受理を意味し、psql による消費完了を意味しません。</para>
+    /// </summary>
     public Stream StandardInput => _session.StandardInput;
 
     /// <summary><para>EN: Gets a task that completes when psql exits.</para><para>JA: psql 終了時に完了する task を取得します。</para></summary>
     public Task<PsqlSessionResult> Completion => _completion;
 
-    /// <summary><para>EN: Closes psql standard input after queued/written bytes, signaling EOF without canceling the process.</para><para>JA: 書き込み済み byte の後で psql 標準入力を閉じ、process を cancel せず EOF を通知します。</para></summary>
+    /// <summary>
+    /// <para>EN: Rejects further input and closes psql standard input after already accepted queued/written bytes, signaling EOF without canceling the process. Flush does not imply that psql has consumed buffered bytes.</para>
+    /// <para>JA: 以後の入力を拒否し、既に受理済みの queued/written byte を配送した後で psql 標準入力を閉じ、process を cancel せず EOF を通知します。Flush は buffered byte を psql が消費済みであることを意味しません。</para>
+    /// </summary>
     public void CompleteInput() => _session.CompleteInput();
 
     /// <summary><para>EN: Requests forceful cancellation of the running psql process tree.</para><para>JA: 実行中 psql process tree の強制 cancellation を要求します。</para></summary>

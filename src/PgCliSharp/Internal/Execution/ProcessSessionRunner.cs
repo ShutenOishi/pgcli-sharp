@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 #if NETSTANDARD2_0
 using CliWrap;
 #endif
@@ -170,9 +171,15 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
 
     private sealed class ModernProcessSession : IProcessSession
     {
+        private static readonly TimeSpan AbnormalCleanupGracePeriod =
+            TimeSpan.FromSeconds(2);
+
         private readonly ProcessSessionStartRequest _request;
         private readonly Process _process;
-        private readonly CancellationTokenSource _manualCancellation = new CancellationTokenSource();
+        private readonly CancellationTokenSource _manualCancellation =
+            new CancellationTokenSource();
+        private readonly CancellationTokenSource _ioCancellation =
+            new CancellationTokenSource();
         private readonly Task _standardOutputTask;
         private readonly Task _standardErrorTask;
         private int _inputCompleted;
@@ -189,11 +196,11 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             _standardOutputTask = process.StandardOutput.BaseStream.CopyToAsync(
                 request.StandardOutput,
                 81920,
-                CancellationToken.None);
+                _ioCancellation.Token);
             _standardErrorTask = process.StandardError.BaseStream.CopyToAsync(
                 request.StandardError,
                 81920,
-                CancellationToken.None);
+                _ioCancellation.Token);
             Completion = CompleteAsync(cancellationToken);
         }
 
@@ -210,7 +217,10 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             {
                 _process.StandardInput.Close();
             }
-            catch (InvalidOperationException)
+            catch (Exception exception) when (
+                exception is InvalidOperationException ||
+                exception is ObjectDisposedException ||
+                exception is IOException)
             {
             }
         }
@@ -251,22 +261,78 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             Task timeoutTask = _request.Timeout.HasValue
                 ? Task.Delay(_request.Timeout.Value, CancellationToken.None)
                 : Task.Delay(Timeout.Infinite, CancellationToken.None);
+            Task<Exception> ioFaultTask = WaitForIoFaultAsync(
+                _standardOutputTask,
+                _standardErrorTask);
 
             try
             {
                 Task completedTask = await Task.WhenAny(
                         waitTask,
                         cancellationTask,
-                        timeoutTask)
+                        timeoutTask,
+                        ioFaultTask)
                     .ConfigureAwait(false);
 
                 if (completedTask != waitTask)
                 {
+                    Exception? ioFailure = completedTask == ioFaultTask
+                        ? await ioFaultTask.ConfigureAwait(false)
+                        : null;
+
                     TryTerminateProcessTree(_process);
                     CompleteInput();
-                    await waitTask.ConfigureAwait(false);
-                    await _standardOutputTask.ConfigureAwait(false);
-                    await _standardErrorTask.ConfigureAwait(false);
+                    _ioCancellation.Cancel();
+
+                    await AwaitBoundedCleanupAsync(
+                            waitTask,
+                            _standardOutputTask,
+                            _standardErrorTask)
+                        .ConfigureAwait(false);
+                    stopwatch.Stop();
+
+                    if (lifetimeCancellation.IsCancellationRequested)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        throw new OperationCanceledException();
+                    }
+
+                    if (timeoutTask.IsCompleted)
+                    {
+                        throw new PgProcessTimeoutException(
+                            _request.ExecutablePath,
+                            _request.Timeout!.Value);
+                    }
+
+                    if (ioFailure is not null)
+                    {
+                        ExceptionDispatchInfo.Capture(ioFailure).Throw();
+                    }
+
+                    throw new InvalidOperationException(
+                        "Process session ended without a process, timeout, cancellation, or I/O outcome.");
+                }
+
+                Task drainTask = Task.WhenAll(
+                    _standardOutputTask,
+                    _standardErrorTask);
+
+                completedTask = await Task.WhenAny(
+                        drainTask,
+                        cancellationTask,
+                        timeoutTask)
+                    .ConfigureAwait(false);
+
+                if (completedTask != drainTask)
+                {
+                    CompleteInput();
+                    _ioCancellation.Cancel();
+
+                    await AwaitBoundedCleanupAsync(
+                            drainTask,
+                            _standardOutputTask,
+                            _standardErrorTask)
+                        .ConfigureAwait(false);
                     stopwatch.Stop();
 
                     if (lifetimeCancellation.IsCancellationRequested)
@@ -280,8 +346,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                         _request.Timeout!.Value);
                 }
 
-                await _standardOutputTask.ConfigureAwait(false);
-                await _standardErrorTask.ConfigureAwait(false);
+                await drainTask.ConfigureAwait(false);
                 stopwatch.Stop();
 
                 return new ProcessSessionResult(
@@ -290,8 +355,67 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             }
             finally
             {
+                _ioCancellation.Cancel();
+                _ioCancellation.Dispose();
                 _manualCancellation.Dispose();
                 _process.Dispose();
+            }
+        }
+
+        private static async Task<Exception> WaitForIoFaultAsync(
+            params Task[] tasks)
+        {
+            var remaining = new List<Task>(tasks);
+
+            while (remaining.Count > 0)
+            {
+                Task completed = await Task.WhenAny(remaining).ConfigureAwait(false);
+                remaining.Remove(completed);
+
+                try
+                {
+                    await completed.ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    continue;
+                }
+                catch (Exception exception)
+                {
+                    return exception;
+                }
+            }
+
+            var never = new TaskCompletionSource<Exception>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            return await never.Task.ConfigureAwait(false);
+        }
+
+        private static async Task AwaitBoundedCleanupAsync(params Task[] tasks)
+        {
+            Task cleanupTask = Task.WhenAll(
+                tasks.Select(ObserveCleanupTaskAsync));
+
+            Task completed = await Task.WhenAny(
+                    cleanupTask,
+                    Task.Delay(AbnormalCleanupGracePeriod))
+                .ConfigureAwait(false);
+
+            if (completed == cleanupTask)
+            {
+                await cleanupTask.ConfigureAwait(false);
+            }
+        }
+
+        private static async Task ObserveCleanupTaskAsync(Task task)
+        {
+            try
+            {
+                await task.ConfigureAwait(false);
+            }
+            catch
+            {
+                // The primary control/I/O outcome is reported by Completion.
             }
         }
 
@@ -307,6 +431,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                 exception is Win32Exception ||
                 exception is NotSupportedException)
             {
+                // Best effort. Completion still reports the primary outcome.
             }
         }
     }
@@ -432,8 +557,16 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
 
     private sealed class SessionInputPipe : IDisposable
     {
-        private readonly ConcurrentQueue<byte[]> _queue = new ConcurrentQueue<byte[]>();
+        private const int SegmentSize = 64 * 1024;
+        private const int MaxBufferedSegments = 16;
+
+        private readonly ConcurrentQueue<byte[]> _queue =
+            new ConcurrentQueue<byte[]>();
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
+        private readonly SemaphoreSlim _availableSlots =
+            new SemaphoreSlim(MaxBufferedSegments, MaxBufferedSegments);
+        private readonly CancellationTokenSource _writeCancellation =
+            new CancellationTokenSource();
         private readonly object _gate = new object();
         private int _completed;
         private int _disposed;
@@ -449,72 +582,203 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
 
         internal void Enqueue(byte[] buffer, int offset, int count)
         {
-            var copy = new byte[count];
-            Buffer.BlockCopy(buffer, offset, copy, 0, count);
+            int position = offset;
+            int remaining = count;
 
-            lock (_gate)
+            while (remaining > 0)
             {
-                if (_completed != 0)
-                    throw new InvalidOperationException("Standard input has already been completed.");
-                if (_disposed != 0)
-                    throw new ObjectDisposedException(nameof(SessionInputPipe));
+                int segmentLength = Math.Min(SegmentSize, remaining);
+                WaitForSlot();
+                EnqueueAcquiredSegment(buffer, position, segmentLength);
+                position += segmentLength;
+                remaining -= segmentLength;
+            }
+        }
 
-                _queue.Enqueue(copy);
-                _signal.Release();
+        internal async Task EnqueueAsync(
+            byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken)
+        {
+            int position = offset;
+            int remaining = count;
+
+            while (remaining > 0)
+            {
+                int segmentLength = Math.Min(SegmentSize, remaining);
+                await WaitForSlotAsync(cancellationToken).ConfigureAwait(false);
+                EnqueueAcquiredSegment(buffer, position, segmentLength);
+                position += segmentLength;
+                remaining -= segmentLength;
             }
         }
 
         internal void Complete()
         {
+            bool shouldSignal;
+
             lock (_gate)
             {
                 if (_completed != 0)
                     return;
 
                 _completed = 1;
-                _signal.Release();
+                shouldSignal = true;
             }
+
+            CancelWriters();
+            if (shouldSignal)
+                _signal.Release();
         }
 
         public void Dispose()
         {
+            bool shouldSignal;
+
             lock (_gate)
             {
                 if (_disposed != 0)
                     return;
 
-                if (_completed == 0)
-                {
-                    _completed = 1;
-                    _signal.Release();
-                }
-
                 _disposed = 1;
+                _completed = 1;
+                shouldSignal = true;
             }
 
-            _signal.Dispose();
+            CancelWriters();
+            if (shouldSignal)
+                _signal.Release();
+        }
+
+        private void WaitForSlot()
+        {
+            try
+            {
+                _availableSlots.Wait(_writeCancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                ThrowForClosedInput();
+                throw;
+            }
+        }
+
+        private async Task WaitForSlotAsync(CancellationToken cancellationToken)
+        {
+            using var linkedCancellation =
+                CancellationTokenSource.CreateLinkedTokenSource(
+                    cancellationToken,
+                    _writeCancellation.Token);
+
+            try
+            {
+                await _availableSlots.WaitAsync(linkedCancellation.Token)
+                    .ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (
+                !cancellationToken.IsCancellationRequested &&
+                _writeCancellation.IsCancellationRequested)
+            {
+                ThrowForClosedInput();
+                throw;
+            }
+        }
+
+        private void EnqueueAcquiredSegment(
+            byte[] buffer,
+            int offset,
+            int count)
+        {
+            var copy = new byte[count];
+            Buffer.BlockCopy(buffer, offset, copy, 0, count);
+
+            lock (_gate)
+            {
+                if (_disposed != 0)
+                {
+                    _availableSlots.Release();
+                    throw new ObjectDisposedException(nameof(SessionInputPipe));
+                }
+
+                if (_completed != 0)
+                {
+                    _availableSlots.Release();
+                    throw new InvalidOperationException(
+                        "Standard input has already been completed.");
+                }
+
+                _queue.Enqueue(copy);
+            }
+
+            _signal.Release();
         }
 
         private async Task PumpAsync(
             Stream destination,
             CancellationToken cancellationToken)
         {
-            while (true)
+            try
             {
-                await _signal.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-                while (_queue.TryDequeue(out byte[]? data))
+                while (true)
                 {
-                    await destination.WriteAsync(
-                            data,
-                            0,
-                            data.Length,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                }
+                    await _signal.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-                if (Volatile.Read(ref _completed) != 0 && _queue.IsEmpty)
-                    return;
+                    while (_queue.TryDequeue(out byte[]? data))
+                    {
+                        try
+                        {
+                            await destination.WriteAsync(
+                                    data,
+                                    0,
+                                    data.Length,
+                                    cancellationToken)
+                                .ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            _availableSlots.Release();
+                        }
+                    }
+
+                    if (Volatile.Read(ref _completed) != 0 && _queue.IsEmpty)
+                        return;
+                }
+            }
+            finally
+            {
+                CancelWriters();
+
+                while (_queue.TryDequeue(out _))
+                {
+                    _availableSlots.Release();
+                }
+            }
+        }
+
+        private void CancelWriters()
+        {
+            try
+            {
+                _writeCancellation.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+        }
+
+        private void ThrowForClosedInput()
+        {
+            lock (_gate)
+            {
+                if (_disposed != 0)
+                    throw new ObjectDisposedException(nameof(SessionInputPipe));
+
+                if (_completed != 0)
+                {
+                    throw new InvalidOperationException(
+                        "Standard input has already been completed.");
+                }
             }
         }
 
@@ -553,15 +817,21 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                 _owner.Enqueue(buffer, offset, count);
             }
 
-            public override Task WriteAsync(
+            public override async Task WriteAsync(
                 byte[] buffer,
                 int offset,
                 int count,
                 CancellationToken cancellationToken)
             {
+                ValidateBuffer(buffer, offset, count);
+                ThrowIfDisposed();
                 cancellationToken.ThrowIfCancellationRequested();
-                Write(buffer, offset, count);
-                return Task.CompletedTask;
+                await _owner.EnqueueAsync(
+                        buffer,
+                        offset,
+                        count,
+                        cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             protected override void Dispose(bool disposing)
@@ -585,7 +855,9 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                 if (buffer is null) throw new ArgumentNullException(nameof(buffer));
                 if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
                 if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
-                if (buffer.Length - offset < count) throw new ArgumentException("Offset and count exceed the buffer length.");
+                if (buffer.Length - offset < count)
+                    throw new ArgumentException(
+                        "Offset and count exceed the buffer length.");
             }
 
             private void ThrowIfDisposed()

@@ -20,8 +20,24 @@ public sealed class Phase6CompatibilitySpecCoverageTests
             bool hasBinding = !string.IsNullOrWhiteSpace(option.Api.Binding);
             Assert.True(hasProperty || hasBinding, $"Spec option '{tool}:{option.Id}' has no API binding.");
             if (hasProperty) Assert.NotNull(optionsType.GetProperty(option.Api.Property!));
+            if (hasBinding)
+            {
+                Assert.True(
+                    IsAllowedSpecialBinding(tool, option.Api.Binding!),
+                    $"Spec option '{tool}:{option.Id}' uses unknown special binding '{option.Api.Binding}'.");
+            }
         }
     }
+
+    private static bool IsAllowedSpecialBinding(string tool, string binding) =>
+        binding switch
+        {
+            "Executable version probe" => true,
+            "Utility command" => true,
+            "Database positional alias; wrapper emits --dbname" => tool == "psql",
+            "Username positional alias; wrapper emits --username" => tool == "psql",
+            _ => false,
+        };
 
     [Theory]
     [InlineData("psql")]

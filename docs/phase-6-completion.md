@@ -75,3 +75,15 @@ Phase 6 completion does not create a NuGet push, Phase 6 tag, GitHub Release, or
 3. Mark PR #11 ready for review and merge it to `main`.
 4. Require the exact `main` merge commit to pass Linux/macOS/Windows CI.
 5. Record final PR/merge/CI evidence in the PR completion report.
+
+## Final reviewed merge evidence
+
+The later repository evidence index confirms the final Phase 6 completion gate:
+
+- PR: #11
+- final PR head: `8bc8f6f52525294d150cd05470134c353148231b`
+- final PR CI: https://github.com/ShutenOishi/pgcli-sharp/actions/runs/35691393213 — Linux/macOS/Windows success
+- `main` merge commit: `6c85389946602b200d2822f7667eeef4ada49c48`
+- exact-main CI: https://github.com/ShutenOishi/pgcli-sharp/actions/runs/35691571528 — Linux/macOS/Windows success
+
+These records supplement the pre-documentation implementation head above; they do not replace or rewrite it.

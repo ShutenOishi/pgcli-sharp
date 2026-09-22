@@ -29,5 +29,11 @@
     <None Include="../../spec/postgresql/*.json"
           Link="spec/%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/PgCliSharp/Resources/Messages.resx"
+          Link="resx/Messages.resx"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/PgCliSharp/Resources/Messages.ja.resx"
+          Link="resx/Messages.ja.resx"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

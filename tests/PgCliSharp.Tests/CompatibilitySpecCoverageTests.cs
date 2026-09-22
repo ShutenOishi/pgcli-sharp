@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using PgCliSharp.Internal.PgDump;
 using PgCliSharp.Internal.PgDumpAll;
 using PgCliSharp.Internal.PgRestore;
 
@@ -7,6 +8,31 @@ namespace PgCliSharp.Tests;
 
 public sealed class CompatibilitySpecCoverageTests
 {
+    private static readonly Dictionary<string, HashSet<string>> AllowedSpecialBindings =
+        new Dictionary<string, HashSet<string>>(StringComparer.Ordinal)
+        {
+            ["pg_dump"] = new HashSet<string>(
+                new[] { "PgDumpOutput", "not-normal-options", "wrapper-version-probe" },
+                StringComparer.Ordinal),
+            ["pg_restore"] = new HashSet<string>(
+                new[]
+                {
+                    "Executable version probe / utility command",
+                    "PgRestoreOutput script/list destination",
+                    "PgRestoreOutput.ToDatabase",
+                    "Utility command",
+                },
+                StringComparer.Ordinal),
+            ["pg_dumpall"] = new HashSet<string>(
+                new[]
+                {
+                    "Executable version probe / utility command",
+                    "PgDumpAllOutput",
+                    "Utility command",
+                },
+                StringComparer.Ordinal),
+        };
+
     [Theory]
     [InlineData("pg_dump", typeof(PgDumpOptions))]
     [InlineData("pg_restore", typeof(PgRestoreOptions))]
@@ -30,7 +56,28 @@ public sealed class CompatibilitySpecCoverageTests
             {
                 Assert.NotNull(optionsType.GetProperty(option.Api.Property!));
             }
+
+            if (hasSpecialBinding)
+            {
+                Assert.True(
+                    AllowedSpecialBindings.TryGetValue(tool, out HashSet<string>? allowed) &&
+                    allowed.Contains(option.Api.Binding!),
+                    $"Spec option '{tool}:{option.Id}' uses unknown special binding '{option.Api.Binding}'.");
+            }
         }
+    }
+
+    [Fact]
+    public void PgDump_VersionVaryingSpecMatchesRuntimeCatalog()
+    {
+        AssertAvailabilityMatches(
+            ReadSpec("pg_dump"),
+            PgDumpOptionAvailabilityCatalog.All.Select(
+                item => new RuntimeAvailability(
+                    item.OptionName,
+                    item.Since,
+                    item.Until,
+                    item.MinimumVersions)));
     }
 
     [Fact]
@@ -74,7 +121,8 @@ public sealed class CompatibilitySpecCoverageTests
             bool varies =
                 availability.MajorSince != 10 ||
                 availability.MajorUntil != 18 ||
-                (availability.MinimumExecutableVersionByMajor?.Count ?? 0) > 0;
+                (availability.MinimumExecutableVersionByMajor?.Count ?? 0) > 0 ||
+                (availability.MinimumPatchByMajor?.Count ?? 0) > 0;
 
             if (!varies)
             {
@@ -93,6 +141,7 @@ public sealed class CompatibilitySpecCoverageTests
 
             Dictionary<string, string> expectedMinimums =
                 availability.MinimumExecutableVersionByMajor ??
+                availability.MinimumPatchByMajor ??
                 new Dictionary<string, string>(StringComparer.Ordinal);
 
             Dictionary<string, string> runtimeMinimums =
@@ -103,9 +152,7 @@ public sealed class CompatibilitySpecCoverageTests
                     StringComparer.Ordinal);
 
             Assert.Equal(
-                (availability.MinimumExecutableVersionByMajor ??
-                    new Dictionary<string, string>(StringComparer.Ordinal))
-                    .OrderBy(pair => pair.Key),
+                expectedMinimums.OrderBy(pair => pair.Key),
                 runtimeMinimums.OrderBy(pair => pair.Key));
         }
     }
@@ -196,6 +243,9 @@ public sealed class CompatibilitySpecCoverageTests
 
         [DataMember(Name = "minimumExecutableVersionByMajor")]
         public Dictionary<string, string>? MinimumExecutableVersionByMajor { get; set; }
+
+        [DataMember(Name = "minimumPatchByMajor")]
+        public Dictionary<string, string>? MinimumPatchByMajor { get; set; }
     }
 
     [DataContract]

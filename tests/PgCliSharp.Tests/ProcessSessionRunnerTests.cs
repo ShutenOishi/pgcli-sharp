@@ -99,6 +99,137 @@ public sealed class ProcessSessionRunnerTests
             () => session.Completion);
     }
 
+#if NET8_0_OR_GREATER
+    [Fact]
+    public async Task Session_NonCooperativeOutput_DoesNotMakeCancellationUnbounded()
+    {
+        (string executable, string[] arguments) = GetContinuousOutputCommand();
+        using var output = new BlockingWriteStream();
+        var request = new ProcessSessionStartRequest(
+            executable,
+            arguments,
+            output,
+            Stream.Null);
+        var runner = new ProcessSessionRunner();
+
+        using IProcessSession session = runner.Start(
+            request,
+            CancellationToken.None);
+
+        await output.WaitUntilWriteStartsAsync(TimeSpan.FromSeconds(10));
+        session.Cancel();
+
+        Task completed = await Task.WhenAny(
+            session.Completion,
+            Task.Delay(TimeSpan.FromSeconds(6)));
+
+        Assert.Same(session.Completion, completed);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => session.Completion);
+        Assert.False(output.IsDisposed);
+
+        output.Release();
+    }
+#endif
+
+#if NET8_0_OR_GREATER
+    [Fact]
+    public async Task Session_OutputWriteFault_TerminatesProducerAndPropagatesOriginalFailure()
+    {
+        (string executable, string[] arguments) = GetContinuousOutputCommand();
+        using var output = new ThrowingWriteStream();
+        var request = new ProcessSessionStartRequest(
+            executable,
+            arguments,
+            output,
+            Stream.Null);
+        var runner = new ProcessSessionRunner();
+
+        using IProcessSession session = runner.Start(
+            request,
+            CancellationToken.None);
+
+        Task completed = await Task.WhenAny(
+            session.Completion,
+            Task.Delay(TimeSpan.FromSeconds(10)));
+
+        Assert.Same(session.Completion, completed);
+        await Assert.ThrowsAsync<IOException>(
+            () => session.Completion);
+        Assert.False(output.IsDisposed);
+    }
+#endif
+
+#if NET48
+    [Fact]
+    public async Task Session_LegacyInputBuffer_AppliesBackpressureAndHonorsWriteCancellation()
+    {
+        (string executable, string[] arguments) = GetLongRunningCommand();
+        var request = new ProcessSessionStartRequest(
+            executable,
+            arguments,
+            Stream.Null,
+            Stream.Null);
+        var runner = new ProcessSessionRunner();
+
+        using IProcessSession session = runner.Start(
+            request,
+            CancellationToken.None);
+        using var writeCancellation = new CancellationTokenSource(
+            TimeSpan.FromMilliseconds(250));
+
+        byte[] payload = new byte[4 * 1024 * 1024];
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => session.StandardInput.WriteAsync(
+                payload,
+                0,
+                payload.Length,
+                writeCancellation.Token));
+
+        session.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => session.Completion);
+    }
+
+    [Fact]
+    public async Task Session_LegacyInputBuffer_ReleasesBlockedWriterWhenSessionEnds()
+    {
+        (string executable, string[] arguments) = GetLongRunningCommand();
+        var request = new ProcessSessionStartRequest(
+            executable,
+            arguments,
+            Stream.Null,
+            Stream.Null);
+        var runner = new ProcessSessionRunner();
+
+        using IProcessSession session = runner.Start(
+            request,
+            CancellationToken.None);
+
+        byte[] payload = new byte[4 * 1024 * 1024];
+        Task writeTask = session.StandardInput.WriteAsync(
+            payload,
+            0,
+            payload.Length,
+            CancellationToken.None);
+
+        await Task.Delay(250);
+        Assert.False(writeTask.IsCompleted);
+
+        session.Cancel();
+
+        Task completedWrite = await Task.WhenAny(
+            writeTask,
+            Task.Delay(TimeSpan.FromSeconds(10)));
+        Assert.Same(writeTask, completedWrite);
+        await Assert.ThrowsAnyAsync<Exception>(() => writeTask);
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => session.Completion);
+    }
+#endif
+
     private static (string Executable, string[] Arguments) GetBinaryEchoCommand()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -116,6 +247,150 @@ public sealed class ProcessSessionRunnerTests
         }
 
         return ("/bin/cat", Array.Empty<string>());
+    }
+
+    private static (string Executable, string[] Arguments) GetContinuousOutputCommand()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            string powerShell = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                "WindowsPowerShell",
+                "v1.0",
+                "powershell.exe");
+            const string Script =
+                "while ($true) { [Console]::Out.Write(('x' * 4096)) }";
+            return (
+                powerShell,
+                new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", Script });
+        }
+
+        return (
+            "/bin/sh",
+            new[] { "-c", "while :; do printf 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\n'; done" });
+    }
+
+#if NET8_0_OR_GREATER
+    private sealed class BlockingWriteStream : Stream
+    {
+        private readonly TaskCompletionSource<bool> _writeStarted =
+            new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _release =
+            new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal bool IsDisposed { get; private set; }
+
+        internal async Task WaitUntilWriteStartsAsync(TimeSpan timeout)
+        {
+            Task completed = await Task.WhenAny(
+                _writeStarted.Task,
+                Task.Delay(timeout));
+            Assert.Same(_writeStarted.Task, completed);
+        }
+
+        internal void Release() => _release.TrySetResult(true);
+
+        public override bool CanRead => false;
+        public override bool CanSeek => false;
+        public override bool CanWrite => !IsDisposed;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            _writeStarted.TrySetResult(true);
+            _release.Task.GetAwaiter().GetResult();
+        }
+
+        public override async ValueTask WriteAsync(
+            ReadOnlyMemory<byte> buffer,
+            CancellationToken cancellationToken = default)
+        {
+            _writeStarted.TrySetResult(true);
+            await _release.Task.ConfigureAwait(false);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                IsDisposed = true;
+                Release();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) =>
+            throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
+        public override void SetLength(long value) =>
+            throw new NotSupportedException();
+    }
+
+#endif
+
+    private sealed class ThrowingWriteStream : Stream
+    {
+        internal bool IsDisposed { get; private set; }
+
+        public override bool CanRead => false;
+        public override bool CanSeek => false;
+        public override bool CanWrite => !IsDisposed;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override void Write(byte[] buffer, int offset, int count) =>
+            throw new IOException("Injected session output write failure.");
+
+        public override Task WriteAsync(
+            byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken) =>
+            Task.FromException(
+                new IOException("Injected session output write failure."));
+
+#if NET8_0_OR_GREATER
+        public override ValueTask WriteAsync(
+            ReadOnlyMemory<byte> buffer,
+            CancellationToken cancellationToken = default) =>
+            ValueTask.FromException(
+                new IOException("Injected session output write failure."));
+#endif
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                IsDisposed = true;
+            base.Dispose(disposing);
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) =>
+            throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
+        public override void SetLength(long value) =>
+            throw new NotSupportedException();
     }
 
     private static (string Executable, string[] Arguments) GetLongRunningCommand()

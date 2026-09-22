@@ -240,25 +240,40 @@ After a PR exists:
 
 A Draft PR is appropriate when review/visibility is useful before completion.
 
-## 13. Phase completion gate
+## 13. Phase completion and deferred-publication gates
 
-Do not change the Phase release manifest while implementation is still moving.
+ADR-0012 changes the operational completion gate from Phase 3 onward without rewriting the historical ADR-0011 sequence.
 
-Completion sequence:
+### Phase 0-2 historical release gate
 
-1. finish specification, implementation, tests, README/architecture/roadmap updates;
-2. get an all-platform green CI run;
-3. add the bilingual `docs/releases/phase-N.md` with `## English` before `## 日本語`;
-4. update `.github/phase-release.json`;
-5. get a fresh all-platform green CI run for that exact head;
-6. mark the PR ready if it was Draft;
-7. merge with the tested head fixed;
-8. verify `main` CI;
-9. verify the Phase Release workflow succeeded;
-10. verify `phase-N` tag and Release target the exact merge commit;
-11. verify the explicit source ZIP, `.nupkg`, and `.snupkg` assets.
+Phase 0-2 retain their already-published immutable Phase Releases and artifacts. Their historical completion evidence is not regenerated.
 
-Only after step 11 should the Phase be reported as complete.
+### Phase 3-7 implementation-completion gate
+
+During implementation phases after ADR-0012:
+
+1. finish specification, implementation, tests, README/architecture/roadmap/completion-evidence updates;
+2. keep `.github/phase-release.json` and `.github/nuget-release.json` disabled and do not move the preserved Phase 3 publication source;
+3. require a Linux/macOS/Windows green CI run for the exact final PR head;
+4. mark the PR ready if it was Draft;
+5. merge with that tested head fixed;
+6. require Linux/macOS/Windows green CI for the exact `main` merge commit;
+7. record the final PR head, merge SHA, and CI run links in repository completion evidence.
+
+A Phase 3-7 implementation can be reported complete after step 7. No new tag, GitHub Release, NuGet push, or Release asset is required or permitted as part of ordinary implementation completion.
+
+### Final release phase
+
+External publication remains a separate, explicitly authorized final-phase action:
+
+1. complete the Phase 8 compatibility/public-API stabilization evidence;
+2. decide explicitly whether the preserved Phase 3 preview candidate is still publishable or is superseded by a later reviewed candidate;
+3. review the selected source SHA, package version, release notes, SourceLink/repository commit metadata, and publication manifests as one provenance unit;
+4. enable publication only through a reviewed manifest change and explicit manual workflow dispatch;
+5. rebuild and revalidate the selected source commit;
+6. verify the resulting NuGet/GitHub Release tags, targets, and package/source artifacts.
+
+Do not infer publication approval from implementation completion.
 
 ## 14. Phase 2 application
 
