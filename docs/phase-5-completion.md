@@ -102,3 +102,15 @@ The prepared Phase 3 publication source remains `cccf8d9fbe1f2e1104676ab94a78632
 3. PR #10 is marked ready and merged to `main`.
 4. The exact merge commit on `main` must pass Linux/macOS/Windows CI.
 5. Direct GitHub links to the PR, merge commit, and CI evidence are recorded in the PR completion report.
+
+## Final reviewed merge evidence
+
+The later repository evidence index confirms the final Phase 5 completion gate:
+
+- PR: #10
+- final PR head: `46b715c7ae0428cb96c650d68898d2d67e898965`
+- final PR CI: https://github.com/ShutenOishi/pgcli-sharp/actions/runs/35581853788 — Linux/macOS/Windows success
+- `main` merge commit: `0a27f5909e18a9b346a47fde2fc11e0f051cb585`
+- exact-main CI: https://github.com/ShutenOishi/pgcli-sharp/actions/runs/35582085056 — Linux/macOS/Windows success
+
+These records supplement the pre-documentation implementation head above; they do not replace or rewrite it.
