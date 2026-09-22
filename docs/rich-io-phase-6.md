@@ -95,7 +95,7 @@ A redirected psql session is intentionally documented as non-TTY. Native PTY/ter
 
 ## Audit status
 
-Completed before public API implementation:
+Completed across research, implementation, and final compatibility review:
 
 - official documentation URLs recorded for every PostgreSQL major 10-18;
 - stable-branch source option tables compared for both tools;
@@ -103,6 +103,9 @@ Completed before public API implementation:
 - pgbench PostgreSQL 11/13/15/17 deltas recorded;
 - psql ordered action and variable-assignment semantics recorded;
 - tool-specific exit-status domains recorded;
-- rich I/O design separated from the one-shot process API.
+- rich I/O design separated from the one-shot process API;
+- redirected psql session lifecycle validated on modern .NET and Windows .NET Framework 4.8 through the netstandard2.0/CliWrap backend;
+- caller-owned stderr streaming validated for finite rich-I/O execution;
+- pgbench mode/logging/progress/partition/retry constraints, script weights, initialization-step value boundaries, and historical exit-status behavior incorporated into the maintained specification.
 
-The implementation now mirrors the audited exact value ranges and upstream-determinable hard conflicts described above. Newly discovered boundaries are recorded in the specifications before Phase 6 completion.
+The implementation mirrors the audited exact value ranges and upstream-determinable hard conflicts described above. Boundaries discovered during implementation are recorded in the specifications and regression tests.

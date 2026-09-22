@@ -91,7 +91,7 @@ Phase 6 must include tests for:
 - stdout/stderr streaming without mandatory whole-payload buffering;
 - cancellation and timeout termination;
 - psql documented exit statuses 0-3;
-- pgbench documented exit statuses 0-2;
+- pgbench version-documented exit statuses (0-1 for PostgreSQL 10-11 and 0-2 from PostgreSQL 12);
 - PostgreSQL 10-18 option availability and spelling changes;
 - Windows .NET Framework 4.8 execution of the netstandard2.0 surface;
 - explicit documentation that redirected psql sessions are not TTY/PTY sessions.
