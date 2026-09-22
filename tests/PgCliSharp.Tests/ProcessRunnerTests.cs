@@ -194,6 +194,54 @@ public sealed class ProcessRunnerTests
         Assert.Equal(expected, output.ToArray());
     }
 
+#if NET8_0_OR_GREATER
+    [Fact]
+    public async Task RunAsync_OutputWriteFault_TerminatesProducerAndPropagatesOriginalFailure()
+    {
+        (string executable, string[] arguments) = GetContinuousOutputCommand();
+        using var output = new ThrowingWriteStream();
+        var request = new ProcessRunRequest(executable, arguments, output);
+        var runner = new ProcessRunner();
+
+        Task<ProcessRunResult> runTask = runner.RunAsync(
+            request,
+            CancellationToken.None);
+
+        Task completed = await Task.WhenAny(
+            runTask,
+            Task.Delay(TimeSpan.FromSeconds(10)));
+
+        Assert.Same(runTask, completed);
+        await Assert.ThrowsAsync<IOException>(() => runTask);
+        Assert.False(output.IsDisposed);
+    }
+
+    [Fact]
+    public async Task RunAsync_InputReadFault_TerminatesConsumerAndPropagatesOriginalFailure()
+    {
+        (string executable, string[] arguments) = GetBinaryEchoCommand();
+        using var input = new ThrowingReadStream();
+        var request = new ProcessRunRequest(
+            executable,
+            arguments,
+            standardOutput: Stream.Null,
+            standardInput: input);
+        var runner = new ProcessRunner();
+
+        Task<ProcessRunResult> runTask = runner.RunAsync(
+            request,
+            CancellationToken.None);
+
+        Task completed = await Task.WhenAny(
+            runTask,
+            Task.Delay(TimeSpan.FromSeconds(10)));
+
+        Assert.Same(runTask, completed);
+        await Assert.ThrowsAsync<IOException>(() => runTask);
+        Assert.False(input.IsDisposed);
+    }
+#endif
+
     private static async Task<bool> WaitForFileAsync(
         string path,
         TimeSpan timeout)
@@ -259,6 +307,130 @@ public sealed class ProcessRunnerTests
         }
 
         return ("/bin/cat", Array.Empty<string>());
+    }
+
+    private static (string Executable, string[] Arguments) GetContinuousOutputCommand()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            string powerShell = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                "WindowsPowerShell",
+                "v1.0",
+                "powershell.exe");
+            const string Script =
+                "while ($true) { [Console]::Out.Write(('x' * 4096)) }";
+            return (
+                powerShell,
+                new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", Script });
+        }
+
+        return (
+            "/bin/sh",
+            new[] { "-c", "while :; do printf 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\n'; done" });
+    }
+
+    private sealed class ThrowingWriteStream : Stream
+    {
+        internal bool IsDisposed { get; private set; }
+
+        public override bool CanRead => false;
+        public override bool CanSeek => false;
+        public override bool CanWrite => !IsDisposed;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override void Write(byte[] buffer, int offset, int count) =>
+            throw new IOException("Injected output write failure.");
+
+        public override Task WriteAsync(
+            byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken) =>
+            Task.FromException(new IOException("Injected output write failure."));
+
+#if NET8_0_OR_GREATER
+        public override ValueTask WriteAsync(
+            ReadOnlyMemory<byte> buffer,
+            CancellationToken cancellationToken = default) =>
+            ValueTask.FromException(
+                new IOException("Injected output write failure."));
+#endif
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                IsDisposed = true;
+            base.Dispose(disposing);
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) =>
+            throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
+        public override void SetLength(long value) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class ThrowingReadStream : Stream
+    {
+        internal bool IsDisposed { get; private set; }
+
+        public override bool CanRead => !IsDisposed;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) =>
+            throw new IOException("Injected input read failure.");
+
+        public override Task<int> ReadAsync(
+            byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken) =>
+            Task.FromException<int>(
+                new IOException("Injected input read failure."));
+
+#if NET8_0_OR_GREATER
+        public override ValueTask<int> ReadAsync(
+            Memory<byte> buffer,
+            CancellationToken cancellationToken = default) =>
+            ValueTask.FromException<int>(
+                new IOException("Injected input read failure."));
+#endif
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                IsDisposed = true;
+            base.Dispose(disposing);
+        }
+
+        public override void Write(byte[] buffer, int offset, int count) =>
+            throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
+        public override void SetLength(long value) =>
+            throw new NotSupportedException();
     }
 
     private static (string Executable, string[] Arguments) GetLongRunningCommand()
