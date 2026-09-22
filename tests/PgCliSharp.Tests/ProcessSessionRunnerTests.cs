@@ -269,6 +269,7 @@ public sealed class ProcessSessionRunnerTests
             new[] { "-c", "while :; do printf 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\n'; done" });
     }
 
+#if NET8_0_OR_GREATER
     private sealed class BlockingWriteStream : Stream
     {
         private readonly TaskCompletionSource<bool> _writeStarted =
@@ -336,6 +337,8 @@ public sealed class ProcessSessionRunnerTests
         public override void SetLength(long value) =>
             throw new NotSupportedException();
     }
+
+#endif
 
     private sealed class ThrowingWriteStream : Stream
     {
