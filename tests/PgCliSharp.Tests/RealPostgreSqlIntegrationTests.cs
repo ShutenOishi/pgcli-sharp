@@ -103,11 +103,17 @@ public sealed class RealPostgreSqlIntegrationTests
 
             byte[] command = Encoding.UTF8.GetBytes(
                 "SELECT 'session-ok';\n\\q\n");
+#if NET8_0_OR_GREATER
+            await session.StandardInput.WriteAsync(
+                command.AsMemory(),
+                CancellationToken.None);
+#else
             await session.StandardInput.WriteAsync(
                 command,
                 0,
                 command.Length,
                 CancellationToken.None);
+#endif
             session.CompleteInput();
 
             PsqlSessionResult sessionResult = await session.Completion;

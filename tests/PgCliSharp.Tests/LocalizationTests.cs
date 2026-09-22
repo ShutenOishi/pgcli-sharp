@@ -44,10 +44,12 @@ public sealed class LocalizationTests
     [Fact]
     public void CompositeFormatParser_HandlesEscapedBracesAndRejectsMalformedInput()
     {
-        Assert.Equal(
-            new[] { 1, 2 },
-            GetCompositeFormatPlaceholderIndexes(
-                "literal {{0}} then {2:N0} and {1,-8} and {2}"));
+        int[] placeholders = GetCompositeFormatPlaceholderIndexes(
+            "literal {{0}} then {2:N0} and {1,-8} and {2}");
+
+        Assert.Equal(2, placeholders.Length);
+        Assert.Equal(1, placeholders[0]);
+        Assert.Equal(2, placeholders[1]);
 
         Assert.Throws<FormatException>(
             () => GetCompositeFormatPlaceholderIndexes("missing close {0"));
@@ -136,8 +138,15 @@ public sealed class LocalizationTests
                 }
 
                 string item = format.Substring(itemStart, close - itemStart);
-                int delimiter = item.IndexOfAny(new[] { ',', ':' });
-                string indexText = (delimiter < 0 ? item : item.Substring(0, delimiter)).Trim();
+                int comma = item.IndexOf(',');
+                int colon = item.IndexOf(':');
+                int delimiter = comma < 0
+                    ? colon
+                    : colon < 0
+                        ? comma
+                        : Math.Min(comma, colon);
+                string indexText =
+                    (delimiter < 0 ? item : item.Substring(0, delimiter)).Trim();
 
                 if (!int.TryParse(
                         indexText,

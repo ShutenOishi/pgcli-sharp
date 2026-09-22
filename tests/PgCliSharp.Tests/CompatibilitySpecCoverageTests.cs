@@ -8,7 +8,7 @@ namespace PgCliSharp.Tests;
 
 public sealed class CompatibilitySpecCoverageTests
 {
-    private static readonly IReadOnlyDictionary<string, HashSet<string>> AllowedSpecialBindings =
+    private static readonly Dictionary<string, HashSet<string>> AllowedSpecialBindings =
         new Dictionary<string, HashSet<string>>(StringComparer.Ordinal)
         {
             ["pg_dump"] = new HashSet<string>(
