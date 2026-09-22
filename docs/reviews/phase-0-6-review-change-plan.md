@@ -4,7 +4,7 @@
 
 Review date: 2026-09-22. Baseline: `6c85389946602b200d2822f7667eeef4ada49c48` (main, Phase 6 merge).
 
-This is a documentation-only review backlog, not an implementation change, a new Accepted ADR, or a reversal of completed phase status. No source, tests, specifications, workflows, release manifests, tags, or publication settings are changed by this record. Proposed fixes require separate authorization.
+This file began as a documentation-only review backlog at commit `746a510363ba74bf214314ff2acab8ddbdcd0143`. After separate authorization, PR #12 was expanded to implement the recorded follow-ups while preserving the completed Phase 0-6 status and ADR-0012 publication deferral. The original findings and acceptance criteria remain below as audit history; the follow-up status section records the resulting changes.
 
 The review found three priority areas: process/I/O failure supervision, bounded legacy-session input buffering, and alignment of the completion workflow with ADR-0012. Other work concerns spec/runtime drift detection, localization regression gates, real PostgreSQL integration evidence, package provenance, and final phase-evidence indexing.
 
@@ -12,7 +12,7 @@ Modern runners do not supervise I/O task failures while awaiting process exit. F
 
 Read-only checks covered 19 specifications and 574 option entries: no duplicate option IDs, missing major records (10–18), unknown referenced IDs, or missing API-binding declarations were found. This does not prove parser semantics or actual public binding correctness. The 24 neutral/Japanese resource entries had matching keys and numeric placeholder sets in this snapshot. Existing main CI [35691571528](https://github.com/ShutenOishi/pgcli-sharp/actions/runs/35691571528) was verified successful for Linux, macOS, and Windows at the exact baseline SHA. No new build, test suite, PostgreSQL execution, or complete upstream semantic re-audit was run.
 
-Priorities below are proposed ordering, not permission to implement. Preserve ADR-0012, historical Phase 0–2 releases, and the deferred Phase 3 source identity.
+The original priorities below remain useful as review history. The authorized follow-up preserves ADR-0012, historical Phase 0–2 releases, the disabled publication manifests, and the deferred Phase 3 source identity.
 
 ## 日本語
 
@@ -22,7 +22,7 @@ Priorities below are proposed ordering, not permission to implement. Preserve AD
 - 基準: `main@6c85389946602b200d2822f7667eeef4ada49c48`。記録前に main が同一 SHA であることを再確認。
 - 対象範囲: Phase 0〜6。Phase 7 の実装、公開操作、既存の完了状態の取り消しは対象外。
 - AGENTS、Accepted ADR、architecture、localization、roadmap、tool implementation workflow を基準に、共通実行基盤・互換性検査・各 Phase の証跡を重点レビュー。
-- この文書は「変更が必要な箇所と今後の確認計画」の記録のみ。現在の仕様・実装を自動的に変更する効力はない。
+- 本文は当初「変更が必要な箇所と今後の確認計画」として commit `746a510363ba74bf214314ff2acab8ddbdcd0143` に記録した。その後、別途の実施承認を受けて PR #12 内で是正を実装した。元の指摘・受入条件は監査履歴として残し、末尾の実施状況で変更結果を追跡する。
 - 確認済みのコード構造、そこから推定される条件付きリスク、今後の検証課題を区別する。全 574 オプションの正しさを保証する監査ではない。
 
 ### 2. Phase 別の確認範囲
@@ -183,7 +183,7 @@ CLI major/patch、server version、OS/TFM、シナリオ、結果、除外理由
 
 CI の head_sha と記録 SHA が一致し、PR と main 両方の結果が直接追跡できること。今回 Phase 6 main のみ直接確認済み: `6c85389946602b200d2822f7667eeef4ada49c48` / run `35691571528`、Linux/macOS/Windows success。Phase 4/5 の最終 CI は追記時に再確認する。
 
-### 4. 推奨実施順序（未着手）
+### 4. 当初の推奨実施順序（履歴）
 
 1. R03: 現行完了ゲートの誤読を防ぐ文書整合。公開方針そのものは維持する。
 2. R01/R02: 異常系再現テストと session 契約の設計を先行。実装修正は別承認後。
@@ -191,12 +191,25 @@ CI の head_sha と記録 SHA が一致し、PR と main 両方の結果が直�
 4. R06: 既存 Phase 8 の実 PG 検証を、環境と完了条件のある作業単位へ具体化。
 5. R07/R08: 公開前の provenance と証跡整理。R07 の候補選択は公開承認と分離して記録する。
 
-各修正では必要な source/spec/tests/docs を一貫した変更単位にし、最終 head の 3 OS CI と merge 後の exact main CI を検証する。今回の計画記録だけを根拠に Phase 7 や公開を開始しない。
+各修正では必要な source/spec/tests/docs を一貫した変更単位にし、最終 head の CI と merge 後の exact main CI を検証する。Phase 7 や外部公開はこの follow-up の対象外とする。
 
 ### 5. 維持する判断・今回の限界
 
 維持するもの: per-tool typed options、explicit executable path/version、PG CLI compatibility と upstream EOL の区別、spec-first、shell 非介在、binary streaming、pipe session と TTY/PTY の区別、日英文書、ADR-0012 の公開延期。
 
-今回していないもの: ビルド・テストの再実行、異常系の動的再現、実 PG 接続、全オプションの upstream source 再監査、全公開 XML の意味対訳確認、外部公開状態の全件監査。既存 main CI の成功は現在のテスト範囲に対する証拠であって、上記リスクを否定する証拠ではない。
+当初レビュー時点で未実施だった build/test、異常系再現、実 PostgreSQL 実行のうち、follow-up で対象化したものは下記の実施状況へ移した。全 574 option の upstream semantic 再監査、全公開 XML の意味対訳確認、外部公開状態の網羅監査は今回の follow-up 範囲には拡張しない。
 
-この記録の保存差分は本 Markdown の追加だけとし、実装・テスト・spec・CI・manifest は変更しない。
+### 6. Follow-up 実施状況
+
+| ID | 実施結果 |
+|---|---|
+| R01 | modern one-shot/session の I/O fault を process/cancel/timeout と同じ lifecycle 監督対象にし、異常 cleanup を 2 秒の内部 grace で有界化。write/read fault と cancellation 非協調 output stream を watchdog 付き real-process test で検証。caller-owned stream は Dispose しない。 |
+| R02 | netstandard2.0 session input bridge を 64 KiB × 16 segment（約 1 MiB）に制限し、同期/非同期 write に backpressure を導入。NET48 test で write cancellation と session end による blocked writer 解放を検証。 |
+| R03 | Phase 0-2 の履歴 release、Phase 3-7 の implementation completion、Phase 8 の external publication を workflow 上で分離。ADR-0012 を維持。 |
+| R04 | pg_dump spec→runtime availability の直接比較、patch-level minimum、special binding allowlist を regression gate に追加。 |
+| R05 | neutral/ja RESX を直接読み、key 集合と composite-format placeholder index を比較する test を追加。 |
+| R06 | disposable PostgreSQL 16/18 Linux CI と public wrapper E2E（PgDump/PgRestore、finite/redirected Psql、PgBench）を追加。Phase 8 の 10-18 拡張規則を文書化。 |
+| R07 | CI package artifact に exact SHA と `publication_candidate=false` を持つ provenance file を同梱。version と Phase 3 publication source は変更しない。 |
+| R08 | Phase 4/5/6 completion docs に final PR head、merge SHA、PR/main CI を追記。 |
+
+実行基盤の契約変更は Accepted ADR-0014 に記録した。PR #12 の最終 head CI と merge 後 exact-main CI を completion gate とし、publication manifest、tag、Release、NuGet push はこの follow-up では変更・実行しない。

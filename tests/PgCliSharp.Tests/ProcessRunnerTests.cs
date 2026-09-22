@@ -196,6 +196,34 @@ public sealed class ProcessRunnerTests
 
 #if NET8_0_OR_GREATER
     [Fact]
+    public async Task RunAsync_NonCooperativeOutput_DoesNotMakeCancellationUnbounded()
+    {
+        (string executable, string[] arguments) = GetContinuousOutputCommand();
+        using var output = new BlockingWriteStream();
+        var request = new ProcessRunRequest(executable, arguments, output);
+        var runner = new ProcessRunner();
+        using var cancellation = new CancellationTokenSource();
+
+        Task<ProcessRunResult> runTask = runner.RunAsync(
+            request,
+            cancellation.Token);
+
+        await output.WaitUntilWriteStartsAsync(TimeSpan.FromSeconds(10));
+        cancellation.Cancel();
+
+        Task completed = await Task.WhenAny(
+            runTask,
+            Task.Delay(TimeSpan.FromSeconds(6)));
+
+        Assert.Same(runTask, completed);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => runTask);
+        Assert.False(output.IsDisposed);
+
+        output.Release();
+    }
+
+#if NET8_0_OR_GREATER
+    [Fact]
     public async Task RunAsync_OutputWriteFault_TerminatesProducerAndPropagatesOriginalFailure()
     {
         (string executable, string[] arguments) = GetContinuousOutputCommand();
@@ -328,6 +356,74 @@ public sealed class ProcessRunnerTests
         return (
             "/bin/sh",
             new[] { "-c", "while :; do printf 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\n'; done" });
+    }
+
+    private sealed class BlockingWriteStream : Stream
+    {
+        private readonly TaskCompletionSource<bool> _writeStarted =
+            new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _release =
+            new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal bool IsDisposed { get; private set; }
+
+        internal async Task WaitUntilWriteStartsAsync(TimeSpan timeout)
+        {
+            Task completed = await Task.WhenAny(
+                _writeStarted.Task,
+                Task.Delay(timeout));
+            Assert.Same(_writeStarted.Task, completed);
+        }
+
+        internal void Release() => _release.TrySetResult(true);
+
+        public override bool CanRead => false;
+        public override bool CanSeek => false;
+        public override bool CanWrite => !IsDisposed;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            _writeStarted.TrySetResult(true);
+            _release.Task.GetAwaiter().GetResult();
+        }
+
+        public override async ValueTask WriteAsync(
+            ReadOnlyMemory<byte> buffer,
+            CancellationToken cancellationToken = default)
+        {
+            _writeStarted.TrySetResult(true);
+            await _release.Task.ConfigureAwait(false);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                IsDisposed = true;
+                Release();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) =>
+            throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
+        public override void SetLength(long value) =>
+            throw new NotSupportedException();
     }
 
     private sealed class ThrowingWriteStream : Stream
