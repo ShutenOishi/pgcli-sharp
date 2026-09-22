@@ -127,7 +127,14 @@ jobs:
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get update
           sudo apt-get install -y "postgresql-${{ matrix.postgresql }}" "postgresql-client-${{ matrix.postgresql }}"
-          sudo pg_ctlcluster "${{ matrix.postgresql }}" main start
+
+          if ! sudo pg_lsclusters --no-header | grep -E "^${{ matrix.postgresql }}[[:space:]]+main[[:space:]]" >/dev/null; then
+            sudo pg_createcluster "${{ matrix.postgresql }}" main
+          fi
+
+          if ! sudo pg_ctlcluster "${{ matrix.postgresql }}" main status >/dev/null 2>&1; then
+            sudo pg_ctlcluster "${{ matrix.postgresql }}" main start
+          fi
 
           db_user="$(id -un)"
           sudo -u postgres createuser --superuser "$db_user"
