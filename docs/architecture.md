@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0013. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0014. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -132,11 +132,15 @@ Requirements:
 - support `CancellationToken`;
 - support timeout configuration;
 - attempt to terminate the complete process tree on cancellation/timeout where the target framework supports it;
+- supervise modern stdout/stderr transfer faults as lifecycle outcomes rather than waiting only for process exit;
+- keep the configured cancellation/timeout deadline active while redirected output drains after process exit;
+- bound abnormal cleanup after a best-effort termination attempt rather than waiting indefinitely for process exit or a caller-owned stream;
+- never dispose caller-owned streams or claim that arbitrary cancellation-noncooperative stream implementations can be forcibly stopped;
 - never include passwords or secrets in diagnostic command-line rendering.
 
 The `netstandard2.0` compatibility backend must map execution results, cancellation, timeout, and failures back into PgCliSharp's own result/exception model. Public behavior should remain consistent across target frameworks.
 
-Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration.
+Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration. ADR-0014 makes modern session output faults part of lifecycle supervision and bounds the `netstandard2.0` CliWrap input bridge to approximately 1 MiB. Legacy `WriteAsync` therefore applies cancellation-aware backpressure; successful write completion means acceptance into the bounded delivery buffer, while `CompleteInput` drains already accepted bytes before EOF.
 
 ## 9. Output model
 
