@@ -10,8 +10,8 @@ not imply API freeze, full real-binary compatibility or publication approval.
 
 | Checkpoint | Scope | Status |
 |---|---|---|
-| CP-01 | Generated XML EN/JA ordering, resources, diagnostic data and public dependency boundaries | Implemented; exact-head/main CI required |
-| CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Pending |
+| CP-01 | Generated XML EN/JA ordering, resources, diagnostic data and public dependency boundaries | Complete: PR #14; exact-main CI 36997454961 |
+| CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Linux scope implemented; final CI gates required; exclusions retained |
 | CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Pending |
 | CP-04 | Preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Pending; publication requires separate explicit authorization |
 
@@ -52,11 +52,17 @@ It covers the representative PostgreSQL 16/18 Linux/net10.0 scenarios described 
 [integration testing](integration-testing.md), including disposable cluster smoke.
 There is no new real-executable matrix claim in CP-01.
 
+CP-02 adds [pinned source builds and scoped scenarios](phase-8-real-binary-matrix.md).
+It covers the nine-major Linux matrix, checksums from 12, divergent rewind from 13
+and one 16-to-18 Copy upgrade. Windows/macOS real execution and listed exclusions
+remain untested; the final CI gates must pass before reporting Linux completion.
+
 CP-02 must investigate package/container/source reproducibility per major instead
 of marking untested majors as unavailable or passing. Record actual numeric CLI
 and server versions, OS/TFM, scenario result and explicit exclusion reasons. Real
-upgrade/rewind and Windows service lifecycle remain pending; fake-runner tests do
-not substitute for them. Older upstream-EOL binaries must stay isolated.
+upgrade/rewind evidence is limited to the configured Linux scenarios; Windows
+service lifecycle remains pending. Fake-runner tests do not substitute for real
+execution. Older upstream-EOL binaries must stay isolated.
 
 ### Publication gate
 
@@ -81,7 +87,8 @@ CP-01 では生成 XML 文書の日英順序、公開シグネチャへの内部
 既存の日英リソースキー・書式プレースホルダ・フォールバック検証も継続します。
 日英文書の構造チェックは翻訳の意味や全 API 命名レビューを保証しません。
 
-CP-02 の PostgreSQL 10〜18 実バイナリ matrix と移行・巻き戻し・Windows サービス検証、
+CP-02 の Linux 10〜18 実バイナリ matrix、13以降の実巻き戻し、16→18コピー移行を追加します。
+最終 CI の成功が必要で、Windows／macOS実機・サービスや掲載した除外は未検証です。
 CP-03 の全 API 命名／互換性レビューと凍結、CP-04 の候補選定／公開前検証は未完了です。
 16／18 の既存実証はその範囲を保ち、未検証の版を合格・再現不可とは扱いません。
 
