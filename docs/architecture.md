@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0016. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0017. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -260,6 +260,13 @@ Phase 8 CP-02 expands the representative Linux matrix to pinned official-source 
 Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and CliWrap compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
 
 ## 14. Package and target framework policy
+
+ADR-0017 adds a reviewed compiled public/protected API baseline shared by all
+library assets. Unreviewed signature drift fails CI; breaking shape changes are
+frozen for stabilization and require an ADR, compatibility/migration and versioning
+rationale. README C# examples compile on every consumer target without execution.
+This is a shape gate, not a substitute for semantic compatibility, native OS
+evidence or publication approval. See [CP-03 review](phase-8-api-review.md).
 
 Package ID target: `PgCliSharp`.
 

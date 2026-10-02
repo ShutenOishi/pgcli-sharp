@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="../api/PublicApi.txt" Link="api/PublicApi.txt" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../src/PgCliSharp/bin/$(Configuration)/$(PgCliSharpDocumentationTfm)/PgCliSharp.xml"
           Link="documentation/PgCliSharp.xml"
           CopyToOutputDirectory="PreserveNewest" />

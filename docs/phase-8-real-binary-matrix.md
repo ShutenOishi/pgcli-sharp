@@ -3,8 +3,9 @@
 ## English
 
 Baseline: CP-01 main `6f3f07e81186f2156cc7c5632e7b5c9c96db4f9c`.
-Status: implemented; exact-final-head and exact-main CI required for completion
-of this **Linux evidence checkpoint**. Phase 8 is not release-ready.
+Status: **Linux evidence checkpoint complete**: PR #15 and exact-main CI
+37006276018 passed on `3f230bd8bddf59b0bed5aeb8bb7589c77b9f88bf`.
+Exclusions remain unchanged. Phase 8 is not release-ready.
 
 Official [source index](https://ftp.postgresql.org/pub/source/) and archive SHA256
 files were checked on 2026-10-02. Versions/hashes are fixed in
@@ -83,7 +84,7 @@ Official references: [10 source build](https://www.postgresql.org/docs/10/instal
 Linux/net10.0 の実バイナリ証拠を10〜18の9メジャーへ拡張します。公式アーカイブと
 SHA256 を固定し、使い捨てクラスタと専用 Unix socket で公開 API を実行します。
 TCP は無効で、利用者所有環境や OS 既存クラスタには接続しません。上表は検証対象であり、
-最終 PR と正確な main の CI 成功後に Linux のチェックポイント完了とします。
+PR #15 と正確な main CI 37006276018 が合格し、Linux のチェックポイントは完了です。
 
 全9版でバックアップ／リストア、有限・セッション psql、pgbench、初期化・WAL reset
 dry-run・起動／停止を実行します。チェックサム操作は12以降、分岐クラスタの実巻き戻しは

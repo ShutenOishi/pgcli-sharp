@@ -51,9 +51,11 @@ jobs:
         shell: bash
         run: bash eng/validate-compatibility-specs.sh
 
-      - name: Validate real PostgreSQL evidence tooling
+      - name: Validate evidence and compile-only README tooling
         if: runner.os == 'Linux'
-        run: python3 -m unittest discover -s eng -p test_real_postgresql_evidence.py
+        run: |
+          python3 -m unittest discover -s eng -p test_real_postgresql_evidence.py
+          python3 -m unittest discover -s eng -p test_readme_examples.py
 
       - name: Restore
         run: dotnet restore PgCliSharp.slnx
@@ -63,6 +65,15 @@ jobs:
 
       - name: Test
         run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
+
+      - name: Compile English and Japanese README examples without execution
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then
+            python eng/compile_readme_examples.py
+          else
+            python3 eng/compile_readme_examples.py
+          fi
 
       - name: Pack
         if: runner.os == 'Linux'
