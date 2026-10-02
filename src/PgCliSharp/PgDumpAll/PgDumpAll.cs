@@ -9,7 +9,7 @@ namespace PgCliSharp;
 /// <para>EN: Executes a caller-selected pg_dumpall executable with typed PostgreSQL 10-18 options.</para>
 /// <para>JA: 呼び出し側が選択した pg_dumpall 実行ファイルを PostgreSQL 10〜18 対応の型付きオプションで実行します。</para>
 /// </summary>
-public sealed class PgDumpAll
+public sealed partial class PgDumpAll
 {
     private readonly IProcessRunner _processRunner;
     private readonly PostgreSqlExecutableVersionProvider _versionProvider;
@@ -63,6 +63,7 @@ public sealed class PgDumpAll
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null)
         {

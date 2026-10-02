@@ -16,6 +16,8 @@ class ReadmeCompilerTests(unittest.TestCase):
             project = Path(command[2])
             code = (project.parent / "Examples.cs").read_text(encoding="utf-8")
             self.assertEqual(code.count("static async Task Example"), 12)
+            self.assertEqual(code.count("static void Example"), 2)
+            self.assertIn("includeSensitiveValues: true", code)
             self.assertIn("WriteAsync(commands, 0, commands.Length)", code)
             self.assertIn("net8.0;net10.0", project.read_text(encoding="utf-8"))
             self.assertTrue(kwargs["check"])

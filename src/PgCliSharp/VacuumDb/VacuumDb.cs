@@ -72,7 +72,7 @@ public sealed class VacuumDbOptions
 }
 
 /// <summary><para>EN: Executes vacuumdb.</para><para>JA: vacuumdb を実行します。</para></summary>
-public sealed class VacuumDb
+public sealed partial class VacuumDb
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a vacuumdb wrapper.</para><para>JA: vacuumdb wrapper を作成します。</para></summary>
@@ -85,6 +85,7 @@ public sealed class VacuumDb
     /// <summary><para>EN: Validates and executes vacuumdb.</para><para>JA: vacuumdb を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(VacuumDbOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

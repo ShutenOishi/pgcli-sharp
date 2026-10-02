@@ -174,7 +174,7 @@ internal static class PgDumpOptionAvailability
     internal static void Ensure(
         PgDumpOptionAvailabilityInfo availability,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         int major = (int)selectedVersion;
         if (major < (int)availability.Since ||
@@ -187,7 +187,7 @@ internal static class PgDumpOptionAvailability
                 availability.Until);
         }
 
-        if (availability.MinimumVersions.TryGetValue(
+        if (executableVersion is not null && availability.MinimumVersions.TryGetValue(
                 selectedVersion,
                 out Version? minimumVersion) &&
             executableVersion.NumericVersion < minimumVersion)

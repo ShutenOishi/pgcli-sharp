@@ -4,7 +4,7 @@ namespace PgCliSharp;
 /// <para>EN: Contains pg_dump execution metadata without buffering the dump payload.</para>
 /// <para>JA: ダンプ本体をバッファリングせず、pg_dump の実行メタデータを保持します。</para>
 /// </summary>
-public sealed class PgDumpResult
+public sealed class PgDumpResult : IPgExecutionResult
 {
     internal PgDumpResult(
         int exitCode,

@@ -33,7 +33,7 @@ public sealed class PgIsReadyResult : PgMaintenanceResult
 }
 
 /// <summary><para>EN: Executes pg_isready while preserving its semantic nonzero exit statuses.</para><para>JA: 意味を持つ非0終了statusを保持して pg_isready を実行します。</para></summary>
-public sealed class PgIsReady
+public sealed partial class PgIsReady
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a pg_isready wrapper.</para><para>JA: pg_isready wrapper を作成します。</para></summary>
@@ -46,6 +46,7 @@ public sealed class PgIsReady
     /// <summary><para>EN: Validates and executes pg_isready. Exit codes 0-3 are returned as status rather than exceptions.</para><para>JA: pg_isready を検証して実行します。終了コード 0〜3 は例外ではなく status として返します。</para></summary>
     public async Task<PgIsReadyResult> ExecuteAsync(PgIsReadyOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

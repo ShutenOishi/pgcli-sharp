@@ -36,7 +36,7 @@ public sealed class PgRewindOptions
 }
 
 /// <summary><para>EN: Executes pg_rewind directly. Cluster state and filesystem suitability remain upstream checks. </para><para>JA: pg_rewind を直接実行します。クラスタ状態とファイルシステム適合性は upstream が検証します。</para></summary>
-public sealed class PgRewind
+public sealed partial class PgRewind
 {
     private static readonly string[] HelpArguments = { "--help" };
     private readonly MaintenanceExecutor _executor;
@@ -51,6 +51,7 @@ public sealed class PgRewind
     /// <summary><para>EN: Validates options before the version probe, then executes. Cancellation/timeout is best effort and does not roll back cluster mutations or guarantee a stopped server. </para><para>JA: バージョン確認前にオプションを検証して実行します。キャンセル／タイムアウトは最善努力で、クラスタ変更の取り消しやサーバー停止を保証しません。</para></summary>
     public async Task<PgServerResult> ExecuteAsync(PgRewindOptions options, PgServerIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

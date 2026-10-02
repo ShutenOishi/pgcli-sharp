@@ -34,7 +34,7 @@ public sealed class ClusterDbOptions
 }
 
 /// <summary><para>EN: Executes clusterdb.</para><para>JA: clusterdb を実行します。</para></summary>
-public sealed class ClusterDb
+public sealed partial class ClusterDb
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a clusterdb wrapper.</para><para>JA: clusterdb wrapper を作成します。</para></summary>
@@ -47,6 +47,7 @@ public sealed class ClusterDb
     /// <summary><para>EN: Validates and executes clusterdb.</para><para>JA: clusterdb を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(ClusterDbOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

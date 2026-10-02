@@ -147,8 +147,7 @@ using PsqlSession session = await psql.StartSessionAsync(
 byte[] commands = Encoding.UTF8.GetBytes(
     "select current_database();\n\\q\n");
 await session.StandardInput.WriteAsync(commands, 0, commands.Length);
-session.CompleteInput();
-PsqlSessionResult sessionResult = await session.Completion;
+PsqlSessionResult sessionResult = await session.CompleteAsync();
 ```
 
 この session は redirected pipe によるもので、**TTY/PTY terminal ではありません**。Readline、history など terminal 専用動作は保証しません。
@@ -250,3 +249,23 @@ Phase 3 以降は ADR-0012 により、実装完了と外部公開を分離し�
 - [Implementation and NuGet roadmap](docs/roadmap.md) — 実装・リリース計画
 
 重要な設計方針を変更する場合は、チャット履歴ではなく ADR と統合ドキュメントを同じ変更内で更新します。
+
+## ラムダ設定とコマンド生成
+
+全25ラッパーでラムダ設定・オフライン検証・コマンド生成を利用できます。非同期実行前に設定をコピーします。ストリーム接続・パッチ版検証・秘密情報の扱いは[日英ガイド](docs/configuration-and-commands.md)をご覧ください。
+
+```csharp
+var dump = new PgDump(@"C:\Program Files\PostgreSQL8in\pg_dump.exe", PostgreSqlMajorVersion.V18);
+PgCommand command = dump.CreateCommand(
+    configureOptions: options =>
+    {
+        options.Database = "appdb";
+        options.Format = PgDumpFormat.Custom;
+        options.Schemas.Add("public");
+    },
+    output: PgDumpOutput.ToFile("appdb.dump"));
+string actualCommand = command.ToCommandLine(PgCommandLineStyle.PowerShell, includeSensitiveValues: true);
+Console.WriteLine(actualCommand);
+```
+
+バージョン確認も含めて実行せず、コマンドを生成します。PowerShell 出力は7.5以降の Standard 引数渡しが対象です。生の出力には秘密情報を含み得ます。`command.ToString()` はすべての引数・環境変数値を伏せます。ストリームは別途接続します。`Validate` は最初のオフライン設定エラーを返し、実行ファイルやサーバー状態は確認しません。

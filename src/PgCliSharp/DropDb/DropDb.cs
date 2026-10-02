@@ -32,7 +32,7 @@ public sealed class DropDbOptions
 }
 
 /// <summary><para>EN: Executes dropdb.</para><para>JA: dropdb を実行します。</para></summary>
-public sealed class DropDb
+public sealed partial class DropDb
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a dropdb wrapper.</para><para>JA: dropdb wrapper を作成します。</para></summary>
@@ -45,6 +45,7 @@ public sealed class DropDb
     /// <summary><para>EN: Validates and executes dropdb.</para><para>JA: dropdb を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(DropDbOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

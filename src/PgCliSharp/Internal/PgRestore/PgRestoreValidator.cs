@@ -9,7 +9,7 @@ internal static class PgRestoreValidator
         PgRestoreInput input,
         PgRestoreOutput output,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         ValidateEnumValues(options, input, output, selectedVersion);
         ValidateScalarValues(options, selectedVersion);
@@ -120,7 +120,7 @@ internal static class PgRestoreValidator
     private static void ValidateAvailability(
         PgRestoreOptions options,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         EnsureIf(
             options.NoComments,
@@ -368,7 +368,7 @@ internal static class PgRestoreValidator
         bool requested,
         PgRestoreOptionAvailabilityInfo availability,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         if (requested)
         {

@@ -4,7 +4,7 @@ namespace PgCliSharp;
 /// <para>EN: Contains pg_restore execution metadata without buffering generated SQL/list output.</para>
 /// <para>JA: 生成 SQL・一覧出力を全量バッファリングせず、pg_restore の実行メタデータを保持します。</para>
 /// </summary>
-public sealed class PgRestoreResult
+public sealed class PgRestoreResult : IPgExecutionResult
 {
     internal PgRestoreResult(
         int exitCode,

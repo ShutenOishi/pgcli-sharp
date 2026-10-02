@@ -43,7 +43,7 @@ public sealed class PgMaintenanceIo
 /// <para>EN: Common execution metadata returned by Phase 5 database-management tools.</para>
 /// <para>JA: Phase 5 のデータベース管理ツールが返す共通実行メタデータです。</para>
 /// </summary>
-public class PgMaintenanceResult
+public class PgMaintenanceResult : IPgExecutionResult
 {
     internal PgMaintenanceResult(int exitCode, TimeSpan duration, Version executableVersion, string rawExecutableVersion, string standardError)
     {

@@ -9,7 +9,7 @@ namespace PgCliSharp;
 /// <para>EN: Executes a caller-selected pg_dump executable with typed, version-aware options.</para>
 /// <para>JA: 呼び出し側が選択した pg_dump 実行ファイルを、型付きかつバージョン対応のオプションで実行します。</para>
 /// </summary>
-public sealed class PgDump
+public sealed partial class PgDump
 {
     private readonly IProcessRunner _processRunner;
     private readonly PostgreSqlExecutableVersionProvider _versionProvider;
@@ -78,6 +78,7 @@ public sealed class PgDump
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null)
         {

@@ -303,7 +303,7 @@ public sealed class PsqlSessionIo
 }
 
 /// <summary><para>EN: Completion metadata for a redirected psql session.</para><para>JA: redirected psql session の完了 metadata です。</para></summary>
-public sealed class PsqlSessionResult
+public sealed class PsqlSessionResult : IPgExecutionResult
 {
     internal PsqlSessionResult(
         int exitCode,
@@ -353,7 +353,7 @@ public sealed class PsqlSession : IDisposable
         _executablePath = executablePath;
         _executableVersion = executableVersion;
         _rawExecutableVersion = rawExecutableVersion;
-        _completion = CompleteAsync();
+        _completion = ObserveCompletionAsync();
     }
 
     /// <summary>
@@ -371,13 +371,30 @@ public sealed class PsqlSession : IDisposable
     /// </summary>
     public void CompleteInput() => _session.CompleteInput();
 
+    /// <summary><para>EN: Signals EOF after accepted input and awaits process completion/output drain. Cancellation requests process-tree termination; the session's original timeout still applies. This does not dispose caller-owned streams.</para><para>JA: 受理済み入力の配送後に EOF を通知し、プロセス終了・出力転送の完了を待ちます。キャンセルはプロセスツリー終了を要求し、セッションの元のタイムアウトも有効です。呼び出し側所有のストリームは破棄しません。</para></summary>
+    public async Task<PsqlSessionResult> CompleteAsync(CancellationToken cancellationToken = default)
+    {
+        using CancellationTokenRegistration registration = cancellationToken.Register(Cancel);
+        CompleteInput();
+        try
+        {
+            PsqlSessionResult result = await _completion.ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            return result;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw new OperationCanceledException(cancellationToken);
+        }
+    }
+
     /// <summary><para>EN: Requests forceful cancellation of the running psql process tree.</para><para>JA: 実行中 psql process tree の強制 cancellation を要求します。</para></summary>
     public void Cancel() => _session.Cancel();
 
     /// <summary><para>EN: Completes input and cancels the session if it is still running.</para><para>JA: input を完了し、まだ実行中なら session を cancel します。</para></summary>
     public void Dispose() => _session.Dispose();
 
-    private async Task<PsqlSessionResult> CompleteAsync()
+    private async Task<PsqlSessionResult> ObserveCompletionAsync()
     {
         ProcessSessionResult process = await _session.Completion.ConfigureAwait(false);
 
@@ -397,7 +414,7 @@ public sealed class PsqlSession : IDisposable
 }
 
 /// <summary><para>EN: Executes finite psql invocations or starts redirected duplex psql sessions with typed PostgreSQL 10-18 options.</para><para>JA: PostgreSQL 10〜18 の型付きオプションで有限な psql 実行または redirected duplex psql session を開始します。</para></summary>
-public sealed class Psql
+public sealed partial class Psql
 {
     private readonly MaintenanceExecutor _executor;
     private readonly PsqlSessionExecutor _sessionExecutor;
@@ -442,6 +459,7 @@ public sealed class Psql
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else
@@ -467,6 +485,7 @@ public sealed class Psql
     /// <summary><para>EN: Validates and executes a finite psql invocation. Known psql exit codes 0-3 are returned as typed status.</para><para>JA: 有限な psql 実行を検証して実行します。既知の psql 終了コード 0〜3 は型付き status として返します。</para></summary>
     public async Task<PsqlResult> ExecuteAsync(PsqlOptions options, PsqlIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

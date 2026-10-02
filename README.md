@@ -137,8 +137,7 @@ using PsqlSession session = await psql.StartSessionAsync(
 byte[] commands = Encoding.UTF8.GetBytes(
     "select current_database();\n\\q\n");
 await session.StandardInput.WriteAsync(commands, 0, commands.Length);
-session.CompleteInput();
-PsqlSessionResult sessionResult = await session.Completion;
+PsqlSessionResult sessionResult = await session.CompleteAsync();
 ```
 
 The session is a redirected pipe session, **not** a TTY/PTY terminal. It deliberately does not promise Readline, history, or other terminal-only behavior.
@@ -247,3 +246,23 @@ Starting with Phase 3, ADR-0012 separates implementation completion from externa
 - [Implementation and NuGet roadmap](docs/roadmap.md)
 
 When implementation work changes a material project-wide decision, add or supersede an ADR and update the relevant consolidated document in the same change. Chat history is not the source of truth.
+
+## Configuration and command generation
+
+All 25 wrappers support lambda configuration, offline validation and command generation. Options are copied before asynchronous execution. See [the English/Japanese guide](docs/configuration-and-commands.md) for stream routing, patch-version checks and secret handling.
+
+```csharp
+var dump = new PgDump(@"C:\Program Files\PostgreSQL8in\pg_dump.exe", PostgreSqlMajorVersion.V18);
+PgCommand command = dump.CreateCommand(
+    configureOptions: options =>
+    {
+        options.Database = "appdb";
+        options.Format = PgDumpFormat.Custom;
+        options.Schemas.Add("public");
+    },
+    output: PgDumpOutput.ToFile("appdb.dump"));
+string actualCommand = command.ToCommandLine(PgCommandLineStyle.PowerShell, includeSensitiveValues: true);
+Console.WriteLine(actualCommand);
+```
+
+This creates the command without executing even a version probe. PowerShell export targets 7.5+ with Standard native argument passing. Raw export may contain secrets; `command.ToString()` redacts every argument/environment value. Streams require separate routing. `Validate` returns the first offline option error; it does not verify installed executables or server state.
