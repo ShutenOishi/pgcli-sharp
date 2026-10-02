@@ -28,7 +28,7 @@ class ReadmeCompilerTests(unittest.TestCase):
             root = Path(directory)
             (root / "eng").mkdir()
             (root / "README.md").write_text("No snippets / 例なし", encoding="utf-8")
-            with mock.patch.object(compiler, "__file__", str(root / "eng" / "compile-readme-examples.py")), mock.patch.object(compiler.subprocess, "run") as build:
+            with mock.patch.object(compiler, "__file__", str(root / "eng" / "compile_readme_examples.py")), mock.patch.object(compiler.subprocess, "run") as build:
                 with self.assertRaisesRegex(ValueError, "Missing C# examples"):
                     compiler.main()
                 build.assert_not_called()

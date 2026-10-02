@@ -70,9 +70,9 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" = Windows ]; then
-            python eng/compile-readme-examples.py
+            python eng/compile_readme_examples.py
           else
-            python3 eng/compile-readme-examples.py
+            python3 eng/compile_readme_examples.py
           fi
 
       - name: Pack
