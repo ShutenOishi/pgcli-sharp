@@ -134,6 +134,8 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase 8 - 1.0 stabilization
 
+**Status: In progress (2026-10-02); not release-ready.** CP-01 introduces generated-documentation, public dependency-boundary and invariant diagnostic regression checks. CP-02 real-binary expansion, CP-03 API review/freeze and CP-04 publication-candidate decisions remain pending. See [stabilization checkpoints](phase-8-stabilization.md). Publication manifests remain disabled.
+
 - Review all public APIs for naming and consistency.
 - Review exception hierarchy and structured diagnostic properties.
 - Verify English/Japanese XML documentation coverage.

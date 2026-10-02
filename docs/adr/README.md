@@ -72,9 +72,8 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0012](0012-defer-external-publication-until-final-phase.md) | Defer external publication until the final release phase | Accepted |
 | [0013](0013-rich-io-process-sessions.md) | Separate rich redirected sessions from one-shot process execution | Accepted |
 | [0014](0014-supervise-process-io-and-bound-session-input.md) | Supervise process I/O and bound redirected session input | Accepted |
+| [0015](0015-server-application-boundaries.md) | Separate server applications and detached-server I/O | Accepted |
 
 ## Template
 
 Copy [0000-template.md](0000-template.md) for new decisions.
-
-| [0015](0015-server-application-boundaries.md) | Separate server applications and detached-server I/O | Accepted |
