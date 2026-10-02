@@ -31,3 +31,18 @@ CI には代表バージョン PostgreSQL 16 / 18 を対象とする Linux 統�
 Phase 8 では、再現可能な runner が用意できる範囲で PostgreSQL 10〜18 へ証拠を拡張します。維持可能な CI で再現できない major/patch/OS は除外理由と、公式 source/specification および決定論的 regression test による補完証拠を明記します。fake/mock の合格を実 PostgreSQL 合格として扱いません。
 
 通常 test は `PGCLI_REAL_PG_*` 環境変数が無い場合に real-PG シナリオを実行しないため、PostgreSQL の導入を要求しません。
+
+## Phase 7 server application smoke scenarios
+
+`RealPostgreSqlServerApplicationsTests` runs alongside the existing real-binary
+scenarios in PostgreSQL 16/18 Linux jobs. It creates a unique disposable cluster,
+checks/disables/enables checksums, executes pg_resetwal with DryRun, and exercises
+pg_ctl Start/Status/Stop with an owned log and socket directory. Cleanup checks
+status before stopping a possibly running server and deletes only the owned
+directory. It never resets production WAL or invokes an upgrade/rewind against
+external clusters. Upgrade/rewind migrations and Windows service lifecycle remain
+Phase 8 real-binary coverage work.
+
+日本語: Phase 7 の実バイナリ検証は、専用の破棄可能なクラスタで初期化・チェックサム操作・
+WAL リセット dry-run・起動／状態確認／停止を実施します。移行・巻き戻し・Windows サービス操作の
+実証や全履歴版の matrix は Phase 8 へ引き継ぎます。

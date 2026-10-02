@@ -59,7 +59,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGDATA; required if the environment is unset."
       },
       "api": {
         "property": "DataDirectory"
@@ -92,7 +92,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Derived from locale; ICU with C defaults to UTF8, libc C to SQL_ASCII."
       },
       "api": {
         "property": "Encoding"
@@ -123,7 +123,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Inherited from the environment."
       },
       "api": {
         "property": "Locale"
@@ -340,7 +340,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Use environment locale unless requested; flag selects C."
       },
       "api": {
         "property": "NoLocale"
@@ -373,7 +373,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Derived from locale, falling back to simple."
       },
       "api": {
         "property": "TextSearchConfiguration"
@@ -406,7 +406,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "trust. ident maps local to peer; peer maps host to ident."
       },
       "api": {
         "property": "Authentication"
@@ -437,7 +437,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "trust unless auth overrides it."
       },
       "api": {
         "property": "LocalAuthentication"
@@ -468,7 +468,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "trust unless auth overrides it."
       },
       "api": {
         "property": "HostAuthentication"
@@ -501,7 +501,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not prompt."
       },
       "api": {
         "property": "PasswordPrompt"
@@ -532,7 +532,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No password file."
       },
       "api": {
         "property": "PasswordFile"
@@ -565,7 +565,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Operating-system user unless the documented environment overrides it."
       },
       "api": {
         "property": "Username"
@@ -598,7 +598,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show help and exit."
       },
       "api": {
         "binding": "GetHelpAsync"
@@ -631,7 +631,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show numeric CLI version and exit."
       },
       "api": {
         "binding": "Executable version probe"
@@ -664,7 +664,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Disabled."
       },
       "api": {
         "property": "Debug"
@@ -697,7 +697,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not show internal settings; initialize normally."
       },
       "api": {
         "property": "ShowSettings"
@@ -730,7 +730,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Alias of no-clean; clean up files by default."
       },
       "api": {
         "property": "NoClean"
@@ -763,7 +763,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Remove files created during an unsuccessful initialization."
       },
       "api": {
         "property": "NoClean"
@@ -796,7 +796,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Alias of no-sync; synchronize by default."
       },
       "api": {
         "property": "NoSync"
@@ -829,7 +829,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Synchronize files durably."
       },
       "api": {
         "property": "NoSync"
@@ -895,7 +895,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "pg_wal inside the data directory."
       },
       "api": {
         "property": "WalDirectory"
@@ -928,7 +928,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Disabled in 10-17; enabled in 18. Explicit false uses omission before 18."
+        "upstream": "Off in PostgreSQL 10-17; on in 18. Explicit false omits flags before 18."
       },
       "api": {
         "property": "DataChecksums"
@@ -959,7 +959,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Installation share directory."
       },
       "api": {
         "property": "InputDirectory"
@@ -985,7 +985,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "initdb: 16 MiB; pg_resetwal: preserve/recover the existing size."
       },
       "api": {
         "property": "WalSegmentSizeMegabytes"
@@ -1018,7 +1018,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Owner-only access."
       },
       "api": {
         "property": "AllowGroupAccess"
@@ -1049,7 +1049,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Print startup instructions."
       },
       "api": {
         "property": "NoInstructions"
@@ -1080,7 +1080,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not enable deep cache debugging."
       },
       "api": {
         "property": "DiscardCaches"
@@ -1111,7 +1111,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "libc."
       },
       "api": {
         "property": "LocaleProvider"
@@ -1142,7 +1142,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Unset; ICU requires explicit value in 15, locale fallback is allowed from 16."
       },
       "api": {
         "property": "IcuLocale"
@@ -1175,7 +1175,7 @@
       },
       "defaults": {
         "wrapper": "Empty collection emits no entries.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No additional settings; repeated names are passed in order."
       },
       "api": {
         "property": "Settings"
@@ -1206,7 +1206,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No additional ICU rules."
       },
       "api": {
         "property": "IcuRules"
@@ -1237,7 +1237,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Unset; the chosen provider controls whether locale is required."
       },
       "api": {
         "property": "BuiltinLocale"
@@ -1268,7 +1268,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "fsync. syncfs is Linux-only."
       },
       "api": {
         "property": "SyncMethod"
@@ -1299,7 +1299,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Disabled in 10-17; enabled in 18. Explicit false uses omission before 18."
+        "upstream": "Off in PostgreSQL 10-17; on in 18. Explicit false omits flags before 18."
       },
       "api": {
         "property": "DataChecksums"
@@ -1330,7 +1330,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Synchronize database data files."
       },
       "api": {
         "property": "NoSyncDataFiles"

@@ -59,7 +59,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show help and exit."
       },
       "api": {
         "binding": "GetHelpAsync"
@@ -92,7 +92,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show numeric CLI version and exit."
       },
       "api": {
         "binding": "Executable version probe"
@@ -125,7 +125,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No file redirect in upstream; wrapper requires a file for Start/Restart."
       },
       "api": {
         "property": "LogFile"
@@ -158,7 +158,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "fast."
       },
       "api": {
         "property": "ShutdownMode"
@@ -191,7 +191,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGDATA; required if the environment is unset."
       },
       "api": {
         "property": "DataDirectory"
@@ -224,7 +224,7 @@
       },
       "defaults": {
         "wrapper": "Empty collection emits no entries.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No extra server/initdb options; repeats append in order."
       },
       "api": {
         "property": "ForwardedOptions"
@@ -257,7 +257,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Print informational messages."
       },
       "api": {
         "property": "Silent"
@@ -290,7 +290,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGCTLTIMEOUT or 60 seconds."
       },
       "api": {
         "property": "WaitTimeoutSeconds"
@@ -323,7 +323,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not raise inherited core-file limits."
       },
       "api": {
         "property": "CoreFiles"
@@ -356,7 +356,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Wait for supported operations."
       },
       "api": {
         "property": "Wait"
@@ -389,7 +389,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Wait unless no-wait is selected."
       },
       "api": {
         "property": "Wait"
@@ -420,7 +420,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Sibling postgres/initdb lookup by upstream."
       },
       "api": {
         "property": "ServerExecutablePath"
@@ -446,7 +446,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PostgreSQL service default."
       },
       "api": {
         "property": "ServiceName"
@@ -472,7 +472,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No explicitly supplied service password."
       },
       "api": {
         "property": "ServicePassword"
@@ -498,7 +498,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Upstream service account default."
       },
       "api": {
         "property": "ServiceUsername"
@@ -524,7 +524,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "auto."
       },
       "api": {
         "property": "ServiceStart"
@@ -550,7 +550,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PostgreSQL event source."
       },
       "api": {
         "property": "EventSource"
@@ -574,7 +574,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Required explicit pg_ctl operation."
       },
       "api": {
         "property": "Command"
@@ -598,7 +598,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Required for Kill; absent for other operations."
       },
       "api": {
         "property": "Signal"
@@ -622,7 +622,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Required positive process ID for Kill."
       },
       "api": {
         "property": "ProcessId"
@@ -1135,5 +1135,72 @@
     "apiAudit": "Every inventory entry binds to a public Options property, GetHelpAsync or executable probe.",
     "constraints": "See docs/server-applications-phase-7.md and internal validators.",
     "environment": "Caller overrides are passed only to the process; upstream ambient environment defaults remain available."
-  }
+  },
+  "commands": [
+    {
+      "name": "initdb",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "init",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "start",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "stop",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "restart",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "reload",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "status",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "promote",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "logrotate",
+      "majorSince": 12,
+      "platform": "all"
+    },
+    {
+      "name": "kill",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "register",
+      "majorSince": 10,
+      "platform": "Windows"
+    },
+    {
+      "name": "unregister",
+      "majorSince": 10,
+      "platform": "Windows"
+    },
+    {
+      "name": "runservice",
+      "majorSince": 10,
+      "platform": "Windows"
+    }
+  ]
 }

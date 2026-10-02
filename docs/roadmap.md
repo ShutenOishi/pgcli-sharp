@@ -119,9 +119,9 @@ External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase
 
 ## Phase 7 - Server applications
 
-**Status: In progress (2026-10-02).** Six researched, typed server wrappers are implemented on the Phase 7 branch; final CI/merge gates are pending. See [research and usage](server-applications-phase-7.md), [completion evidence](phase-7-completion.md), and ADR-0015.
+**Status: Implementation complete (2026-10-02).** Six researched, typed server wrappers, compatibility/argument/execution tests and disposable PostgreSQL 16/18 integration are implemented. Final PR-head and exact-main completion gates are indexed in the linked completion evidence. See [research and usage](server-applications-phase-7.md), [completion evidence](phase-7-completion.md), and ADR-0015.
 
-Add server-side administrative executables in a clearly separated namespace/category, for example:
+Implemented in the clearly separated `PgCliSharp.ServerApplications` namespace:
 
 - `initdb`
 - `pg_ctl`

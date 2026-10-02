@@ -59,7 +59,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGDATAOLD; required if environment is unset."
       },
       "api": {
         "property": "OldDataDirectory"
@@ -92,7 +92,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGDATANEW; required if environment is unset."
       },
       "api": {
         "property": "NewDataDirectory"
@@ -125,7 +125,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGBINOLD; required if environment is unset."
       },
       "api": {
         "property": "OldBinaryDirectory"
@@ -158,7 +158,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGBINNEW or the directory containing pg_upgrade."
       },
       "api": {
         "property": "NewBinaryDirectory"
@@ -191,7 +191,7 @@
       },
       "defaults": {
         "wrapper": "Empty collection emits no entries.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No extra old-server options; repeats append in order."
       },
       "api": {
         "property": "OldServerOptions"
@@ -224,7 +224,7 @@
       },
       "defaults": {
         "wrapper": "Empty collection emits no entries.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No extra new-server options; repeats append in order."
       },
       "api": {
         "property": "NewServerOptions"
@@ -257,7 +257,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGPORTOLD or 50432."
       },
       "api": {
         "property": "OldPort"
@@ -290,7 +290,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGPORTNEW or 50432."
       },
       "api": {
         "property": "NewPort"
@@ -323,7 +323,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Operating-system user unless the documented environment overrides it."
       },
       "api": {
         "property": "Username"
@@ -356,7 +356,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "pg_checksums: check; pg_upgrade: perform the upgrade unless check is requested."
       },
       "api": {
         "property": "CheckOnly"
@@ -389,7 +389,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
+        "upstream": "Copy files unless a transfer mode is selected."
       },
       "api": {
         "property": "TransferMode"
@@ -422,7 +422,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Remove successful upgrade SQL/log files."
       },
       "api": {
         "property": "Retain"
@@ -455,7 +455,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "One simultaneous job."
       },
       "api": {
         "property": "Jobs"
@@ -488,7 +488,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Disabled."
       },
       "api": {
         "property": "Verbose"
@@ -521,7 +521,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show help and exit."
       },
       "api": {
         "binding": "GetHelpAsync"
@@ -554,7 +554,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show numeric CLI version and exit."
       },
       "api": {
         "binding": "Executable version probe"
@@ -587,7 +587,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGSOCKETDIR or current directory."
       },
       "api": {
         "property": "SocketDirectory"
@@ -618,7 +618,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
+        "upstream": "Copy files unless a transfer mode is selected."
       },
       "api": {
         "property": "TransferMode"
@@ -651,7 +651,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Synchronize files durably."
       },
       "api": {
         "property": "NoSync"
@@ -682,7 +682,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
+        "upstream": "Copy files (default); explicit spelling exists from 16."
       },
       "api": {
         "property": "TransferMode"
@@ -713,7 +713,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
+        "upstream": "Copy files unless a transfer mode is selected."
       },
       "api": {
         "property": "TransferMode"
@@ -744,7 +744,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "fsync. syncfs is Linux-only."
       },
       "api": {
         "property": "SyncMethod"
@@ -775,7 +775,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Transfer available statistics in 18."
       },
       "api": {
         "property": "NoStatistics"
@@ -806,7 +806,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/infer cluster char signedness from source/platform."
       },
       "api": {
         "property": "CharSignedness"
@@ -837,7 +837,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
+        "upstream": "Copy files unless a transfer mode is selected."
       },
       "api": {
         "property": "TransferMode"

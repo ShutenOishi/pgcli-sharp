@@ -57,7 +57,7 @@
       },
       "defaults": {
         "wrapper": "Check mode.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "pg_checksums: check; pg_upgrade: perform the upgrade unless check is requested."
       },
       "api": {
         "property": "Mode"
@@ -90,7 +90,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "PGDATA; required if the environment is unset."
       },
       "api": {
         "property": "DataDirectory"
@@ -123,7 +123,7 @@
       },
       "defaults": {
         "wrapper": "Check mode.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not disable checksums unless selected."
       },
       "api": {
         "property": "Mode"
@@ -156,7 +156,7 @@
       },
       "defaults": {
         "wrapper": "Check mode.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not enable checksums unless selected."
       },
       "api": {
         "property": "Mode"
@@ -189,7 +189,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Check all relation files; 0 accepted from 15, positive values in 12-14."
       },
       "api": {
         "property": "FileNode"
@@ -222,7 +222,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Synchronize files durably."
       },
       "api": {
         "property": "NoSync"
@@ -255,7 +255,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Disabled."
       },
       "api": {
         "property": "Progress"
@@ -288,7 +288,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Disabled."
       },
       "api": {
         "property": "Verbose"
@@ -321,7 +321,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show help and exit."
       },
       "api": {
         "binding": "GetHelpAsync"
@@ -354,7 +354,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show numeric CLI version and exit."
       },
       "api": {
         "binding": "Executable version probe"
@@ -385,7 +385,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "fsync. syncfs is Linux-only."
       },
       "api": {
         "property": "SyncMethod"

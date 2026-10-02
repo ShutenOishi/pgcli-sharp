@@ -59,7 +59,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show help and exit."
       },
       "api": {
         "binding": "GetHelpAsync"
@@ -92,7 +92,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Required explicit target directory."
       },
       "api": {
         "property": "TargetDataDirectory"
@@ -123,7 +123,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No source; exactly one of source-pgdata/source-server is required."
       },
       "api": {
         "property": "SourceDataDirectory"
@@ -154,7 +154,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "No source; exactly one of source-pgdata/source-server is required."
       },
       "api": {
         "property": "SourceConnectionString"
@@ -187,7 +187,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show numeric CLI version and exit."
       },
       "api": {
         "binding": "Executable version probe"
@@ -220,7 +220,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Perform mutations unless dry-run is requested."
       },
       "api": {
         "property": "DryRun"
@@ -253,7 +253,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Disabled."
       },
       "api": {
         "property": "Progress"
@@ -284,7 +284,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Disabled."
       },
       "api": {
         "property": "Debug"
@@ -317,7 +317,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Synchronize files durably."
       },
       "api": {
         "property": "NoSync"
@@ -350,7 +350,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not write standby connection configuration."
       },
       "api": {
         "property": "WriteRecoveryConfiguration"
@@ -381,7 +381,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Ensure clean target shutdown, potentially replaying WAL."
       },
       "api": {
         "property": "NoEnsureShutdown"
@@ -414,7 +414,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not use restore_command to fetch missing target WAL."
       },
       "api": {
         "property": "RestoreTargetWal"
@@ -445,7 +445,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Use the target cluster configuration location."
       },
       "api": {
         "property": "ConfigurationFile"
@@ -476,7 +476,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "fsync. syncfs is Linux-only."
       },
       "api": {
         "property": "SyncMethod"

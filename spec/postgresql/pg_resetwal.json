@@ -59,7 +59,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show help and exit."
       },
       "api": {
         "binding": "GetHelpAsync"
@@ -92,7 +92,7 @@
       },
       "defaults": {
         "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Show numeric CLI version and exit."
       },
       "api": {
         "binding": "Executable version probe"
@@ -125,7 +125,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Required explicit directory (PGDATA is not read)."
       },
       "api": {
         "property": "DataDirectory"
@@ -158,7 +158,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/recover control-file IDs."
       },
       "api": {
         "property": "CommitTimestampIds"
@@ -171,7 +171,45 @@
         }
       },
       "valueKind": "PgCommitTimestampIds?",
-      "constraints": "Oldest,newest commit-timestamp IDs; each is 0 or at least 2 through 16, at least 3 from 17."
+      "constraints": "Oldest,newest commit-timestamp IDs; each is 0 or at least 2 through 16, at least 3 from 17.",
+      "semanticsByMajor": {
+        "10": {
+          "zeroAllowed": true,
+          "positiveMinimum": 2
+        },
+        "11": {
+          "zeroAllowed": true,
+          "positiveMinimum": 2
+        },
+        "12": {
+          "zeroAllowed": true,
+          "positiveMinimum": 2
+        },
+        "13": {
+          "zeroAllowed": true,
+          "positiveMinimum": 2
+        },
+        "14": {
+          "zeroAllowed": true,
+          "positiveMinimum": 2
+        },
+        "15": {
+          "zeroAllowed": true,
+          "positiveMinimum": 2
+        },
+        "16": {
+          "zeroAllowed": true,
+          "positiveMinimum": 2
+        },
+        "17": {
+          "zeroAllowed": true,
+          "positiveMinimum": 3
+        },
+        "18": {
+          "zeroAllowed": true,
+          "positiveMinimum": 3
+        }
+      }
     },
     {
       "id": "epoch",
@@ -191,7 +229,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/recover transaction epoch."
       },
       "api": {
         "property": "TransactionIdEpoch"
@@ -224,7 +262,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Do not force unsafe reset."
       },
       "api": {
         "property": "Force"
@@ -257,7 +295,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Choose a segment beyond existing WAL."
       },
       "api": {
         "property": "NextWalFile"
@@ -290,7 +328,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/recover next and oldest multixact IDs."
       },
       "api": {
         "property": "MultiTransactionIds"
@@ -303,7 +341,45 @@
         }
       },
       "valueKind": "PgMultiTransactionIds?",
-      "constraints": "Next,oldest multitransaction IDs. Oldest must be positive; next zero is accepted from 15."
+      "constraints": "Next,oldest multitransaction IDs. Oldest must be positive; next zero is accepted from 15.",
+      "semanticsByMajor": {
+        "10": {
+          "nextZeroAllowed": false,
+          "oldestMinimum": 1
+        },
+        "11": {
+          "nextZeroAllowed": false,
+          "oldestMinimum": 1
+        },
+        "12": {
+          "nextZeroAllowed": false,
+          "oldestMinimum": 1
+        },
+        "13": {
+          "nextZeroAllowed": false,
+          "oldestMinimum": 1
+        },
+        "14": {
+          "nextZeroAllowed": false,
+          "oldestMinimum": 1
+        },
+        "15": {
+          "nextZeroAllowed": true,
+          "oldestMinimum": 1
+        },
+        "16": {
+          "nextZeroAllowed": true,
+          "oldestMinimum": 1
+        },
+        "17": {
+          "nextZeroAllowed": true,
+          "oldestMinimum": 1
+        },
+        "18": {
+          "nextZeroAllowed": true,
+          "oldestMinimum": 1
+        }
+      }
     },
     {
       "id": "dry-run",
@@ -323,7 +399,7 @@
       },
       "defaults": {
         "wrapper": "False omits the flag.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Perform mutations unless dry-run is requested."
       },
       "api": {
         "property": "DryRun"
@@ -356,7 +432,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/recover the next object ID."
       },
       "api": {
         "property": "NextObjectId"
@@ -389,7 +465,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/recover next multixact offset."
       },
       "api": {
         "property": "MultiTransactionOffset"
@@ -402,7 +478,45 @@
         }
       },
       "valueKind": "uint?",
-      "constraints": "Next multitransaction offset; UInt32.MaxValue accepted from 15."
+      "constraints": "Next multitransaction offset; UInt32.MaxValue accepted from 15.",
+      "semanticsByMajor": {
+        "10": {
+          "minimum": 0,
+          "maximum": 4294967294
+        },
+        "11": {
+          "minimum": 0,
+          "maximum": 4294967294
+        },
+        "12": {
+          "minimum": 0,
+          "maximum": 4294967294
+        },
+        "13": {
+          "minimum": 0,
+          "maximum": 4294967294
+        },
+        "14": {
+          "minimum": 0,
+          "maximum": 4294967294
+        },
+        "15": {
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "16": {
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "17": {
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "18": {
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
     },
     {
       "id": "oldest-transaction-id",
@@ -422,7 +536,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/recover oldest transaction ID."
       },
       "api": {
         "property": "OldestTransactionId"
@@ -455,7 +569,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/recover next transaction ID."
       },
       "api": {
         "property": "NextTransactionId"
@@ -468,7 +582,36 @@
         }
       },
       "valueKind": "uint?",
-      "constraints": "Next transaction ID: positive through 11, at least 3 from 12."
+      "constraints": "Next transaction ID: positive through 11, at least 3 from 12.",
+      "semanticsByMajor": {
+        "10": {
+          "minimum": 1
+        },
+        "11": {
+          "minimum": 1
+        },
+        "12": {
+          "minimum": 3
+        },
+        "13": {
+          "minimum": 3
+        },
+        "14": {
+          "minimum": 3
+        },
+        "15": {
+          "minimum": 3
+        },
+        "16": {
+          "minimum": 3
+        },
+        "17": {
+          "minimum": 3
+        },
+        "18": {
+          "minimum": 3
+        }
+      }
     },
     {
       "id": "wal-segsize",
@@ -486,7 +629,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "initdb: 16 MiB; pg_resetwal: preserve/recover the existing size."
       },
       "api": {
         "property": "WalSegmentSizeMegabytes"
@@ -517,7 +660,7 @@
       },
       "defaults": {
         "wrapper": "Null omits the option.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "upstream": "Preserve/infer existing char signedness."
       },
       "api": {
         "property": "CharSignedness"

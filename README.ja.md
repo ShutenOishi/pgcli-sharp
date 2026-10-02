@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 2 のバックアップ／リストア中核、Phase 3 のリリースパイプライン、Phase 4 の Backup/WAL ツール、Phase 5 のデータベース管理・maintenance ツールに加え、Phase 6 の `psql` / `pgbench` rich-I/O 実装まで完了しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により最終リリース Phase まで外部公開を延期したまま、Phase 7 の開発へ進みます。
+バックアップ／リストア、Backup/WAL、データベース管理、rich-I/O に加え、Phase 7 のサーバー管理6ツールまで実装しました。サーバー管理 API は `PgCliSharp.ServerApplications` に分離しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により外部公開を延期したままです。次は Phase 8 の API・文書・互換性の安定化です。[Phase 7 完了証跡](docs/phase-7-completion.md) に最終 CI／マージ条件を記録します。
 
 初期対応範囲:
 
@@ -176,6 +176,33 @@ await pgBench.ExecuteAsync(
 PostgreSQL 11/13/15/17 の option 境界、PostgreSQL 13 以降の server-side initialization step `G`、logging/progress/partition/retry 制約、script weight、PostgreSQL 12 以降の runtime-error exit status などは process 起動前または typed result として扱います。
 
 互換性仕様は [`spec/postgresql/psql.json`](spec/postgresql/psql.json) と [`spec/postgresql/pgbench.json`](spec/postgresql/pgbench.json)、調査記録は [`docs/rich-io-phase-6.md`](docs/rich-io-phase-6.md)、session lifecycle の判断は ADR-0013、完了 evidence は [`docs/phase-6-completion.md`](docs/phase-6-completion.md) に保存しています。
+
+## サーバー管理ツール
+
+Phase 7 では `PgCliSharp.ServerApplications` に `InitDb`、`PgCtl`、`PgUpgrade`、
+`PgRewind`、`PgChecksums`、`PgResetWal` を追加します。PostgreSQL 10〜18 の
+専用 Options・実行前検証・実行ファイルの版確認・呼び出し側所有の I/O・`GetHelpAsync` を
+用意します。`PgChecksums` は12以降です。
+
+```csharp
+using PgCliSharp.ServerApplications;
+
+var ctl = new PgCtl(@"C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe",
+    PostgreSqlMajorVersion.V18);
+PgCtlResult status = await ctl.ExecuteAsync(new PgCtlOptions
+{
+    Command = PgCtlCommand.Status,
+    DataDirectory = @"C:\pgdata\new-cluster",
+});
+```
+
+状態確認では稼働・停止・ディレクトリ利用不可を `PgCtlServerStatus` で返します。
+起動・再起動は独立したサーバーのパイプを閉じるため、明示的な `LogFile` が必須です。
+initdb の `DataChecksums` が null の場合は、17まで無効・18以降有効という upstream の
+既定値を維持します。アップグレード・巻き戻し・WAL リセットはデータへ影響し、
+キャンセルによる取り消しは保証しません。pg_resetwal は最後の修復手段です。
+版固有の制約と実バイナリ検証範囲は [サーバー管理ツールガイド](docs/server-applications-phase-7.md)
+を参照してください。
 
 ## 開発
 
