@@ -6,6 +6,8 @@
     <IsTestProject>true</IsTestProject>
     <!-- Underscore-separated test names intentionally encode scenario/condition/expectation. -->
     <NoWarn>$(NoWarn);CA1707</NoWarn>
+    <PgCliSharpDocumentationTfm>$(TargetFramework)</PgCliSharpDocumentationTfm>
+    <PgCliSharpDocumentationTfm Condition="'$(TargetFramework)' == 'net48'">netstandard2.0</PgCliSharpDocumentationTfm>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="../../src/PgCliSharp/bin/$(Configuration)/$(PgCliSharpDocumentationTfm)/PgCliSharp.xml"
+          Link="documentation/PgCliSharp.xml"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../spec/postgresql/*.json"
           Link="spec/%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
