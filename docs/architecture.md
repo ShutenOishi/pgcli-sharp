@@ -299,6 +299,12 @@ The core package should avoid unnecessary dependencies such as Npgsql or Microso
 
 ## 15. NuGet and release policy
 
+ADR-0019 licenses original PgCliSharp code/documentation under MIT. Packages declare
+the MIT expression and include the root LICENSE and bilingual licensing guide.
+PostgreSQL executables are externally supplied, not bundled or relicensed.
+Dependencies retain their own terms; resolved transitive-license auditing remains
+a final publication gate. See [Licensing / ライセンス](licensing.md).
+
 Use Semantic Versioning.
 
 Planned progression:

@@ -75,8 +75,8 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0015](0015-server-application-boundaries.md) | Separate server applications and detached-server I/O | Accepted |
 | [0016](0016-pin-real-postgresql-evidence-and-scope-exclusions.md) | Pin real PostgreSQL evidence and scope exclusions | Accepted |
 | [0017](0017-freeze-reviewed-public-api-contract.md) | Freeze the reviewed public API contract | Accepted |
-
 | [0018](0018-offline-commands-and-configuration-snapshots.md) | Add lambda configuration, offline commands and execution snapshots | Accepted |
+| [0019](0019-adopt-mit-license.md) | Adopt the MIT license | Accepted |
 
 ## Template
 

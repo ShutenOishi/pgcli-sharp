@@ -56,11 +56,11 @@ test -n "$english_line"
 test -n "$japanese_line"
 test "$english_line" -lt "$japanese_line"
 
-if grep -Eq '<PackageLicense(Expression|File)>' "$project"; then
-  echo "NuGet license metadata: configured"
-else
-  echo "NuGet license metadata: not configured (no accepted repository license decision exists yet)"
-fi
+grep -F '<PackageLicenseExpression>MIT</PackageLicenseExpression>' "$project" >/dev/null
+test -f LICENSE
+grep -Fx 'MIT License' LICENSE >/dev/null
+grep -Fx 'Copyright (c) 2026 ShutenOishi' LICENSE >/dev/null
+echo "NuGet license metadata: MIT (ADR-0019)"
 
 if [ "$(jq -r '.publication_enabled' "$manifest")" != "true" ]; then
   echo "NuGet external publication: deferred/disabled"

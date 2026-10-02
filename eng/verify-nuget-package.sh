@@ -44,6 +44,10 @@ done
 
 test -f "$work/nupkg/README.md"
 test -f "$work/nupkg/README.ja.md"
+test -f "$work/nupkg/LICENSE"
+test -f "$work/nupkg/docs/licensing.md"
+cmp LICENSE "$work/nupkg/LICENSE"
+grep -F '<license type="expression">MIT</license>' "$nuspec" >/dev/null
 
 # Clean local-consumer smoke test for every advertised TFM.
 consumer="$work/consumer"

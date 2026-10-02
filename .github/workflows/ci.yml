@@ -56,6 +56,7 @@ jobs:
         run: |
           python3 -m unittest discover -s eng -p test_real_postgresql_evidence.py
           python3 -m unittest discover -s eng -p test_readme_examples.py
+          python3 -m unittest discover -s eng -p test_licensing.py
 
       - name: Restore
         run: dotnet restore PgCliSharp.slnx

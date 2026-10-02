@@ -134,7 +134,7 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase 8 - 1.0 stabilization
 
-**Status: In progress (2026-10-02); not release-ready.** CP-01 and the CP-02 [scoped nine-major Linux checkpoint](phase-8-real-binary-matrix.md) are complete (PR #15; exact-main CI 37006276018); exclusions remain. CP-03 adds the [reviewed API freeze/baseline and compile-checked examples](phase-8-api-review.md), subject to its final CI gates. CP-04 publication-candidate/license decisions remain pending. See [stabilization checkpoints](phase-8-stabilization.md). Publication manifests remain disabled.
+**Status: In progress (2026-10-03); not release-ready.** CP-01 and the CP-02 [scoped nine-major Linux checkpoint](phase-8-real-binary-matrix.md) are complete; exclusions remain. CP-03 including ADR-0018 is complete (PR #17; main `ddce19c77f9bd2a39eaa71eada9907c97b23aceb`; exact-main CI 37077909665, all 12 jobs successful). CP-04 selects MIT under ADR-0019; publication-candidate/provenance and dependency-license audits remain pending. See [stabilization checkpoints](phase-8-stabilization.md). Publication manifests remain disabled.
 
 - Review all public APIs for naming and consistency.
 - Review exception hierarchy and structured diagnostic properties.
