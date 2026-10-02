@@ -125,6 +125,7 @@ public sealed class RealPostgreSqlMigrationTests
         {
             _binary = binary;
             _version = version;
+            Username = Environment.UserName;
             _log = Path.Combine(root, name + ".log");
             DataDirectory = Path.Combine(root, name + "-data");
             SocketDirectory = Path.Combine(root, name + "-socket");
@@ -133,7 +134,7 @@ public sealed class RealPostgreSqlMigrationTests
 
         internal string DataDirectory { get; }
         internal string SocketDirectory { get; }
-        internal string Username => Environment.UserName;
+        internal string Username { get; }
 
         internal async Task InitializeAsync() =>
             _ = await new InitDb(Path.Combine(_binary, "initdb"), _version).ExecuteAsync(new InitDbOptions
