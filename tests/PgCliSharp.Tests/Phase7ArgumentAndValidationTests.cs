@@ -5,6 +5,11 @@ namespace PgCliSharp.Tests;
 
 public sealed class Phase7ArgumentAndValidationTests
 {
+    private static readonly string[] ExpectedArguments1 = new[] { "--pgdata", "cluster with spaces", "--no-locale", "--set", "shared_buffers=128 MB", "--set", "shared_buffers=256 MB" };
+    private static readonly string[] ExpectedArguments2 = new[] { "kill", "USR1", "123" };
+    private static readonly string[] ExpectedArguments3 = new[] { "--pgdata", "cluster", "--log", "server.log", "--mode", "fast", "--options", "-p 55432", "--options", "-c listen_addresses=''", "--no-wait", "start" };
+    private static readonly string[] ExpectedArguments4 = new[] { "--pgdata", "cluster", "--check", "--filenode", "0" };
+    private static readonly string[] ExpectedArguments5 = new[] { "-D", "cluster", "-c", "2,10", "-l", "00000001000000000000000A", "-m", "12,3", "-n" };
     [Theory]
     [InlineData(PostgreSqlMajorVersion.V10)]
     [InlineData(PostgreSqlMajorVersion.V17)]
@@ -28,7 +33,7 @@ public sealed class Phase7ArgumentAndValidationTests
         o.Settings.Add(new PgServerSetting("shared_buffers", "128 MB"));
         o.Settings.Add(new PgServerSetting("shared_buffers", "256 MB"));
         InitDbImplementation.Validate(o, PostgreSqlMajorVersion.V18);
-        Assert.Equal(new[] { "--pgdata", "cluster with spaces", "--no-locale", "--set", "shared_buffers=128 MB", "--set", "shared_buffers=256 MB" }, InitDbImplementation.Build(o, PostgreSqlMajorVersion.V18));
+        Assert.Equal(ExpectedArguments1, InitDbImplementation.Build(o, PostgreSqlMajorVersion.V18));
     }
 
     [Theory]
@@ -56,7 +61,7 @@ public sealed class Phase7ArgumentAndValidationTests
     {
         var kill = new PgCtlOptions { Command = PgCtlCommand.Kill, Signal = PgCtlSignal.Usr1, ProcessId = 123 };
         PgCtlImplementation.Validate(kill, PostgreSqlMajorVersion.V10);
-        Assert.Equal(new[] { "kill", "USR1", "123" }, PgCtlImplementation.Build(kill, PostgreSqlMajorVersion.V10));
+        Assert.Equal(ExpectedArguments2, PgCtlImplementation.Build(kill, PostgreSqlMajorVersion.V10));
         Assert.Throws<PgInvalidOptionValueException>(() => PgCtlImplementation.Validate(new PgCtlOptions { Command = PgCtlCommand.Kill, Signal = PgCtlSignal.Kill, ProcessId = 0 }, PostgreSqlMajorVersion.V18));
         Assert.Throws<PgUnsupportedOptionException>(() => PgCtlImplementation.Validate(new PgCtlOptions { Command = PgCtlCommand.LogRotate, DataDirectory = "cluster" }, PostgreSqlMajorVersion.V11));
         PgCtlImplementation.Validate(new PgCtlOptions { Command = PgCtlCommand.LogRotate, DataDirectory = "cluster" }, PostgreSqlMajorVersion.V12);
@@ -70,7 +75,7 @@ public sealed class Phase7ArgumentAndValidationTests
         o.ForwardedOptions.Add("-p 55432");
         o.ForwardedOptions.Add("-c listen_addresses=''");
         PgCtlImplementation.Validate(o, PostgreSqlMajorVersion.V18);
-        Assert.Equal(new[] { "--pgdata", "cluster", "--log", "server.log", "--mode", "fast", "--options", "-p 55432", "--options", "-c listen_addresses=''", "--no-wait", "start" }, PgCtlImplementation.Build(o, PostgreSqlMajorVersion.V18));
+        Assert.Equal(ExpectedArguments3, PgCtlImplementation.Build(o, PostgreSqlMajorVersion.V18));
     }
 
     [Theory]
@@ -126,7 +131,7 @@ public sealed class Phase7ArgumentAndValidationTests
         Assert.Throws<PgInvalidOptionCombinationException>(() => PgChecksumsImplementation.Validate(o, PostgreSqlMajorVersion.V18));
         o.Mode = PgChecksumsMode.Check;
         PgChecksumsImplementation.Validate(o, PostgreSqlMajorVersion.V18);
-        Assert.Equal(new[] { "--pgdata", "cluster", "--check", "--filenode", "0" }, PgChecksumsImplementation.Build(o, PostgreSqlMajorVersion.V18));
+        Assert.Equal(ExpectedArguments4, PgChecksumsImplementation.Build(o, PostgreSqlMajorVersion.V18));
     }
 
     [Fact]
@@ -134,7 +139,7 @@ public sealed class Phase7ArgumentAndValidationTests
     {
         var o = new PgResetWalOptions { DataDirectory = "cluster", DryRun = true, NextWalFile = new PgWalSegmentName("00000001000000000000000a"), CommitTimestampIds = new PgCommitTimestampIds(2, 10), MultiTransactionIds = new PgMultiTransactionIds(12, 3) };
         PgResetWalImplementation.Validate(o, PostgreSqlMajorVersion.V10);
-        Assert.Equal(new[] { "-D", "cluster", "-c", "2,10", "-l", "00000001000000000000000A", "-m", "12,3", "-n" }, PgResetWalImplementation.Build(o, PostgreSqlMajorVersion.V10));
+        Assert.Equal(ExpectedArguments5, PgResetWalImplementation.Build(o, PostgreSqlMajorVersion.V10));
         Assert.Throws<PgInvalidOptionValueException>(() => PgResetWalImplementation.Validate(o, PostgreSqlMajorVersion.V17));
     }
 
@@ -157,6 +162,30 @@ public sealed class Phase7ArgumentAndValidationTests
         Assert.Throws<PgInvalidOptionValueException>(() => PgChecksumsImplementation.Validate(new PgChecksumsOptions { DataDirectory = "cluster", Mode = (PgChecksumsMode)99 }, PostgreSqlMajorVersion.V18));
         Assert.Throws<ArgumentException>(() => new PgWalSegmentName("123"));
         Assert.Throws<ArgumentException>(() => new PgServerSetting("a=b", "v"));
+    }
+
+    [Fact]
+    public void InitDb_AuthIdentAndPeerAreTranslatedForTheOtherConnectionType()
+    {
+        InitDbImplementation.Validate(new InitDbOptions { DataDirectory = "cluster", Authentication = PgInitDbAuthentication.Ident }, PostgreSqlMajorVersion.V10);
+        InitDbImplementation.Validate(new InitDbOptions { DataDirectory = "cluster", Authentication = PgInitDbAuthentication.Peer }, PostgreSqlMajorVersion.V18);
+    }
+
+    [Fact]
+    public void InitDb_IcuLocaleFallbackChangesAt16()
+    {
+        var o = new InitDbOptions { DataDirectory = "cluster", LocaleProvider = PgInitDbLocaleProvider.Icu, NoLocale = true };
+        Assert.Throws<PgInvalidOptionValueException>(() => InitDbImplementation.Validate(o, PostgreSqlMajorVersion.V15));
+        InitDbImplementation.Validate(o, PostgreSqlMajorVersion.V16);
+        InitDbImplementation.Validate(o, PostgreSqlMajorVersion.V17);
+    }
+
+    [Fact]
+    public void PgChecksums_ZeroFileNodeBecomesAcceptedAt15()
+    {
+        var o = new PgChecksumsOptions { DataDirectory = "cluster", FileNode = 0 };
+        Assert.Throws<PgInvalidOptionValueException>(() => PgChecksumsImplementation.Validate(o, PostgreSqlMajorVersion.V14));
+        PgChecksumsImplementation.Validate(o, PostgreSqlMajorVersion.V15);
     }
 
     private static PgUpgradeOptions UpgradeOptions() => new PgUpgradeOptions { OldDataDirectory = "old", NewDataDirectory = "new", OldBinaryDirectory = "old bin" };

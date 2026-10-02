@@ -6,6 +6,8 @@ namespace PgCliSharp.Tests;
 
 public sealed class Phase7ExecutionTests
 {
+    private static readonly string[] ExpectedArguments1 = new[] { "-D", "owned copy", "-n" };
+    private static readonly string[] ExpectedArguments2 = new[] { "--help" };
     [Theory]
     [InlineData(0, PgCtlServerStatus.Running)]
     [InlineData(3, PgCtlServerStatus.NotRunning)]
@@ -98,9 +100,9 @@ public sealed class Phase7ExecutionTests
         var runner = new FakeRunner("pg_resetwal", "10.23", Array.Empty<byte>());
         var tool = new PgResetWal("/fake/pg_resetwal", PostgreSqlMajorVersion.V10, runner);
         await tool.ExecuteAsync(new PgResetWalOptions { DataDirectory = "owned copy", DryRun = true });
-        Assert.Equal(new[] { "-D", "owned copy", "-n" }, runner.LastRequest!.Arguments);
+        Assert.Equal(ExpectedArguments1, runner.LastRequest!.Arguments);
         await tool.GetHelpAsync();
-        Assert.Equal(new[] { "--help" }, runner.LastRequest!.Arguments);
+        Assert.Equal(ExpectedArguments2, runner.LastRequest!.Arguments);
     }
 
     private sealed class FakeRunner : IProcessRunner

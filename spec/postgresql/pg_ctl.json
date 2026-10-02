@@ -70,7 +70,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "version",
@@ -101,7 +103,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "log",
@@ -120,7 +124,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -132,7 +136,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Server log file; required for Start/Restart so detached server pipes can close."
     },
     {
       "id": "mode",
@@ -151,7 +157,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -163,7 +169,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgCtlShutdownMode?",
+      "constraints": "Shutdown policy; null preserves upstream fast."
     },
     {
       "id": "pgdata",
@@ -182,7 +190,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -194,7 +202,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Cluster configuration directory; null uses PGDATA."
     },
     {
       "id": "options",
@@ -213,7 +223,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Empty collection emits no entries.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -225,7 +235,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "IList<string>",
+      "constraints": "Ordered -o fragments interpreted by upstream postgres/initdb invocation. Trusted input only; not a PgCliSharp command tail."
     },
     {
       "id": "silent",
@@ -244,7 +256,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -256,7 +268,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Suppress informational messages."
     },
     {
       "id": "timeout",
@@ -275,7 +289,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -287,7 +301,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "int?",
+      "constraints": "Upstream wait timeout in seconds, nonnegative; null uses PGCTLTIMEOUT/default 60."
     },
     {
       "id": "core-files",
@@ -306,7 +322,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -318,7 +334,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Allow server core dumps on supported platforms."
     },
     {
       "id": "wait",
@@ -337,7 +355,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -349,7 +367,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool?",
+      "constraints": "Explicit wait/no-wait policy; null leaves upstream default."
     },
     {
       "id": "no-wait",
@@ -368,7 +388,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -380,7 +400,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool?",
+      "constraints": "Explicit wait/no-wait policy; null leaves upstream default."
     },
     {
       "id": "executable",
@@ -397,14 +419,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "ServerExecutablePath"
       },
       "semantics": "Explicit postgres/initdb executable for -p; null uses upstream sibling lookup.",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Explicit postgres/initdb executable for -p; null uses upstream sibling lookup."
     },
     {
       "id": "service-name",
@@ -421,14 +445,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "ServiceName"
       },
       "semantics": "Windows service name (-N).",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows service name (-N)."
     },
     {
       "id": "service-password",
@@ -445,14 +471,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "ServicePassword"
       },
       "semantics": "Windows service account password (-P); do not log the option value.",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows service account password (-P); do not log the option value."
     },
     {
       "id": "service-username",
@@ -469,14 +497,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "ServiceUsername"
       },
       "semantics": "Windows service account name (-U).",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows service account name (-U)."
     },
     {
       "id": "service-start",
@@ -493,14 +523,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "ServiceStart"
       },
       "semantics": "Windows service start policy (-S): automatic or on demand.",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "PgCtlServiceStart?",
+      "constraints": "Windows service start policy (-S): automatic or on demand."
     },
     {
       "id": "event-source",
@@ -517,14 +549,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "EventSource"
       },
       "semantics": "Windows event-log source (-e).",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows event-log source (-e)."
     },
     {
       "id": "command",
@@ -539,14 +573,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "Command"
       },
       "semantics": "Required operation. Windows service operations require Windows.",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "PgCtlCommand?",
+      "constraints": "Required operation. Windows service operations require Windows."
     },
     {
       "id": "signal",
@@ -561,14 +597,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "Signal"
       },
       "semantics": "Required signal in Kill mode.",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "PgCtlSignal?",
+      "constraints": "Required signal in Kill mode."
     },
     {
       "id": "pid",
@@ -583,14 +621,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "ProcessId"
       },
       "semantics": "Positive process ID for Kill mode.",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "int?",
+      "constraints": "Positive process ID for Kill mode."
     }
   ],
   "versions": {

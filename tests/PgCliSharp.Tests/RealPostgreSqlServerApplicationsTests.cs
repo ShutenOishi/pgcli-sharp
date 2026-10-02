@@ -41,7 +41,11 @@ public sealed class RealPostgreSqlServerApplicationsTests
         finally
         {
             if (serverMayBeRunning)
-                await ctl.ExecuteAsync(new PgCtlOptions { Command = PgCtlCommand.Stop, DataDirectory = data, ShutdownMode = PgCtlShutdownMode.Immediate, Wait = true }, timeout: TimeSpan.FromMinutes(1));
+            {
+                PgCtlResult status = await ctl.ExecuteAsync(new PgCtlOptions { Command = PgCtlCommand.Status, DataDirectory = data });
+                if (status.ServerStatus == PgCtlServerStatus.Running)
+                    await ctl.ExecuteAsync(new PgCtlOptions { Command = PgCtlCommand.Stop, DataDirectory = data, ShutdownMode = PgCtlShutdownMode.Immediate, Wait = true }, timeout: TimeSpan.FromMinutes(1));
+            }
             Directory.Delete(ownedRoot, recursive: true);
         }
     }

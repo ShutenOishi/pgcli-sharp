@@ -56,7 +56,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Check mode.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -68,7 +68,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgChecksumsMode",
+      "constraints": "Check (default), enable or disable checksums; enable/disable modify files."
     },
     {
       "id": "pgdata",
@@ -87,7 +89,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -99,7 +101,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Cleanly shut down cluster directory; null uses PGDATA."
     },
     {
       "id": "disable",
@@ -118,7 +122,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Check mode.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -130,7 +134,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgChecksumsMode",
+      "constraints": "Check (default), enable or disable checksums; enable/disable modify files."
     },
     {
       "id": "enable",
@@ -149,7 +155,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Check mode.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -161,7 +167,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgChecksumsMode",
+      "constraints": "Check (default), enable or disable checksums; enable/disable modify files."
     },
     {
       "id": "filenode",
@@ -180,7 +188,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -192,7 +200,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "int?",
+      "constraints": "Check only this nonnegative filenode (up to Int32.MaxValue); check mode only. Zero is rejected in 12-14 and accepted from 15."
     },
     {
       "id": "no-sync",
@@ -211,7 +221,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -223,7 +233,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip durable synchronization when enabling/disabling."
     },
     {
       "id": "progress",
@@ -242,7 +254,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -254,7 +266,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Report progress."
     },
     {
       "id": "verbose",
@@ -273,7 +287,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -285,7 +299,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Report each scanned file."
     },
     {
       "id": "help",
@@ -316,7 +332,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "version",
@@ -347,7 +365,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "sync-method",
@@ -364,7 +384,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -376,7 +396,9 @@
           "majorSince": 17,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgFileSyncMethod?",
+      "constraints": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux."
     }
   ],
   "versions": {

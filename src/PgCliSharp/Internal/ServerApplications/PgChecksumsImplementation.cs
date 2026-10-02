@@ -14,7 +14,7 @@ internal static class PgChecksumsImplementation
         if (o.SyncMethod.HasValue && !ServerArgument.Defined(o.SyncMethod.Value)) ServerArgument.Invalid(v, "sync-method", o.SyncMethod);
         if (o.SyncMethod.HasValue) MaintenanceAvailability.Ensure(PgChecksumsOptionAvailabilityCatalog.SyncMethod, v);
         ServerArgument.Directory(o.DataDirectory, "PGDATA", o.EnvironmentVariables, "--pgdata", v);
-        if (o.FileNode < 0) ServerArgument.Invalid(v, "--filenode", o.FileNode);
+        if (o.FileNode < 0 || (o.FileNode == 0 && v < PostgreSqlMajorVersion.V15)) ServerArgument.Invalid(v, "--filenode", o.FileNode);
         if (o.FileNode.HasValue && o.Mode != PgChecksumsMode.Check) ServerArgument.Conflict(v, "--filenode", "--check");
         ServerArgument.Sync(o.SyncMethod, v);
     }

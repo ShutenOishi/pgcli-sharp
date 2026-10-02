@@ -70,7 +70,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "target-pgdata",
@@ -89,7 +91,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -101,7 +103,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Required target data directory; may be modified even during recovery preparation."
     },
     {
       "id": "source-pgdata",
@@ -118,7 +122,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -130,7 +134,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Offline source directory; exactly one source must be supplied."
     },
     {
       "id": "source-server",
@@ -147,7 +153,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -159,7 +165,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Live source libpq connection string; exactly one source must be supplied."
     },
     {
       "id": "version",
@@ -190,7 +198,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "dry-run",
@@ -209,7 +219,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -221,7 +231,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Report rewind actions; automatic shutdown preparation may still write."
     },
     {
       "id": "progress",
@@ -240,7 +252,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -252,7 +264,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Report progress."
     },
     {
       "id": "debug",
@@ -269,7 +283,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -281,7 +295,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Enable detailed debug diagnostics."
     },
     {
       "id": "no-sync",
@@ -300,7 +316,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -312,7 +328,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip durable synchronization (PostgreSQL 12+)."
     },
     {
       "id": "write-recovery-conf",
@@ -331,7 +349,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -343,7 +361,9 @@
           "majorSince": 13,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Write standby recovery configuration; requires SourceConnectionString (PostgreSQL 13+)."
     },
     {
       "id": "no-ensure-shutdown",
@@ -360,7 +380,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -372,7 +392,9 @@
           "majorSince": 13,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip automatic recovery to a clean shutdown (PostgreSQL 13+)."
     },
     {
       "id": "restore-target-wal",
@@ -391,7 +413,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -403,7 +425,9 @@
           "majorSince": 13,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Fetch missing target WAL through restore_command (PostgreSQL 13+)."
     },
     {
       "id": "config-file",
@@ -420,7 +444,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -432,7 +456,9 @@
           "majorSince": 15,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Target configuration file for recovery (PostgreSQL 15+)."
     },
     {
       "id": "sync-method",
@@ -449,7 +475,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -461,7 +487,9 @@
           "majorSince": 17,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgFileSyncMethod?",
+      "constraints": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux."
     }
   ],
   "versions": {

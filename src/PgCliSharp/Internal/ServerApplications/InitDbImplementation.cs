@@ -48,8 +48,8 @@ internal static class InitDbImplementation
         if (o.PasswordPrompt && o.PasswordFile is not null) ServerArgument.Conflict(v, "--pwprompt", "--pwfile");
         if (o.NoLocale && o.Locale is not null) ServerArgument.Conflict(v, "--no-locale", "--locale");
         if (o.WalDirectory is not null && !Path.IsPathRooted(o.WalDirectory)) ServerArgument.Invalid(v, "--waldir", o.WalDirectory);
-        PgInitDbAuthentication? local = o.LocalAuthentication ?? o.Authentication;
-        PgInitDbAuthentication? host = o.HostAuthentication ?? o.Authentication;
+        PgInitDbAuthentication? local = o.LocalAuthentication ?? (o.Authentication == PgInitDbAuthentication.Ident ? PgInitDbAuthentication.Peer : o.Authentication);
+        PgInitDbAuthentication? host = o.HostAuthentication ?? (o.Authentication == PgInitDbAuthentication.Peer ? PgInitDbAuthentication.Ident : o.Authentication);
         if (local is PgInitDbAuthentication.Ident or PgInitDbAuthentication.Gss or PgInitDbAuthentication.Sspi or PgInitDbAuthentication.Cert)
             ServerArgument.Invalid(v, "--auth-local", local);
         if (host == PgInitDbAuthentication.Peer) ServerArgument.Invalid(v, "--auth-host", host);
@@ -66,8 +66,8 @@ internal static class InitDbImplementation
         if (o.BuiltinLocale.HasValue && o.LocaleProvider != PgInitDbLocaleProvider.Builtin) ServerArgument.Conflict(v, "--builtin-locale", "--locale-provider=builtin");
         if ((o.IcuLocale is not null || o.IcuRules is not null) && o.LocaleProvider != PgInitDbLocaleProvider.Icu)
             ServerArgument.Conflict(v, "--icu-locale/--icu-rules", "--locale-provider=icu");
-        // PostgreSQL 15-16 derive ICU locale from the environment when no explicit locale is provided.
-        if (v >= PostgreSqlMajorVersion.V17 && o.LocaleProvider == PgInitDbLocaleProvider.Icu && o.IcuLocale is null && o.Locale is null && !o.NoLocale)
+        if (o.LocaleProvider == PgInitDbLocaleProvider.Icu && o.IcuLocale is null &&
+            (v == PostgreSqlMajorVersion.V15 || (o.Locale is null && !o.NoLocale)))
             ServerArgument.Invalid(v, "--icu-locale");
         ServerArgument.Sync(o.SyncMethod, v);
     }

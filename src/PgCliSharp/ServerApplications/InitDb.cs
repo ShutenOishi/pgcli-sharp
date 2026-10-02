@@ -29,7 +29,7 @@ public sealed class InitDbOptions
     public bool NoLocale { get; set; }
     /// <summary><para>EN: Default text search configuration. </para><para>JA: 既定の全文検索設定です。</para></summary>
     public string? TextSearchConfiguration { get; set; }
-    /// <summary><para>EN: Authentication policy for both local and host connections. </para><para>JA: ローカル接続とホスト接続共通の認証方針です。</para></summary>
+    /// <summary><para>EN: Authentication policy for both local and host connections; ident maps local to peer, peer maps host to ident. </para><para>JA: ローカル接続とホスト接続共通の認証方針です。ident はローカルで peer、peer はホストで ident へ変換されます。</para></summary>
     public PgInitDbAuthentication? Authentication { get; set; }
     /// <summary><para>EN: Override local authentication; peer is local-only. </para><para>JA: ローカル認証を上書きします。peer はローカル専用です。</para></summary>
     public PgInitDbAuthentication? LocalAuthentication { get; set; }

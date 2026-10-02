@@ -70,7 +70,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "version",
@@ -101,7 +103,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "pgdata",
@@ -120,7 +124,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -132,7 +136,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Required data directory. This tool does not read PGDATA; it is last-resort repair and can destroy consistency."
     },
     {
       "id": "commit-timestamp-ids",
@@ -151,7 +157,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -163,7 +169,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgCommitTimestampIds?",
+      "constraints": "Oldest,newest commit-timestamp IDs; each is 0 or at least 2 through 16, at least 3 from 17."
     },
     {
       "id": "epoch",
@@ -182,7 +190,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -194,7 +202,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "uint?",
+      "constraints": "Transaction ID epoch; UInt32.MaxValue is reserved."
     },
     {
       "id": "force",
@@ -213,7 +223,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -225,7 +235,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Force reset despite unsafe control-file state."
     },
     {
       "id": "next-wal-file",
@@ -244,7 +256,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -256,7 +268,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgWalSegmentName?",
+      "constraints": "Next WAL file name: exactly 24 hexadecimal characters."
     },
     {
       "id": "multixact-ids",
@@ -275,7 +289,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -287,7 +301,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgMultiTransactionIds?",
+      "constraints": "Next,oldest multitransaction IDs. Oldest must be positive; next zero is accepted from 15."
     },
     {
       "id": "dry-run",
@@ -306,7 +322,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -318,7 +334,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Display proposed values without changing WAL/control files."
     },
     {
       "id": "next-oid",
@@ -337,7 +355,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -349,7 +367,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "uint?",
+      "constraints": "Positive next object ID."
     },
     {
       "id": "multixact-offset",
@@ -368,7 +388,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -380,7 +400,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "uint?",
+      "constraints": "Next multitransaction offset; UInt32.MaxValue accepted from 15."
     },
     {
       "id": "oldest-transaction-id",
@@ -399,7 +421,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -411,7 +433,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "uint?",
+      "constraints": "Oldest transaction ID, at least 3."
     },
     {
       "id": "next-transaction-id",
@@ -430,7 +454,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -442,7 +466,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "uint?",
+      "constraints": "Next transaction ID: positive through 11, at least 3 from 12."
     },
     {
       "id": "wal-segsize",
@@ -459,7 +485,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -471,7 +497,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "int?",
+      "constraints": "WAL segment size: power of two, 1-1024 MiB (PostgreSQL 11+)."
     },
     {
       "id": "char-signedness",
@@ -488,7 +516,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -500,7 +528,9 @@
           "majorSince": 18,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgCharSignedness?",
+      "constraints": "Override cluster char signedness (PostgreSQL 18+)."
     }
   ],
   "versions": {

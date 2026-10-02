@@ -58,7 +58,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -70,7 +70,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Old cluster configuration directory; null uses PGDATAOLD."
     },
     {
       "id": "new-datadir",
@@ -89,7 +91,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -101,7 +103,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "New cluster configuration directory; null uses PGDATANEW."
     },
     {
       "id": "old-bindir",
@@ -120,7 +124,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -132,7 +136,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Old executable directory; null uses PGBINOLD."
     },
     {
       "id": "new-bindir",
@@ -151,7 +157,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -163,7 +169,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "New executable directory; null uses PGBINNEW or upstream executable directory."
     },
     {
       "id": "old-options",
@@ -182,7 +190,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Empty collection emits no entries.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -194,7 +202,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "IList<string>",
+      "constraints": "Ordered upstream old-postgres option fragments; trusted input only."
     },
     {
       "id": "new-options",
@@ -213,7 +223,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Empty collection emits no entries.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -225,7 +235,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "IList<string>",
+      "constraints": "Ordered upstream new-postgres option fragments; trusted input only."
     },
     {
       "id": "old-port",
@@ -244,7 +256,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -256,7 +268,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "int?",
+      "constraints": "Old cluster port; null uses PGPORTOLD/default 50432."
     },
     {
       "id": "new-port",
@@ -275,7 +289,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -287,7 +301,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "int?",
+      "constraints": "New cluster port; null uses PGPORTNEW/default 50432."
     },
     {
       "id": "username",
@@ -306,7 +322,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -318,7 +334,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Cluster install user; null preserves PGUSER/upstream default."
     },
     {
       "id": "check",
@@ -337,7 +355,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -349,7 +367,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Run compatibility checks without performing the upgrade."
     },
     {
       "id": "link",
@@ -368,8 +388,8 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "wrapper": "Null omits the option.",
+        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
       },
       "api": {
         "property": "TransferMode"
@@ -380,7 +400,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgUpgradeTransferMode?",
+      "constraints": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable."
     },
     {
       "id": "retain",
@@ -399,7 +421,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -411,7 +433,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Retain SQL and log files after success."
     },
     {
       "id": "jobs",
@@ -430,7 +454,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -442,7 +466,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "int?",
+      "constraints": "Positive simultaneous job count."
     },
     {
       "id": "verbose",
@@ -461,7 +487,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -473,7 +499,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Enable verbose upgrade diagnostics."
     },
     {
       "id": "help",
@@ -504,7 +532,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "version",
@@ -535,7 +565,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "socketdir",
@@ -554,7 +586,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -566,7 +598,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Unix socket directory (PostgreSQL 12+)."
     },
     {
       "id": "clone",
@@ -583,8 +617,8 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "wrapper": "Null omits the option.",
+        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
       },
       "api": {
         "property": "TransferMode"
@@ -595,7 +629,9 @@
           "majorSince": 12,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgUpgradeTransferMode?",
+      "constraints": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable."
     },
     {
       "id": "no-sync",
@@ -614,7 +650,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -626,7 +662,9 @@
           "majorSince": 15,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip durable synchronization (PostgreSQL 15+)."
     },
     {
       "id": "copy",
@@ -643,8 +681,8 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "wrapper": "Null omits the option.",
+        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
       },
       "api": {
         "property": "TransferMode"
@@ -655,7 +693,9 @@
           "majorSince": 16,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgUpgradeTransferMode?",
+      "constraints": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable."
     },
     {
       "id": "copy-file-range",
@@ -672,8 +712,8 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "wrapper": "Null omits the option.",
+        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
       },
       "api": {
         "property": "TransferMode"
@@ -684,7 +724,9 @@
           "majorSince": 17,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgUpgradeTransferMode?",
+      "constraints": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable."
     },
     {
       "id": "sync-method",
@@ -701,7 +743,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -713,7 +755,9 @@
           "majorSince": 17,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgFileSyncMethod?",
+      "constraints": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux."
     },
     {
       "id": "no-statistics",
@@ -730,7 +774,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -742,7 +786,9 @@
           "majorSince": 18,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Do not transfer planner statistics (PostgreSQL 18+)."
     },
     {
       "id": "set-char-signedness",
@@ -759,7 +805,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -771,7 +817,9 @@
           "majorSince": 18,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgCharSignedness?",
+      "constraints": "Override cluster char signedness (PostgreSQL 18+)."
     },
     {
       "id": "swap",
@@ -788,8 +836,8 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "wrapper": "Null omits the option.",
+        "upstream": "Copy files. Explicit --copy starts in 16; typed Copy emits no flag in 10-15."
       },
       "api": {
         "property": "TransferMode"
@@ -800,7 +848,9 @@
           "majorSince": 18,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgUpgradeTransferMode?",
+      "constraints": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable."
     }
   ],
   "versions": {

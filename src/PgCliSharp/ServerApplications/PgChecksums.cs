@@ -11,7 +11,7 @@ public sealed class PgChecksumsOptions
     public string? DataDirectory { get; set; }
     /// <summary><para>EN: Check (default), enable or disable checksums; enable/disable modify files. </para><para>JA: チェックサムの検査（既定）・有効化・無効化です。有効化／無効化はファイルを変更します。</para></summary>
     public PgChecksumsMode Mode { get; set; }
-    /// <summary><para>EN: Check only this nonnegative filenode (up to Int32.MaxValue); check mode only. </para><para>JA: 0〜Int32.MaxValue のこの filenode のみ検査します。検査モード専用です。</para></summary>
+    /// <summary><para>EN: Check only this nonnegative filenode (up to Int32.MaxValue); zero requires PostgreSQL 15+; check mode only. </para><para>JA: 0〜Int32.MaxValue のこの filenode のみ検査します。0は PostgreSQL 15以降で、検査モード専用です。</para></summary>
     public int? FileNode { get; set; }
     /// <summary><para>EN: Skip durable synchronization when enabling/disabling. </para><para>JA: 有効化／無効化時の永続化同期を省略します。</para></summary>
     public bool NoSync { get; set; }

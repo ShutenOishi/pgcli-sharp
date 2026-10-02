@@ -58,7 +58,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -70,7 +70,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Cluster data directory; null uses PGDATA."
     },
     {
       "id": "encoding",
@@ -89,7 +91,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -101,7 +103,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Template database encoding; null preserves the locale-derived default."
     },
     {
       "id": "locale",
@@ -118,7 +122,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -130,7 +134,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Default locale; null inherits the environment."
     },
     {
       "id": "lc-collate",
@@ -147,7 +153,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -159,7 +165,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Override the collate locale category."
     },
     {
       "id": "lc-ctype",
@@ -176,7 +184,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -188,7 +196,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Override the ctype locale category."
     },
     {
       "id": "lc-monetary",
@@ -205,7 +215,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -217,7 +227,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Override the monetary locale category."
     },
     {
       "id": "lc-numeric",
@@ -234,7 +246,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -246,7 +258,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Override the numeric locale category."
     },
     {
       "id": "lc-time",
@@ -263,7 +277,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -275,7 +289,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Override the time locale category."
     },
     {
       "id": "lc-messages",
@@ -292,7 +308,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -304,7 +320,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Override the messages locale category."
     },
     {
       "id": "no-locale",
@@ -321,7 +339,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -333,7 +351,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Use the C locale. Cannot be combined with Locale."
     },
     {
       "id": "text-search-config",
@@ -352,7 +372,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -364,7 +384,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Default text search configuration."
     },
     {
       "id": "auth",
@@ -383,7 +405,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -395,7 +417,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgInitDbAuthentication?",
+      "constraints": "Authentication policy for both local and host connections. ident maps local to peer; peer maps host to ident."
     },
     {
       "id": "auth-local",
@@ -412,7 +436,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -424,7 +448,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgInitDbAuthentication?",
+      "constraints": "Override local authentication; peer is local-only."
     },
     {
       "id": "auth-host",
@@ -441,7 +467,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -453,7 +479,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgInitDbAuthentication?",
+      "constraints": "Override host authentication; ident/GSS/SSPI/cert are host-only."
     },
     {
       "id": "pwprompt",
@@ -472,7 +500,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -484,7 +512,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Prompt for the bootstrap password; mutually exclusive with PasswordFile."
     },
     {
       "id": "pwfile",
@@ -501,7 +531,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -513,7 +543,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Read the bootstrap password from the first line of this file."
     },
     {
       "id": "username",
@@ -532,7 +564,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -544,7 +576,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Bootstrap superuser; null uses the operating-system user."
     },
     {
       "id": "help",
@@ -575,7 +609,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "version",
@@ -606,7 +642,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
     },
     {
       "id": "debug",
@@ -625,7 +663,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -637,7 +675,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Enable bootstrap debugging."
     },
     {
       "id": "show",
@@ -656,7 +696,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -668,7 +708,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Show internal settings and exit without creating a cluster."
     },
     {
       "id": "noclean",
@@ -687,7 +729,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -699,7 +741,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Retain incomplete files on failure."
     },
     {
       "id": "no-clean",
@@ -718,7 +762,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -730,7 +774,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Retain incomplete files on failure."
     },
     {
       "id": "nosync",
@@ -749,7 +795,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -761,7 +807,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip durable synchronization; intended for disposable testing."
     },
     {
       "id": "no-sync",
@@ -780,7 +828,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -792,7 +840,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip durable synchronization; intended for disposable testing."
     },
     {
       "id": "sync-only",
@@ -811,7 +861,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -823,7 +873,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Only synchronize an existing cluster."
     },
     {
       "id": "waldir",
@@ -842,7 +894,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -854,7 +906,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "Absolute WAL directory."
     },
     {
       "id": "data-checksums",
@@ -873,8 +927,8 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "wrapper": "Null omits the option.",
+        "upstream": "Disabled in 10-17; enabled in 18. Explicit false uses omission before 18."
       },
       "api": {
         "property": "DataChecksums"
@@ -885,7 +939,9 @@
           "majorSince": 10,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool?",
+      "constraints": "Explicit checksum policy. Null preserves upstream default: off through 17, on from 18. False omits the flag before 18."
     },
     {
       "id": "input-directory",
@@ -902,14 +958,16 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
         "property": "InputDirectory"
       },
       "semantics": "Override bootstrap input-file location (-L).",
-      "spellingAvailability": {}
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Override bootstrap input-file location (-L)."
     },
     {
       "id": "wal-segsize",
@@ -926,7 +984,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -938,7 +996,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "int?",
+      "constraints": "WAL segment size: power of two, 1-1024 MiB (PostgreSQL 11+)."
     },
     {
       "id": "allow-group-access",
@@ -957,7 +1017,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -969,7 +1029,9 @@
           "majorSince": 11,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Allow group read access (PostgreSQL 11+, ignored on Windows)."
     },
     {
       "id": "no-instructions",
@@ -986,7 +1048,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -998,7 +1060,9 @@
           "majorSince": 14,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Suppress startup instructions (PostgreSQL 14+)."
     },
     {
       "id": "discard-caches",
@@ -1015,7 +1079,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1027,7 +1091,9 @@
           "majorSince": 14,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Enable deep bootstrap cache debugging (PostgreSQL 14+)."
     },
     {
       "id": "locale-provider",
@@ -1044,7 +1110,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1056,7 +1122,9 @@
           "majorSince": 15,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgInitDbLocaleProvider?",
+      "constraints": "Locale provider: libc/ICU from 15, builtin from 17."
     },
     {
       "id": "icu-locale",
@@ -1073,7 +1141,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1085,7 +1153,9 @@
           "majorSince": 15,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "ICU locale identifier (PostgreSQL 15+). ICU requires explicit icu-locale in 15; locale/no-locale fallback begins in 16."
     },
     {
       "id": "set",
@@ -1104,7 +1174,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Empty collection emits no entries.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1116,7 +1186,9 @@
           "majorSince": 16,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "IList<PgServerSetting>",
+      "constraints": "Ordered server settings, repeated as --set=name=value (PostgreSQL 16+)."
     },
     {
       "id": "icu-rules",
@@ -1133,7 +1205,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1145,7 +1217,9 @@
           "majorSince": 16,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "string?",
+      "constraints": "ICU collation rules (PostgreSQL 16+)."
     },
     {
       "id": "builtin-locale",
@@ -1162,7 +1236,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1174,7 +1248,9 @@
           "majorSince": 17,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgBuiltinLocale?",
+      "constraints": "Builtin locale (PostgreSQL 17+); UnicodeFast requires 18."
     },
     {
       "id": "sync-method",
@@ -1191,7 +1267,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "Null omits the option.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1203,7 +1279,9 @@
           "majorSince": 17,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "PgFileSyncMethod?",
+      "constraints": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux."
     },
     {
       "id": "no-data-checksums",
@@ -1220,8 +1298,8 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
-        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+        "wrapper": "Null omits the option.",
+        "upstream": "Disabled in 10-17; enabled in 18. Explicit false uses omission before 18."
       },
       "api": {
         "property": "DataChecksums"
@@ -1232,7 +1310,9 @@
           "majorSince": 18,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool?",
+      "constraints": "Explicit checksum policy. Null preserves upstream default: off through 17, on from 18. False omits the flag before 18."
     },
     {
       "id": "no-sync-data-files",
@@ -1249,7 +1329,7 @@
         "majorUntil": 18
       },
       "defaults": {
-        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "wrapper": "False omits the flag.",
         "upstream": "Use per-major manual/parser default; see semantics and research notes."
       },
       "api": {
@@ -1261,7 +1341,9 @@
           "majorSince": 18,
           "majorUntil": 18
         }
-      }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip syncing database data files (PostgreSQL 18+)."
     }
   ],
   "versions": {

@@ -37,7 +37,7 @@ entries; it is not a claim that every entry appeared in the rendered manual.
 | pg_ctl | Options stable across 10-18; logrotate operation begins at 12; Windows service options are separately modeled |
 | pg_upgrade | 12: clone/socket directory; 15: no-sync; 16: explicit copy; 17: copy-file-range/sync method; 18: swap/statistics/char signedness |
 | pg_rewind | 12: no-sync; 13: recovery-conf/restore-target-wal/no-ensure-shutdown; 15: config-file; 17: sync method |
-| pg_checksums | Whole tool begins at 12; 17: sync method |
+| pg_checksums | Whole tool begins at 12; 15: zero filenode accepted; 17: sync method |
 | pg_resetwal | 10: short options (plus first-position help/version); 11: long aliases/WAL size; 12: next XID minimum 3; 15: next multixact zero and maximum offset become accepted; 17: commit-timestamp minimum 3 instead of 2; 18: char signedness |
 
 ### Validation and I/O contract
@@ -48,7 +48,7 @@ entries; it is not a claim that every entry appeared in the rendered manual.
 - WAL size is a power of two from 1-1024 MiB. ID pairs have named components and
   invariant-culture serialization; XID/offset boundaries follow the audited parser.
 - initdb authentication rejects host-only/local-only mismatches. Password prompt
-  and file are exclusive. ICU/builtin parameters require their provider; builtin
+  and file are exclusive. ICU/builtin parameters require their provider. ICU needs explicit icu-locale in 15; locale fallback starts at 16. Combined auth=ident/peer maps the other connection type to peer/ident. Builtin
   values and PostgreSQL 18's UnicodeFast boundary are explicit. ICU build/locale
   availability, encodings and server GUC names remain upstream checks.
 - `PgChecksumsMode` and `PgUpgradeTransferMode` prevent contradictory flags.
