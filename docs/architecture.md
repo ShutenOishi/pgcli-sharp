@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0014. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0015. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -233,6 +233,19 @@ ADR-0013 adds a separate internal long-lived redirected-process lifecycle rather
 pgbench remains finite execution and uses `PgBenchIo` for caller-owned stdout/stderr; no public stdin contract is exposed because the audited PostgreSQL 10-18 CLI has no stdin workload interface. The wrapper models PostgreSQL 11/13/15/17 option changes, PostgreSQL 13+ server-side initialization step `G`, the report option rename, the PostgreSQL 17 `-d` reassignment while emitting stable `--debug`, script weights and script-count limits, initialization-versus-benchmark mode restrictions, logging/progress/partition/retry constraints, and the historical exit-status boundary where runtime status 2 is defined from PostgreSQL 12.
 
 Phase 6 tests cover spec-to-API/runtime availability, deterministic serialization, semantic exit statuses, caller-owned stderr streaming, executable-version mismatch, and the long-lived session lifecycle. Real process-session tests verify writes after startup, explicit EOF, timeout, and cancellation. Windows executes the suite through .NET Framework 4.8 as well as modern targets, exercising the `netstandard2.0`/CliWrap session backend.
+
+Phase 7 separates server applications into `PgCliSharp.ServerApplications` under
+ADR-0015. Six dedicated Options APIs retain centralized option availability and
+reuse the existing finite execution backend internally. Server-specific I/O and
+result types keep that category visible without moving earlier public types.
+`pg_checksums` is a PostgreSQL 12+ whole-tool boundary. pg_ctl Status preserves
+0/3/4 domain statuses; Start/Restart require explicit log redirection for the
+independently running server. Upstream server options remain ordered, trusted
+fragments for PostgreSQL itself, rather than arbitrary wrapper argument tails.
+The wrapper preserves initdb checksum defaults and historical short-option/omission
+semantics. Cluster state, migration compatibility and filesystem/build capabilities
+remain upstream checks. Cancellation does not promise rollback or server shutdown.
+See [Phase 7 research and usage](server-applications-phase-7.md).
 
 ## 13. Test layers
 

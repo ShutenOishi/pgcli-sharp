@@ -1,0 +1,1206 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_ctl",
+  "researchedAt": "2026-10-02",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pg-ctl.html",
+      "11": "https://www.postgresql.org/docs/11/app-pg-ctl.html",
+      "12": "https://www.postgresql.org/docs/12/app-pg-ctl.html",
+      "13": "https://www.postgresql.org/docs/13/app-pg-ctl.html",
+      "14": "https://www.postgresql.org/docs/14/app-pg-ctl.html",
+      "15": "https://www.postgresql.org/docs/15/app-pg-ctl.html",
+      "16": "https://www.postgresql.org/docs/16/app-pg-ctl.html",
+      "17": "https://www.postgresql.org/docs/17/app-pg-ctl.html",
+      "18": "https://www.postgresql.org/docs/18/app-pg-ctl.html"
+    },
+    "upstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_ctl/pg_ctl.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_ctl/pg_ctl.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": [
+          "-?"
+        ],
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Show help and exit."
+      },
+      "api": {
+        "binding": "GetHelpAsync"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--help": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": [
+          "-V"
+        ],
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Show numeric CLI version and exit."
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--version": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
+    },
+    {
+      "id": "log",
+      "spellings": {
+        "short": [
+          "-l"
+        ],
+        "long": [
+          "--log"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "No file redirect in upstream; wrapper requires a file for Start/Restart."
+      },
+      "api": {
+        "property": "LogFile"
+      },
+      "semantics": "Server log file; required for Start/Restart so detached server pipes can close.",
+      "spellingAvailability": {
+        "--log": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "string?",
+      "constraints": "Server log file; required for Start/Restart so detached server pipes can close."
+    },
+    {
+      "id": "mode",
+      "spellings": {
+        "short": [
+          "-m"
+        ],
+        "long": [
+          "--mode"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "fast."
+      },
+      "api": {
+        "property": "ShutdownMode"
+      },
+      "semantics": "Shutdown policy; null preserves upstream fast.",
+      "spellingAvailability": {
+        "--mode": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "PgCtlShutdownMode?",
+      "constraints": "Shutdown policy; null preserves upstream fast."
+    },
+    {
+      "id": "pgdata",
+      "spellings": {
+        "short": [
+          "-D"
+        ],
+        "long": [
+          "--pgdata"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "PGDATA; required if the environment is unset."
+      },
+      "api": {
+        "property": "DataDirectory"
+      },
+      "semantics": "Cluster configuration directory; null uses PGDATA.",
+      "spellingAvailability": {
+        "--pgdata": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "string?",
+      "constraints": "Cluster configuration directory; null uses PGDATA."
+    },
+    {
+      "id": "options",
+      "spellings": {
+        "short": [
+          "-o"
+        ],
+        "long": [
+          "--options"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Empty collection emits no entries.",
+        "upstream": "No extra server/initdb options; repeats append in order."
+      },
+      "api": {
+        "property": "ForwardedOptions"
+      },
+      "semantics": "Ordered -o fragments interpreted by upstream postgres/initdb invocation. Trusted input only; not a PgCliSharp command tail.",
+      "spellingAvailability": {
+        "--options": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "IList<string>",
+      "constraints": "Ordered -o fragments interpreted by upstream postgres/initdb invocation. Trusted input only; not a PgCliSharp command tail."
+    },
+    {
+      "id": "silent",
+      "spellings": {
+        "short": [
+          "-s"
+        ],
+        "long": [
+          "--silent"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "False omits the flag.",
+        "upstream": "Print informational messages."
+      },
+      "api": {
+        "property": "Silent"
+      },
+      "semantics": "Suppress informational messages.",
+      "spellingAvailability": {
+        "--silent": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "bool",
+      "constraints": "Suppress informational messages."
+    },
+    {
+      "id": "timeout",
+      "spellings": {
+        "short": [
+          "-t"
+        ],
+        "long": [
+          "--timeout"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "PGCTLTIMEOUT or 60 seconds."
+      },
+      "api": {
+        "property": "WaitTimeoutSeconds"
+      },
+      "semantics": "Upstream wait timeout in seconds, nonnegative; null uses PGCTLTIMEOUT/default 60.",
+      "spellingAvailability": {
+        "--timeout": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "int?",
+      "constraints": "Upstream wait timeout in seconds, nonnegative; null uses PGCTLTIMEOUT/default 60."
+    },
+    {
+      "id": "core-files",
+      "spellings": {
+        "short": [
+          "-c"
+        ],
+        "long": [
+          "--core-files"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "False omits the flag.",
+        "upstream": "Do not raise inherited core-file limits."
+      },
+      "api": {
+        "property": "CoreFiles"
+      },
+      "semantics": "Allow server core dumps on supported platforms.",
+      "spellingAvailability": {
+        "--core-files": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "bool",
+      "constraints": "Allow server core dumps on supported platforms."
+    },
+    {
+      "id": "wait",
+      "spellings": {
+        "short": [
+          "-w"
+        ],
+        "long": [
+          "--wait"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Wait for supported operations."
+      },
+      "api": {
+        "property": "Wait"
+      },
+      "semantics": "Explicit wait/no-wait policy; null leaves upstream default.",
+      "spellingAvailability": {
+        "--wait": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "bool?",
+      "constraints": "Explicit wait/no-wait policy; null leaves upstream default."
+    },
+    {
+      "id": "no-wait",
+      "spellings": {
+        "short": [
+          "-W"
+        ],
+        "long": [
+          "--no-wait"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Wait unless no-wait is selected."
+      },
+      "api": {
+        "property": "Wait"
+      },
+      "semantics": "Explicit wait/no-wait policy; null leaves upstream default.",
+      "spellingAvailability": {
+        "--no-wait": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "bool?",
+      "constraints": "Explicit wait/no-wait policy; null leaves upstream default."
+    },
+    {
+      "id": "executable",
+      "spellings": {
+        "short": [
+          "-p"
+        ],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Sibling postgres/initdb lookup by upstream."
+      },
+      "api": {
+        "property": "ServerExecutablePath"
+      },
+      "semantics": "Explicit postgres/initdb executable for -p; null uses upstream sibling lookup.",
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Explicit postgres/initdb executable for -p; null uses upstream sibling lookup."
+    },
+    {
+      "id": "service-name",
+      "spellings": {
+        "short": [
+          "-N"
+        ],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "PostgreSQL service default."
+      },
+      "api": {
+        "property": "ServiceName"
+      },
+      "semantics": "Windows service name (-N).",
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows service name (-N)."
+    },
+    {
+      "id": "service-password",
+      "spellings": {
+        "short": [
+          "-P"
+        ],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "No explicitly supplied service password."
+      },
+      "api": {
+        "property": "ServicePassword"
+      },
+      "semantics": "Windows service account password (-P); do not log the option value.",
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows service account password (-P); do not log the option value."
+    },
+    {
+      "id": "service-username",
+      "spellings": {
+        "short": [
+          "-U"
+        ],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Upstream service account default."
+      },
+      "api": {
+        "property": "ServiceUsername"
+      },
+      "semantics": "Windows service account name (-U).",
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows service account name (-U)."
+    },
+    {
+      "id": "service-start",
+      "spellings": {
+        "short": [
+          "-S"
+        ],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "auto."
+      },
+      "api": {
+        "property": "ServiceStart"
+      },
+      "semantics": "Windows service start policy (-S): automatic or on demand.",
+      "spellingAvailability": {},
+      "valueKind": "PgCtlServiceStart?",
+      "constraints": "Windows service start policy (-S): automatic or on demand."
+    },
+    {
+      "id": "event-source",
+      "spellings": {
+        "short": [
+          "-e"
+        ],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "PostgreSQL event source."
+      },
+      "api": {
+        "property": "EventSource"
+      },
+      "semantics": "Windows event-log source (-e).",
+      "spellingAvailability": {},
+      "valueKind": "string?",
+      "constraints": "Windows event-log source (-e)."
+    },
+    {
+      "id": "command",
+      "spellings": {
+        "short": [],
+        "long": []
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Required explicit pg_ctl operation."
+      },
+      "api": {
+        "property": "Command"
+      },
+      "semantics": "Required operation. Windows service operations require Windows.",
+      "spellingAvailability": {},
+      "valueKind": "PgCtlCommand?",
+      "constraints": "Required operation. Windows service operations require Windows."
+    },
+    {
+      "id": "signal",
+      "spellings": {
+        "short": [],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Required for Kill; absent for other operations."
+      },
+      "api": {
+        "property": "Signal"
+      },
+      "semantics": "Required signal in Kill mode.",
+      "spellingAvailability": {},
+      "valueKind": "PgCtlSignal?",
+      "constraints": "Required signal in Kill mode."
+    },
+    {
+      "id": "pid",
+      "spellings": {
+        "short": [],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Required positive process ID for Kill."
+      },
+      "api": {
+        "property": "ProcessId"
+      },
+      "semantics": "Positive process ID for Kill mode.",
+      "spellingAvailability": {},
+      "valueKind": "int?",
+      "constraints": "Positive process ID for Kill mode."
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "859e580aa1ab109efdf23ccf8d5f8644aa282d65f94f73f5b043940772eebac4",
+      "documentationSourceSha256": "700e59e2c6bf1bad46507a46aa1dc1fa63a6b55240333bceb716e9fbe97ebf9c",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "0235680a93b430836da0f023104379980658427e4a83af6d5255931358b6a233",
+      "documentationSourceSha256": "15965bc1fe489eb68e2976c90509c35ced560bbfd3aade7cc8f371a8acd5b40b",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "196ad29a84c2f83372035741280fa6e8e582d1ad78af05532aeaf8094a32e822",
+      "documentationSourceSha256": "c5963d2611dfeb9b40bc4356dd54e8669ada4b51b151c9583289c9cf09acebf5",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "55ad45a6768ddb4cc8e48eb0b113c2564d3bf7501c9445f0aa039610983aacdb",
+      "documentationSourceSha256": "c5963d2611dfeb9b40bc4356dd54e8669ada4b51b151c9583289c9cf09acebf5",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "489fb5b7b7b7da9e8a064c834ff78d2a0e2fa44b370d1d9c80dd6620a6ef428d",
+      "documentationSourceSha256": "ad097b5db34b067e9fb0b24f26a00f8b0819d12c695407877e6a02079cf11a15",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "30c7ceb1c3291864754e055b7a14d388fffead5be55dbf92355881badf7e6f07",
+      "documentationSourceSha256": "0731b5b60b2f60a0eddd7d3c1ab545d1a2a3080b00004db51c9c09f98f632054",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "815a51b2f76e03e7cee85f74340476589704cbd4105eec6ae3722b7ba7122279",
+      "documentationSourceSha256": "0731b5b60b2f60a0eddd7d3c1ab545d1a2a3080b00004db51c9c09f98f632054",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "170c9b01d1aa46fd35719adee4644d4de6591f8aa719b1e62a8f8a14ec0c0d77",
+      "documentationSourceSha256": "0731b5b60b2f60a0eddd7d3c1ab545d1a2a3080b00004db51c9c09f98f632054",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pg-ctl.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "command",
+        "core-files",
+        "event-source",
+        "executable",
+        "help",
+        "log",
+        "mode",
+        "no-wait",
+        "options",
+        "pgdata",
+        "pid",
+        "service-name",
+        "service-password",
+        "service-start",
+        "service-username",
+        "signal",
+        "silent",
+        "timeout",
+        "version",
+        "wait"
+      ],
+      "resolvedLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "sourceSha256": "628cca22b8e58e11cfbaccf0a3519f7978d002bd100f1b3082640184d78355fa",
+      "documentationSourceSha256": "0731b5b60b2f60a0eddd7d3c1ab545d1a2a3080b00004db51c9c09f98f632054",
+      "sourceOptionTableLongOptions": [
+        "--core-files",
+        "--help",
+        "--log",
+        "--mode",
+        "--no-wait",
+        "--options",
+        "--pgdata",
+        "--silent",
+        "--timeout",
+        "--version",
+        "--wait"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    }
+  },
+  "verification": {
+    "inventoryAudit": "All supported major manuals and stable parser option tables compared independently on 2026-10-02. Source/documentation SHA256 recorded per major.",
+    "apiAudit": "Every inventory entry binds to a public Options property, GetHelpAsync or executable probe.",
+    "constraints": "See docs/server-applications-phase-7.md and internal validators.",
+    "environment": "Caller overrides are passed only to the process; upstream ambient environment defaults remain available."
+  },
+  "commands": [
+    {
+      "name": "initdb",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "init",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "start",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "stop",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "restart",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "reload",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "status",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "promote",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "logrotate",
+      "majorSince": 12,
+      "platform": "all"
+    },
+    {
+      "name": "kill",
+      "majorSince": 10,
+      "platform": "all"
+    },
+    {
+      "name": "register",
+      "majorSince": 10,
+      "platform": "Windows"
+    },
+    {
+      "name": "unregister",
+      "majorSince": 10,
+      "platform": "Windows"
+    },
+    {
+      "name": "runservice",
+      "majorSince": 10,
+      "platform": "Windows"
+    }
+  ]
+}

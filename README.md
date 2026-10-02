@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed the Phase 6 rich-I/O implementation for `psql` and `pgbench`, on top of the Phase 2 backup/restore core, Phase 3 release-pipeline work, Phase 4 Backup/WAL tools, and Phase 5 database-management/maintenance tools. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred until the final release phase under ADR-0012; development continues with Phase 7.
+PgCliSharp has completed implementation through Phase 7, including six server-administration tools in `PgCliSharp.ServerApplications`, on top of the backup/restore, Backup/WAL, maintenance and rich-I/O APIs. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred under ADR-0012. The next phase is Phase 8: API, documentation and compatibility stabilization; [Phase 7 completion evidence](docs/phase-7-completion.md) indexes the final CI/merge gates.
 
 Initial PostgreSQL compatibility target:
 
@@ -166,6 +166,43 @@ await pgBench.ExecuteAsync(
 PgCliSharp validates version-specific pgbench behavior before startup, including PostgreSQL 11/13/15/17 option boundaries, PostgreSQL 13+ server-side initialization step `G`, logging/progress/partition/retry constraints, script-weight rules, and the PostgreSQL 12+ runtime-error exit status.
 
 The compatibility inventories are [`spec/postgresql/psql.json`](spec/postgresql/psql.json) and [`spec/postgresql/pgbench.json`](spec/postgresql/pgbench.json). Research is recorded in [`docs/rich-io-phase-6.md`](docs/rich-io-phase-6.md), ADR-0013 records the session lifecycle decision, and completion evidence is in [`docs/phase-6-completion.md`](docs/phase-6-completion.md).
+
+## Server applications
+
+Phase 7 adds `InitDb`, `PgCtl`, `PgUpgrade`, `PgRewind`, `PgChecksums`, and
+`PgResetWal` in `PgCliSharp.ServerApplications`. They model PostgreSQL 10-18;
+`PgChecksums` begins at 12. All six have typed Options, pre-execution validation,
+version probing, caller-owned I/O and `GetHelpAsync`.
+
+```csharp
+using PgCliSharp.ServerApplications;
+
+var init = new InitDb(@"C:\Program Files\PostgreSQL\18\bin\initdb.exe",
+    PostgreSqlMajorVersion.V18);
+await init.ExecuteAsync(new InitDbOptions
+{
+    DataDirectory = @"C:\pgdata\new-cluster",
+    NoLocale = true,
+    Encoding = "UTF8",
+    DataChecksums = true,
+});
+
+var ctl = new PgCtl(@"C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe",
+    PostgreSqlMajorVersion.V18);
+PgCtlResult status = await ctl.ExecuteAsync(new PgCtlOptions
+{
+    Command = PgCtlCommand.Status,
+    DataDirectory = @"C:\pgdata\new-cluster",
+});
+```
+
+`PgCtlServerStatus` distinguishes running, stopped and unavailable directories.
+Start/Restart require an explicit `LogFile` to release detached-server pipes.
+Null initdb checksum policy preserves the upstream default (off through 17, on
+from 18). Upgrade/rewind/reset operations can change data directories; interruption
+does not promise rollback, and pg_resetwal is last-resort repair. See the
+[server application guide](docs/server-applications-phase-7.md) for complete
+version boundaries, trusted upstream option fragments and real-test limits.
 
 ## Development
 

@@ -1,0 +1,725 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_checksums",
+  "researchedAt": "2026-10-02",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 12
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/reference-server.html",
+      "11": "https://www.postgresql.org/docs/11/reference-server.html",
+      "12": "https://www.postgresql.org/docs/12/app-pgchecksums.html",
+      "13": "https://www.postgresql.org/docs/13/app-pgchecksums.html",
+      "14": "https://www.postgresql.org/docs/14/app-pgchecksums.html",
+      "15": "https://www.postgresql.org/docs/15/app-pgchecksums.html",
+      "16": "https://www.postgresql.org/docs/16/app-pgchecksums.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgchecksums.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgchecksums.html"
+    },
+    "upstreamSource": {
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_checksums/pg_checksums.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_checksums/pg_checksums.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_checksums/pg_checksums.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_checksums/pg_checksums.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_checksums/pg_checksums.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_checksums/pg_checksums.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_checksums/pg_checksums.c"
+    }
+  },
+  "options": [
+    {
+      "id": "check",
+      "spellings": {
+        "short": [
+          "-c"
+        ],
+        "long": [
+          "--check"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Check mode.",
+        "upstream": "pg_checksums: check; pg_upgrade: perform the upgrade unless check is requested."
+      },
+      "api": {
+        "property": "Mode"
+      },
+      "semantics": "Check (default), enable or disable checksums; enable/disable modify files.",
+      "spellingAvailability": {
+        "--check": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "PgChecksumsMode",
+      "constraints": "Check (default), enable or disable checksums; enable/disable modify files."
+    },
+    {
+      "id": "pgdata",
+      "spellings": {
+        "short": [
+          "-D"
+        ],
+        "long": [
+          "--pgdata"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "PGDATA; required if the environment is unset."
+      },
+      "api": {
+        "property": "DataDirectory"
+      },
+      "semantics": "Cleanly shut down cluster directory; null uses PGDATA.",
+      "spellingAvailability": {
+        "--pgdata": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "string?",
+      "constraints": "Cleanly shut down cluster directory; null uses PGDATA."
+    },
+    {
+      "id": "disable",
+      "spellings": {
+        "short": [
+          "-d"
+        ],
+        "long": [
+          "--disable"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Check mode.",
+        "upstream": "Do not disable checksums unless selected."
+      },
+      "api": {
+        "property": "Mode"
+      },
+      "semantics": "Check (default), enable or disable checksums; enable/disable modify files.",
+      "spellingAvailability": {
+        "--disable": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "PgChecksumsMode",
+      "constraints": "Check (default), enable or disable checksums; enable/disable modify files."
+    },
+    {
+      "id": "enable",
+      "spellings": {
+        "short": [
+          "-e"
+        ],
+        "long": [
+          "--enable"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Check mode.",
+        "upstream": "Do not enable checksums unless selected."
+      },
+      "api": {
+        "property": "Mode"
+      },
+      "semantics": "Check (default), enable or disable checksums; enable/disable modify files.",
+      "spellingAvailability": {
+        "--enable": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "PgChecksumsMode",
+      "constraints": "Check (default), enable or disable checksums; enable/disable modify files."
+    },
+    {
+      "id": "filenode",
+      "spellings": {
+        "short": [
+          "-f"
+        ],
+        "long": [
+          "--filenode"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "Check all relation files; 0 accepted from 15, positive values in 12-14."
+      },
+      "api": {
+        "property": "FileNode"
+      },
+      "semantics": "Check only this nonnegative filenode (up to Int32.MaxValue); check mode only.",
+      "spellingAvailability": {
+        "--filenode": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "int?",
+      "constraints": "Check only this nonnegative filenode (up to Int32.MaxValue); check mode only. Zero is rejected in 12-14 and accepted from 15."
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": [
+          "-N"
+        ],
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "False omits the flag.",
+        "upstream": "Synchronize files durably."
+      },
+      "api": {
+        "property": "NoSync"
+      },
+      "semantics": "Skip durable synchronization when enabling/disabling.",
+      "spellingAvailability": {
+        "--no-sync": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "bool",
+      "constraints": "Skip durable synchronization when enabling/disabling."
+    },
+    {
+      "id": "progress",
+      "spellings": {
+        "short": [
+          "-P"
+        ],
+        "long": [
+          "--progress"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "False omits the flag.",
+        "upstream": "Disabled."
+      },
+      "api": {
+        "property": "Progress"
+      },
+      "semantics": "Report progress.",
+      "spellingAvailability": {
+        "--progress": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "bool",
+      "constraints": "Report progress."
+    },
+    {
+      "id": "verbose",
+      "spellings": {
+        "short": [
+          "-v"
+        ],
+        "long": [
+          "--verbose"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "False omits the flag.",
+        "upstream": "Disabled."
+      },
+      "api": {
+        "property": "Verbose"
+      },
+      "semantics": "Report each scanned file.",
+      "spellingAvailability": {
+        "--verbose": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "bool",
+      "constraints": "Report each scanned file."
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": [
+          "-?"
+        ],
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Show help and exit."
+      },
+      "api": {
+        "binding": "GetHelpAsync"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--help": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": [
+          "-V"
+        ],
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Show numeric CLI version and exit."
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--version": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "utility",
+      "constraints": "First-position utility command."
+    },
+    {
+      "id": "sync-method",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--sync-method"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Null omits the option.",
+        "upstream": "fsync. syncfs is Linux-only."
+      },
+      "api": {
+        "property": "SyncMethod"
+      },
+      "semantics": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux.",
+      "spellingAvailability": {
+        "--sync-method": {
+          "majorSince": 17,
+          "majorUntil": 18
+        }
+      },
+      "valueKind": "PgFileSyncMethod?",
+      "constraints": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux."
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/reference-server.html",
+      "toolAvailable": false,
+      "optionIdsInCurrentMajorDocumentation": [],
+      "resolvedLongOptions": [],
+      "sourceSha256": null,
+      "documentationSourceSha256": null,
+      "sourceOptionTableLongOptions": [],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/reference-server.html",
+      "toolAvailable": false,
+      "optionIdsInCurrentMajorDocumentation": [],
+      "resolvedLongOptions": [],
+      "sourceSha256": null,
+      "documentationSourceSha256": null,
+      "sourceOptionTableLongOptions": [],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pgchecksums.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "disable",
+        "enable",
+        "filenode",
+        "help",
+        "no-sync",
+        "pgdata",
+        "progress",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--help",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "b6f4995d4370f31183f8bb7a3de87a27dae1c5d473ab86983c638fa0774bae6e",
+      "documentationSourceSha256": "2388a0a86962669df44ff96563b0243d6173ed33710ffad492dc270c7e6f5db7",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pgchecksums.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "disable",
+        "enable",
+        "filenode",
+        "help",
+        "no-sync",
+        "pgdata",
+        "progress",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--help",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "2edb1b6bddc46aa26bbfd6cd655deb40483bc1c674621b5121270af5d3141191",
+      "documentationSourceSha256": "01e7b9d8595981b04b370865c0398252ea205220d1693c22460a1d6881437dae",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pgchecksums.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "disable",
+        "enable",
+        "filenode",
+        "help",
+        "no-sync",
+        "pgdata",
+        "progress",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--help",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "c9b40af82f93d2e10595481f20bcaba16b695f4ae805268278e977647074e22b",
+      "documentationSourceSha256": "01e7b9d8595981b04b370865c0398252ea205220d1693c22460a1d6881437dae",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pgchecksums.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "disable",
+        "enable",
+        "filenode",
+        "help",
+        "no-sync",
+        "pgdata",
+        "progress",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--help",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "8d7ea94ad894a869e3647dbe5cc1582cb392a3694f7c57e7260fbbe629229469",
+      "documentationSourceSha256": "7433d6eab3a42dfc94cc60cd3dba6e5bbc989f0ee6860e43f7e2b4d0d991f637",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pgchecksums.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "disable",
+        "enable",
+        "filenode",
+        "help",
+        "no-sync",
+        "pgdata",
+        "progress",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--help",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "58223769f932ddf13b5c03fc9f0b152e22afabb5b20da7d96a1c2b98a72608bf",
+      "documentationSourceSha256": "0ad777aeef9fec4e0eb14e0b4c50971ed101e568490cc62fa685463089365db7",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgchecksums.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "disable",
+        "enable",
+        "filenode",
+        "help",
+        "no-sync",
+        "pgdata",
+        "progress",
+        "sync-method",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--help",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--sync-method",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "fb3e71acd8ac27f3dcf05de639e3265123f8402e98681362a066507376acbe69",
+      "documentationSourceSha256": "f61805b58f02f59b136b8851a95f7f299b8dd9172dad4556d9dbc40464e8abef",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--sync-method",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgchecksums.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "disable",
+        "enable",
+        "filenode",
+        "help",
+        "no-sync",
+        "pgdata",
+        "progress",
+        "sync-method",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--help",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--sync-method",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "6410aec9df5d808343fb84bc5bb95ab563fa96dbe8886ba20fd905066a961163",
+      "documentationSourceSha256": "f61805b58f02f59b136b8851a95f7f299b8dd9172dad4556d9dbc40464e8abef",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--disable",
+        "--enable",
+        "--filenode",
+        "--no-sync",
+        "--pgdata",
+        "--progress",
+        "--sync-method",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    }
+  },
+  "verification": {
+    "inventoryAudit": "All supported major manuals and stable parser option tables compared independently on 2026-10-02. Source/documentation SHA256 recorded per major.",
+    "apiAudit": "Every inventory entry binds to a public Options property, GetHelpAsync or executable probe.",
+    "constraints": "See docs/server-applications-phase-7.md and internal validators.",
+    "environment": "Caller overrides are passed only to the process; upstream ambient environment defaults remain available."
+  }
+}
