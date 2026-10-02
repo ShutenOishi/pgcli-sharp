@@ -11,8 +11,8 @@ not imply API freeze, full real-binary compatibility or publication approval.
 | Checkpoint | Scope | Status |
 |---|---|---|
 | CP-01 | Generated XML EN/JA ordering, resources, diagnostic data and public dependency boundaries | Complete: PR #14; exact-main CI 36997454961 |
-| CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Linux scope implemented; final CI gates required; exclusions retained |
-| CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Pending |
+| CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Linux checkpoint complete: PR #15; exact-main CI 37006276018; exclusions retained |
+| CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Review/gates implemented; final CI required; see [API review](phase-8-api-review.md) |
 | CP-04 | Preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Pending; publication requires separate explicit authorization |
 
 ### CP-01 audit and changes
@@ -55,7 +55,10 @@ There is no new real-executable matrix claim in CP-01.
 CP-02 adds [pinned source builds and scoped scenarios](phase-8-real-binary-matrix.md).
 It covers the nine-major Linux matrix, checksums from 12, divergent rewind from 13
 and one 16-to-18 Copy upgrade. Windows/macOS real execution and listed exclusions
-remain untested; the final CI gates must pass before reporting Linux completion.
+remain untested. [PR #15](https://github.com/ShutenOishi/pgcli-sharp/pull/15) records
+the final head and main `3f230bd8bddf59b0bed5aeb8bb7589c77b9f88bf`;
+[exact-main CI 37006276018](https://github.com/ShutenOishi/pgcli-sharp/actions/runs/37006276018)
+passed all 12 jobs and all nine evidence reports. The scoped Linux checkpoint is complete.
 
 CP-02 must investigate package/container/source reproducibility per major instead
 of marking untested majors as unavailable or passing. Record actual numeric CLI
@@ -88,8 +91,10 @@ CP-01 では生成 XML 文書の日英順序、公開シグネチャへの内部
 日英文書の構造チェックは翻訳の意味や全 API 命名レビューを保証しません。
 
 CP-02 の Linux 10〜18 実バイナリ matrix、13以降の実巻き戻し、16→18コピー移行を追加します。
-最終 CI の成功が必要で、Windows／macOS実機・サービスや掲載した除外は未検証です。
-CP-03 の全 API 命名／互換性レビューと凍結、CP-04 の候補選定／公開前検証は未完了です。
+PR #15 と正確な main CI 37006276018 の全12ジョブが合格し、Linux範囲は完了です。
+Windows／macOS実機・サービスや掲載した除外は未検証です。
+CP-03 は [公開APIレビュー](phase-8-api-review.md) と凍結検証を追加し、最終 CI 条件を確認します。
+CP-04 の候補選定・ライセンス判断・公開前検証は未完了です。
 16／18 の既存実証はその範囲を保ち、未検証の版を合格・再現不可とは扱いません。
 
 公開設定は無効のまま、Phase 3 の固定ソースと候補を保存します。NuGet・新規タグ・

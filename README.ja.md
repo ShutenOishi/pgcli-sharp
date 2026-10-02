@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-バックアップ／リストア、Backup/WAL、データベース管理、rich-I/O に加え、Phase 7 のサーバー管理6ツールまで実装しました。サーバー管理 API は `PgCliSharp.ServerApplications` に分離しています。準備済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により外部公開を延期したままです。次は Phase 8 の API・文書・互換性の安定化です。[Phase 7 完了証跡](docs/phase-7-completion.md) に最終 CI／マージ条件を記録します。
+Phase 7 のサーバー管理6ツールまで実装し、Phase 8 の安定化を進めています。日英文書・診断と PostgreSQL 10〜18 の Linux 実バイナリ検証チェックポイントは完了しました。公開 API の命名レビューと検証ベースラインは [CP-03](docs/phase-8-api-review.md) を参照してください。Phase 8 全体完了・公開可能な状態とは扱いません。保存済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により外部公開を延期したままです。
 
 初期対応範囲:
 
@@ -44,7 +44,7 @@ package の target framework は `netstandard2.0`、`net8.0`、`net10.0` です�
 
 ```csharp
 var pgDump = new PgDump(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dump.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_dump.exe",
     PostgreSqlMajorVersion.V18);
 
 var options = new PgDumpOptions
@@ -71,7 +71,7 @@ Phase 2 では、アーカイブ入力、データベースへの直接復元、
 
 ```csharp
 var pgRestore = new PgRestore(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_restore.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_restore.exe",
     PostgreSqlMajorVersion.V18);
 
 await pgRestore.ExecuteAsync(
@@ -80,7 +80,7 @@ await pgRestore.ExecuteAsync(
     PgRestoreOutput.ToDatabase("appdb"));
 
 var pgDumpAll = new PgDumpAll(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dumpall.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_dumpall.exe",
     PostgreSqlMajorVersion.V18);
 
 await pgDumpAll.ExecuteAsync(
@@ -112,7 +112,7 @@ Phase 5 では `createdb`、`dropdb`、`createuser`、`dropuser`、`vacuumdb`、
 
 ```csharp
 var ready = new PgIsReady(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_isready.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_isready.exe",
     PostgreSqlMajorVersion.V18);
 
 PgIsReadyResult status = await ready.ExecuteAsync(new PgIsReadyOptions
@@ -133,7 +133,7 @@ Phase 6 では、`psql` と `pgbench` を PostgreSQL 10〜18 向けの型付き 
 
 ```csharp
 var psql = new Psql(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\psql.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\psql.exe",
     PostgreSqlMajorVersion.V18);
 
 using var stdout = new MemoryStream();
@@ -146,7 +146,7 @@ using PsqlSession session = await psql.StartSessionAsync(
 
 byte[] commands = Encoding.UTF8.GetBytes(
     "select current_database();\n\\q\n");
-await session.StandardInput.WriteAsync(commands);
+await session.StandardInput.WriteAsync(commands, 0, commands.Length);
 session.CompleteInput();
 PsqlSessionResult sessionResult = await session.Completion;
 ```
@@ -157,7 +157,7 @@ PsqlSessionResult sessionResult = await session.Completion;
 
 ```csharp
 var pgBench = new PgBench(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pgbench.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pgbench.exe",
     PostgreSqlMajorVersion.V18);
 
 await pgBench.ExecuteAsync(
@@ -205,6 +205,14 @@ initdb の `DataChecksums` が null の場合は、17まで無効・18以降有�
 を参照してください。
 
 ## 開発
+
+上の C# 例は modern target と Windows の .NET Framework 4.8 consumer で
+コンパイル検証しますが、CI は例のデータベース操作を実行しません。必要に応じて
+`using PgCliSharp;`、`using System;`、`using System.IO;`、`using System.Text;`
+を追加し、実行ファイルのパスと接続先を自身の環境へ変更してください。
+PostgreSQL 実行ファイルは同梱せず、CLI 版と接続先サーバー版は別です。
+ストリーム所有権、状態／例外、互換性の限界は [API レビューと凍結](docs/phase-8-api-review.md)
+にまとめています。
 
 ソリューションは XML 形式の `.slnx` を使用します。
 

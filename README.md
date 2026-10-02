@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed implementation through Phase 7, including six server-administration tools in `PgCliSharp.ServerApplications`, on top of the backup/restore, Backup/WAL, maintenance and rich-I/O APIs. External publication of the prepared `PgCliSharp 0.1.0-alpha.1` candidate remains deferred under ADR-0012. The next phase is Phase 8: API, documentation and compatibility stabilization; [Phase 7 completion evidence](docs/phase-7-completion.md) indexes the final CI/merge gates.
+PgCliSharp has completed implementation through Phase 7. Phase 8 stabilization is in progress: bilingual diagnostics/documentation and the PostgreSQL 10-18 Linux real-binary checkpoint are complete. The checked public API contract and naming review are described in [CP-03](docs/phase-8-api-review.md); this is not full Phase 8 completion or release readiness. External publication of the preserved `PgCliSharp 0.1.0-alpha.1` candidate remains deferred under ADR-0012.
 
 Initial PostgreSQL compatibility target:
 
@@ -34,7 +34,7 @@ The executable path and expected PostgreSQL CLI major version are explicit:
 
 ```csharp
 var pgDump = new PgDump(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dump.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_dump.exe",
     PostgreSqlMajorVersion.V18);
 
 var options = new PgDumpOptions
@@ -61,7 +61,7 @@ Phase 2 keeps archive input, direct-database restore, generated SQL/list output,
 
 ```csharp
 var pgRestore = new PgRestore(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_restore.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_restore.exe",
     PostgreSqlMajorVersion.V18);
 
 await pgRestore.ExecuteAsync(
@@ -70,7 +70,7 @@ await pgRestore.ExecuteAsync(
     PgRestoreOutput.ToDatabase("appdb"));
 
 var pgDumpAll = new PgDumpAll(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_dumpall.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_dumpall.exe",
     PostgreSqlMajorVersion.V18);
 
 await pgDumpAll.ExecuteAsync(
@@ -102,7 +102,7 @@ The first eight tools are modeled for PostgreSQL 10-18. `pg_amcheck` is availabl
 
 ```csharp
 var ready = new PgIsReady(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pg_isready.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pg_isready.exe",
     PostgreSqlMajorVersion.V18);
 
 PgIsReadyResult status = await ready.ExecuteAsync(new PgIsReadyOptions
@@ -123,7 +123,7 @@ Finite psql execution uses `PsqlIo` for optional caller-owned stdin/stdout/stder
 
 ```csharp
 var psql = new Psql(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\psql.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\psql.exe",
     PostgreSqlMajorVersion.V18);
 
 using var stdout = new MemoryStream();
@@ -136,7 +136,7 @@ using PsqlSession session = await psql.StartSessionAsync(
 
 byte[] commands = Encoding.UTF8.GetBytes(
     "select current_database();\n\\q\n");
-await session.StandardInput.WriteAsync(commands);
+await session.StandardInput.WriteAsync(commands, 0, commands.Length);
 session.CompleteInput();
 PsqlSessionResult sessionResult = await session.Completion;
 ```
@@ -147,7 +147,7 @@ The session is a redirected pipe session, **not** a TTY/PTY terminal. It deliber
 
 ```csharp
 var pgBench = new PgBench(
-    @"C:\\Program Files\\PostgreSQL\\18\\bin\\pgbench.exe",
+    @"C:\Program Files\PostgreSQL\18\bin\pgbench.exe",
     PostgreSqlMajorVersion.V18);
 
 await pgBench.ExecuteAsync(
@@ -205,6 +205,14 @@ does not promise rollback, and pg_resetwal is last-resort repair. See the
 version boundaries, trusted upstream option fragments and real-test limits.
 
 ## Development
+
+All C# examples above are compile-checked on modern targets and the Windows
+.NET Framework 4.8 consumer; CI does not execute their database operations.
+Add `using PgCliSharp;`, `using System;`, `using System.IO;` and
+`using System.Text;` as needed. Supply executable paths and connection settings
+for your own environment; no PostgreSQL binary is bundled. The CLI version is
+not automatically the server version. See [API review and freeze](docs/phase-8-api-review.md)
+for stream ownership, status/exception conventions and compatibility limits.
 
 The repository uses the XML solution format:
 

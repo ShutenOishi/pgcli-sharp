@@ -64,6 +64,15 @@ jobs:
       - name: Test
         run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
 
+      - name: Compile English and Japanese README examples without execution
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then
+            python eng/compile-readme-examples.py
+          else
+            python3 eng/compile-readme-examples.py
+          fi
+
       - name: Pack
         if: runner.os == 'Linux'
         run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts

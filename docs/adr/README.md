@@ -74,6 +74,7 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0014](0014-supervise-process-io-and-bound-session-input.md) | Supervise process I/O and bound redirected session input | Accepted |
 | [0015](0015-server-application-boundaries.md) | Separate server applications and detached-server I/O | Accepted |
 | [0016](0016-pin-real-postgresql-evidence-and-scope-exclusions.md) | Pin real PostgreSQL evidence and scope exclusions | Accepted |
+| [0017](0017-freeze-reviewed-public-api-contract.md) | Freeze the reviewed public API contract | Accepted |
 
 ## Template
 
