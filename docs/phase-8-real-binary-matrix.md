@@ -68,7 +68,7 @@ the evidence contract; no public library API or process backend changes.
 | TLS/ICU/TTY | Not built/exercised by the scoped redirected-pipe environment. |
 | Unlisted tools/options, forced reset, link/swap, full workload recovery | Not exercised; unit/spec tests do not substitute. |
 
-The [CP-02 PR report](https://github.com/ShutenOishi/pgcli-sharp/pulls?q=is%3Apr+%22Phase+8+CP-02%22)
+The [CP-02 PR report](https://github.com/ShutenOishi/pgcli-sharp/pull/15)
 indexes final head, merge SHA, exact CI and all nine outcomes. No API freeze or
 publication authorization is inferred from this matrix.
 

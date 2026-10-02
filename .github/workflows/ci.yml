@@ -120,8 +120,6 @@ jobs:
           - 18
     timeout-minutes: 25
     env:
-      PGCLI_PREFIX_ROOT: ${{ runner.temp }}/pgclisharp-postgresql
-      PGCLI_REAL_PG_BIN: ${{ runner.temp }}/pgclisharp-postgresql/${{ matrix.postgresql }}/bin
       PGCLI_REAL_PG_MAJOR: ${{ matrix.postgresql }}
       PGCLI_REAL_PG_REQUIRED: 'true'
       PGCLI_EVIDENCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -142,6 +140,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential bison flex zlib1g-dev pkg-config
+
+      - name: Set explicit runner-owned executable paths
+        shell: bash
+        run: |
+          echo "PGCLI_PREFIX_ROOT=$RUNNER_TEMP/pgclisharp-postgresql" >> "$GITHUB_ENV"
+          echo "PGCLI_REAL_PG_BIN=$RUNNER_TEMP/pgclisharp-postgresql/$PGCLI_REAL_PG_MAJOR/bin" >> "$GITHUB_ENV"
 
       - name: Cache verified PostgreSQL installations
         uses: actions/cache@v4

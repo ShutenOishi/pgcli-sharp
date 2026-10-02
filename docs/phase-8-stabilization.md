@@ -60,8 +60,9 @@ remain untested; the final CI gates must pass before reporting Linux completion.
 CP-02 must investigate package/container/source reproducibility per major instead
 of marking untested majors as unavailable or passing. Record actual numeric CLI
 and server versions, OS/TFM, scenario result and explicit exclusion reasons. Real
-upgrade/rewind and Windows service lifecycle remain pending; fake-runner tests do
-not substitute for them. Older upstream-EOL binaries must stay isolated.
+upgrade/rewind evidence is limited to the configured Linux scenarios; Windows
+service lifecycle remains pending. Fake-runner tests do not substitute for real
+execution. Older upstream-EOL binaries must stay isolated.
 
 ### Publication gate
 
