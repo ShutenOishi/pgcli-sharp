@@ -168,7 +168,7 @@ jobs:
             echo "- Port: $PGCLI_REAL_PG_PORT"
             echo "- OS: ubuntu-latest"
             echo "- TFM: net10.0"
-            echo "- Scenarios: PgDump/PgRestore, finite Psql, redirected PsqlSession, PgBench"
+            echo "- Scenarios: PgDump/PgRestore, finite Psql, redirected PsqlSession, PgBench, disposable initdb/checksums/resetwal dry-run/pg_ctl lifecycle"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run real PostgreSQL wrapper integration
@@ -176,4 +176,4 @@ jobs:
           dotnet test tests/PgCliSharp.Tests/PgCliSharp.Tests.csproj
           --framework net10.0
           --configuration Release
-          --filter FullyQualifiedName~RealPostgreSqlIntegrationTests
+          --filter "FullyQualifiedName~RealPostgreSqlIntegrationTests|FullyQualifiedName~RealPostgreSqlServerApplicationsTests"

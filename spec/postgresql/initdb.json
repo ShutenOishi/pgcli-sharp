@@ -1,0 +1,2295 @@
+{
+  "schemaVersion": 1,
+  "tool": "initdb",
+  "researchedAt": "2026-10-02",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-initdb.html",
+      "11": "https://www.postgresql.org/docs/11/app-initdb.html",
+      "12": "https://www.postgresql.org/docs/12/app-initdb.html",
+      "13": "https://www.postgresql.org/docs/13/app-initdb.html",
+      "14": "https://www.postgresql.org/docs/14/app-initdb.html",
+      "15": "https://www.postgresql.org/docs/15/app-initdb.html",
+      "16": "https://www.postgresql.org/docs/16/app-initdb.html",
+      "17": "https://www.postgresql.org/docs/17/app-initdb.html",
+      "18": "https://www.postgresql.org/docs/18/app-initdb.html"
+    },
+    "upstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/initdb/initdb.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/initdb/initdb.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/initdb/initdb.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/initdb/initdb.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/initdb/initdb.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/initdb/initdb.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/initdb/initdb.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/initdb/initdb.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/initdb/initdb.c"
+    }
+  },
+  "options": [
+    {
+      "id": "pgdata",
+      "spellings": {
+        "short": [
+          "-D"
+        ],
+        "long": [
+          "--pgdata"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "DataDirectory"
+      },
+      "semantics": "Cluster data directory; null uses PGDATA.",
+      "spellingAvailability": {
+        "--pgdata": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "encoding",
+      "spellings": {
+        "short": [
+          "-E"
+        ],
+        "long": [
+          "--encoding"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Encoding"
+      },
+      "semantics": "Template database encoding; null preserves the locale-derived default.",
+      "spellingAvailability": {
+        "--encoding": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "locale",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--locale"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Locale"
+      },
+      "semantics": "Default locale; null inherits the environment.",
+      "spellingAvailability": {
+        "--locale": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "lc-collate",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--lc-collate"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LcCollate"
+      },
+      "semantics": "Override the collate locale category.",
+      "spellingAvailability": {
+        "--lc-collate": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "lc-ctype",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--lc-ctype"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LcCtype"
+      },
+      "semantics": "Override the ctype locale category.",
+      "spellingAvailability": {
+        "--lc-ctype": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "lc-monetary",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--lc-monetary"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LcMonetary"
+      },
+      "semantics": "Override the monetary locale category.",
+      "spellingAvailability": {
+        "--lc-monetary": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "lc-numeric",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--lc-numeric"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LcNumeric"
+      },
+      "semantics": "Override the numeric locale category.",
+      "spellingAvailability": {
+        "--lc-numeric": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "lc-time",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--lc-time"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LcTime"
+      },
+      "semantics": "Override the time locale category.",
+      "spellingAvailability": {
+        "--lc-time": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "lc-messages",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--lc-messages"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LcMessages"
+      },
+      "semantics": "Override the messages locale category.",
+      "spellingAvailability": {
+        "--lc-messages": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-locale",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--no-locale"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoLocale"
+      },
+      "semantics": "Use the C locale. Cannot be combined with Locale.",
+      "spellingAvailability": {
+        "--no-locale": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "text-search-config",
+      "spellings": {
+        "short": [
+          "-T"
+        ],
+        "long": [
+          "--text-search-config"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TextSearchConfiguration"
+      },
+      "semantics": "Default text search configuration.",
+      "spellingAvailability": {
+        "--text-search-config": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "auth",
+      "spellings": {
+        "short": [
+          "-A"
+        ],
+        "long": [
+          "--auth"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Authentication"
+      },
+      "semantics": "Authentication policy for both local and host connections.",
+      "spellingAvailability": {
+        "--auth": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "auth-local",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--auth-local"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LocalAuthentication"
+      },
+      "semantics": "Override local authentication; peer is local-only.",
+      "spellingAvailability": {
+        "--auth-local": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "auth-host",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--auth-host"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "HostAuthentication"
+      },
+      "semantics": "Override host authentication; ident/GSS/SSPI/cert are host-only.",
+      "spellingAvailability": {
+        "--auth-host": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "pwprompt",
+      "spellings": {
+        "short": [
+          "-W"
+        ],
+        "long": [
+          "--pwprompt"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "PasswordPrompt"
+      },
+      "semantics": "Prompt for the bootstrap password; mutually exclusive with PasswordFile.",
+      "spellingAvailability": {
+        "--pwprompt": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "pwfile",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--pwfile"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "PasswordFile"
+      },
+      "semantics": "Read the bootstrap password from the first line of this file.",
+      "spellingAvailability": {
+        "--pwfile": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": [
+          "-U"
+        ],
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Username"
+      },
+      "semantics": "Bootstrap superuser; null uses the operating-system user.",
+      "spellingAvailability": {
+        "--username": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": [
+          "-?"
+        ],
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "GetHelpAsync"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--help": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": [
+          "-V"
+        ],
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--version": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "debug",
+      "spellings": {
+        "short": [
+          "-d"
+        ],
+        "long": [
+          "--debug"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Debug"
+      },
+      "semantics": "Enable bootstrap debugging.",
+      "spellingAvailability": {
+        "--debug": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "show",
+      "spellings": {
+        "short": [
+          "-s"
+        ],
+        "long": [
+          "--show"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "ShowSettings"
+      },
+      "semantics": "Show internal settings and exit without creating a cluster.",
+      "spellingAvailability": {
+        "--show": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "noclean",
+      "spellings": {
+        "short": [
+          "-n"
+        ],
+        "long": [
+          "--noclean"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoClean"
+      },
+      "semantics": "Retain incomplete files on failure.",
+      "spellingAvailability": {
+        "--noclean": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-clean",
+      "spellings": {
+        "short": [
+          "-n"
+        ],
+        "long": [
+          "--no-clean"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoClean"
+      },
+      "semantics": "Retain incomplete files on failure.",
+      "spellingAvailability": {
+        "--no-clean": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "nosync",
+      "spellings": {
+        "short": [
+          "-N"
+        ],
+        "long": [
+          "--nosync"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoSync"
+      },
+      "semantics": "Skip durable synchronization; intended for disposable testing.",
+      "spellingAvailability": {
+        "--nosync": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": [
+          "-N"
+        ],
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoSync"
+      },
+      "semantics": "Skip durable synchronization; intended for disposable testing.",
+      "spellingAvailability": {
+        "--no-sync": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "sync-only",
+      "spellings": {
+        "short": [
+          "-S"
+        ],
+        "long": [
+          "--sync-only"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "SyncOnly"
+      },
+      "semantics": "Only synchronize an existing cluster.",
+      "spellingAvailability": {
+        "--sync-only": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "waldir",
+      "spellings": {
+        "short": [
+          "-X"
+        ],
+        "long": [
+          "--waldir"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "WalDirectory"
+      },
+      "semantics": "Absolute WAL directory.",
+      "spellingAvailability": {
+        "--waldir": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "data-checksums",
+      "spellings": {
+        "short": [
+          "-k"
+        ],
+        "long": [
+          "--data-checksums"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "DataChecksums"
+      },
+      "semantics": "Explicit checksum policy. Null preserves upstream default: off through 17, on from 18. False omits the flag before 18.",
+      "spellingAvailability": {
+        "--data-checksums": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "input-directory",
+      "spellings": {
+        "short": [
+          "-L"
+        ],
+        "long": []
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "InputDirectory"
+      },
+      "semantics": "Override bootstrap input-file location (-L).",
+      "spellingAvailability": {}
+    },
+    {
+      "id": "wal-segsize",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--wal-segsize"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "WalSegmentSizeMegabytes"
+      },
+      "semantics": "WAL segment size: power of two, 1-1024 MiB (PostgreSQL 11+).",
+      "spellingAvailability": {
+        "--wal-segsize": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "allow-group-access",
+      "spellings": {
+        "short": [
+          "-g"
+        ],
+        "long": [
+          "--allow-group-access"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "AllowGroupAccess"
+      },
+      "semantics": "Allow group read access (PostgreSQL 11+, ignored on Windows).",
+      "spellingAvailability": {
+        "--allow-group-access": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-instructions",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--no-instructions"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoInstructions"
+      },
+      "semantics": "Suppress startup instructions (PostgreSQL 14+).",
+      "spellingAvailability": {
+        "--no-instructions": {
+          "majorSince": 14,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "discard-caches",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--discard-caches"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 14,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "DiscardCaches"
+      },
+      "semantics": "Enable deep bootstrap cache debugging (PostgreSQL 14+).",
+      "spellingAvailability": {
+        "--discard-caches": {
+          "majorSince": 14,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "locale-provider",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--locale-provider"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "LocaleProvider"
+      },
+      "semantics": "Locale provider: libc/ICU from 15, builtin from 17.",
+      "spellingAvailability": {
+        "--locale-provider": {
+          "majorSince": 15,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "icu-locale",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--icu-locale"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "IcuLocale"
+      },
+      "semantics": "ICU locale identifier (PostgreSQL 15+).",
+      "spellingAvailability": {
+        "--icu-locale": {
+          "majorSince": 15,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "set",
+      "spellings": {
+        "short": [
+          "-c"
+        ],
+        "long": [
+          "--set"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Settings"
+      },
+      "semantics": "Ordered server settings, repeated as --set=name=value (PostgreSQL 16+).",
+      "spellingAvailability": {
+        "--set": {
+          "majorSince": 16,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "icu-rules",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--icu-rules"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "IcuRules"
+      },
+      "semantics": "ICU collation rules (PostgreSQL 16+).",
+      "spellingAvailability": {
+        "--icu-rules": {
+          "majorSince": 16,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "builtin-locale",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--builtin-locale"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "BuiltinLocale"
+      },
+      "semantics": "Builtin locale (PostgreSQL 17+); UnicodeFast requires 18.",
+      "spellingAvailability": {
+        "--builtin-locale": {
+          "majorSince": 17,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "sync-method",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--sync-method"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "SyncMethod"
+      },
+      "semantics": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux.",
+      "spellingAvailability": {
+        "--sync-method": {
+          "majorSince": 17,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-data-checksums",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--no-data-checksums"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "DataChecksums"
+      },
+      "semantics": "Explicit checksum policy. Null preserves upstream default: off through 17, on from 18. False omits the flag before 18.",
+      "spellingAvailability": {
+        "--no-data-checksums": {
+          "majorSince": 18,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-sync-data-files",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--no-sync-data-files"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoSyncDataFiles"
+      },
+      "semantics": "Skip syncing database data files (PostgreSQL 18+).",
+      "spellingAvailability": {
+        "--no-sync-data-files": {
+          "majorSince": 18,
+          "majorUntil": 18
+        }
+      }
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "auth",
+        "auth-host",
+        "auth-local",
+        "data-checksums",
+        "debug",
+        "encoding",
+        "help",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "no-clean",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "show",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--waldir"
+      ],
+      "sourceSha256": "7448f6d2974dbe6dc6a4869690dc979b012d950a0d78b2ea1febf501c8e57ec7",
+      "documentationSourceSha256": "a60500527023dc3d2bd11c6668c43053de9399794a5de01b9da4afc94cc9fa7d",
+      "sourceOptionTableLongOptions": [
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "data-checksums",
+        "debug",
+        "encoding",
+        "help",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "no-clean",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "show",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "60507d1b5ee28143d702aad0a98f5bffc9bf4bbcf55e3b383a8f150dc74574c8",
+      "documentationSourceSha256": "824020f21facefb5ee75def833546974fd993dc817e416502e0c53eeb91f2534",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "data-checksums",
+        "debug",
+        "encoding",
+        "help",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "no-clean",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "show",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "245cb316d17d3c5b128bdaa67711540a78b35c63bd9fc2b35ce33998208d9000",
+      "documentationSourceSha256": "96277965f79070e5993930102143cf4ecb52645edff16afc4b9de22017d8e9bb",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "data-checksums",
+        "debug",
+        "encoding",
+        "help",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "no-clean",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "show",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "89438037a9db726ddc6f92a26e4e28f905029ab814e1bf1dfa08852cd6a3e882",
+      "documentationSourceSha256": "a206c0dba6fe14063b82660b27d8f6baf4e3771acef5a8f521980aed09cffad8",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "data-checksums",
+        "debug",
+        "discard-caches",
+        "encoding",
+        "help",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "no-clean",
+        "no-instructions",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "show",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "87e05e58844bf847bef22769c43dc2529a430eb2536abd9e11eee94eb391abfb",
+      "documentationSourceSha256": "473da51e259dec5901607722262cf98b43b9ec41ec45c9a2dab5fea2c31c0d14",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "data-checksums",
+        "debug",
+        "discard-caches",
+        "encoding",
+        "help",
+        "icu-locale",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "locale-provider",
+        "no-clean",
+        "no-instructions",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "show",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "bf3b3364bcc7dfd72c8c92f06eb60ca7ecfcb2ea698eac60b9e7570644436cdf",
+      "documentationSourceSha256": "ae6257d0d1af70261b0471640f436262a6ffc9404be94dd0a9e2b3b85b965983",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "data-checksums",
+        "debug",
+        "discard-caches",
+        "encoding",
+        "help",
+        "icu-locale",
+        "icu-rules",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "locale-provider",
+        "no-clean",
+        "no-instructions",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "set",
+        "show",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--icu-rules",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--set",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "4da5bfa19aae3fb511af35e3a5430d3a26095e362991698a48a0234c13f50c75",
+      "documentationSourceSha256": "03b9c43fffe33c0c03e0a248f47221f75b951fc63f027e7c3f88bd413cdc9758",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--icu-rules",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--set",
+        "--show",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "builtin-locale",
+        "data-checksums",
+        "debug",
+        "discard-caches",
+        "encoding",
+        "help",
+        "icu-locale",
+        "icu-rules",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "locale-provider",
+        "no-clean",
+        "no-instructions",
+        "no-locale",
+        "no-sync",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "set",
+        "show",
+        "sync-method",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--builtin-locale",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--icu-rules",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--set",
+        "--show",
+        "--sync-method",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "f971ecc5ff78cdac6dfc9c79801f37b4b5987694d4fa006a605d903292526e11",
+      "documentationSourceSha256": "be507556fb5c1ae336adc190cfde9de34e3a6e4fa63f0260fb0e1d44c59b1c1c",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--builtin-locale",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--icu-rules",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--set",
+        "--show",
+        "--sync-method",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-initdb.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "allow-group-access",
+        "auth",
+        "auth-host",
+        "auth-local",
+        "builtin-locale",
+        "data-checksums",
+        "debug",
+        "discard-caches",
+        "encoding",
+        "help",
+        "icu-locale",
+        "icu-rules",
+        "input-directory",
+        "lc-collate",
+        "lc-ctype",
+        "lc-messages",
+        "lc-monetary",
+        "lc-numeric",
+        "lc-time",
+        "locale",
+        "locale-provider",
+        "no-clean",
+        "no-data-checksums",
+        "no-instructions",
+        "no-locale",
+        "no-sync",
+        "no-sync-data-files",
+        "noclean",
+        "nosync",
+        "pgdata",
+        "pwfile",
+        "pwprompt",
+        "set",
+        "show",
+        "sync-method",
+        "sync-only",
+        "text-search-config",
+        "username",
+        "version",
+        "wal-segsize",
+        "waldir"
+      ],
+      "resolvedLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--builtin-locale",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--icu-rules",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-data-checksums",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--no-sync-data-files",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--set",
+        "--show",
+        "--sync-method",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "sourceSha256": "92d56b22abad61337b4badc4c8b94a50763b858f979b2e018fa730442776d5d2",
+      "documentationSourceSha256": "36dda55b530a8a1cf55f9db990d4f659100bfd83a207ae0b6957051714e19622",
+      "sourceOptionTableLongOptions": [
+        "--allow-group-access",
+        "--auth",
+        "--auth-host",
+        "--auth-local",
+        "--builtin-locale",
+        "--data-checksums",
+        "--debug",
+        "--discard-caches",
+        "--encoding",
+        "--help",
+        "--icu-locale",
+        "--icu-rules",
+        "--lc-collate",
+        "--lc-ctype",
+        "--lc-messages",
+        "--lc-monetary",
+        "--lc-numeric",
+        "--lc-time",
+        "--locale",
+        "--locale-provider",
+        "--no-clean",
+        "--no-data-checksums",
+        "--no-instructions",
+        "--no-locale",
+        "--no-sync",
+        "--no-sync-data-files",
+        "--noclean",
+        "--nosync",
+        "--pgdata",
+        "--pwfile",
+        "--pwprompt",
+        "--set",
+        "--show",
+        "--sync-method",
+        "--sync-only",
+        "--text-search-config",
+        "--username",
+        "--version",
+        "--wal-segsize",
+        "--waldir"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    }
+  },
+  "verification": {
+    "inventoryAudit": "All supported major manuals and stable parser option tables compared independently on 2026-10-02. Source/documentation SHA256 recorded per major.",
+    "apiAudit": "Every inventory entry binds to a public Options property, GetHelpAsync or executable probe.",
+    "constraints": "See docs/server-applications-phase-7.md and internal validators.",
+    "environment": "Caller overrides are passed only to the process; upstream ambient environment defaults remain available."
+  }
+}

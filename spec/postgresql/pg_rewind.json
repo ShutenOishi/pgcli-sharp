@@ -1,0 +1,901 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_rewind",
+  "researchedAt": "2026-10-02",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pgrewind.html",
+      "11": "https://www.postgresql.org/docs/11/app-pgrewind.html",
+      "12": "https://www.postgresql.org/docs/12/app-pgrewind.html",
+      "13": "https://www.postgresql.org/docs/13/app-pgrewind.html",
+      "14": "https://www.postgresql.org/docs/14/app-pgrewind.html",
+      "15": "https://www.postgresql.org/docs/15/app-pgrewind.html",
+      "16": "https://www.postgresql.org/docs/16/app-pgrewind.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgrewind.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgrewind.html"
+    },
+    "upstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_rewind/pg_rewind.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_rewind/pg_rewind.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": [
+          "-?"
+        ],
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "GetHelpAsync"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--help": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "target-pgdata",
+      "spellings": {
+        "short": [
+          "-D"
+        ],
+        "long": [
+          "--target-pgdata"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TargetDataDirectory"
+      },
+      "semantics": "Required target data directory; may be modified even during recovery preparation.",
+      "spellingAvailability": {
+        "--target-pgdata": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "source-pgdata",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--source-pgdata"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "SourceDataDirectory"
+      },
+      "semantics": "Offline source directory; exactly one source must be supplied.",
+      "spellingAvailability": {
+        "--source-pgdata": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "source-server",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--source-server"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "SourceConnectionString"
+      },
+      "semantics": "Live source libpq connection string; exactly one source must be supplied.",
+      "spellingAvailability": {
+        "--source-server": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": [
+          "-V"
+        ],
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--version": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "dry-run",
+      "spellings": {
+        "short": [
+          "-n"
+        ],
+        "long": [
+          "--dry-run"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "DryRun"
+      },
+      "semantics": "Report rewind actions; automatic shutdown preparation may still write.",
+      "spellingAvailability": {
+        "--dry-run": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "progress",
+      "spellings": {
+        "short": [
+          "-P"
+        ],
+        "long": [
+          "--progress"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Progress"
+      },
+      "semantics": "Report progress.",
+      "spellingAvailability": {
+        "--progress": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "debug",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--debug"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Debug"
+      },
+      "semantics": "Enable detailed debug diagnostics.",
+      "spellingAvailability": {
+        "--debug": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": [
+          "-N"
+        ],
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoSync"
+      },
+      "semantics": "Skip durable synchronization (PostgreSQL 12+).",
+      "spellingAvailability": {
+        "--no-sync": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "write-recovery-conf",
+      "spellings": {
+        "short": [
+          "-R"
+        ],
+        "long": [
+          "--write-recovery-conf"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "WriteRecoveryConfiguration"
+      },
+      "semantics": "Write standby recovery configuration; requires SourceConnectionString (PostgreSQL 13+).",
+      "spellingAvailability": {
+        "--write-recovery-conf": {
+          "majorSince": 13,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-ensure-shutdown",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--no-ensure-shutdown"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoEnsureShutdown"
+      },
+      "semantics": "Skip automatic recovery to a clean shutdown (PostgreSQL 13+).",
+      "spellingAvailability": {
+        "--no-ensure-shutdown": {
+          "majorSince": 13,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "restore-target-wal",
+      "spellings": {
+        "short": [
+          "-c"
+        ],
+        "long": [
+          "--restore-target-wal"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 13,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "RestoreTargetWal"
+      },
+      "semantics": "Fetch missing target WAL through restore_command (PostgreSQL 13+).",
+      "spellingAvailability": {
+        "--restore-target-wal": {
+          "majorSince": 13,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "config-file",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--config-file"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "ConfigurationFile"
+      },
+      "semantics": "Target configuration file for recovery (PostgreSQL 15+).",
+      "spellingAvailability": {
+        "--config-file": {
+          "majorSince": 15,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "sync-method",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--sync-method"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "SyncMethod"
+      },
+      "semantics": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux.",
+      "spellingAvailability": {
+        "--sync-method": {
+          "majorSince": 17,
+          "majorUntil": 18
+        }
+      }
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "debug",
+        "dry-run",
+        "help",
+        "progress",
+        "source-pgdata",
+        "source-server",
+        "target-pgdata",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--progress",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version"
+      ],
+      "sourceSha256": "c4dfd256835e90cb2014f94cce6a1fab5081016f3a5ebe83df2a424e4694e710",
+      "documentationSourceSha256": "3bb350c1f9ce43fec20eb425c93e74fc2eb98d2998ba8049cda71cbba1b4a4bf",
+      "sourceOptionTableLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--progress",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "debug",
+        "dry-run",
+        "help",
+        "progress",
+        "source-pgdata",
+        "source-server",
+        "target-pgdata",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--progress",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version"
+      ],
+      "sourceSha256": "f68e6903a736c0daf00a53567bb51ea6c4323567bdaf3f46921154850a623ef1",
+      "documentationSourceSha256": "b9a03c621d8504228b4fb836dac0c882a506d9f92451cecf9adc193a33b17b29",
+      "sourceOptionTableLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--progress",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "debug",
+        "dry-run",
+        "help",
+        "no-sync",
+        "progress",
+        "source-pgdata",
+        "source-server",
+        "target-pgdata",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-sync",
+        "--progress",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version"
+      ],
+      "sourceSha256": "35b2f437ffafc41bd552b95af7c7925e1a108a242c8847d0f142d5ecf2455583",
+      "documentationSourceSha256": "55e4f337f8e1c4cf8dbc324d7596cde842550f01d10da372ee0ac9a1ee96d256",
+      "sourceOptionTableLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-sync",
+        "--progress",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "debug",
+        "dry-run",
+        "help",
+        "no-ensure-shutdown",
+        "no-sync",
+        "progress",
+        "restore-target-wal",
+        "source-pgdata",
+        "source-server",
+        "target-pgdata",
+        "version",
+        "write-recovery-conf"
+      ],
+      "resolvedLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "sourceSha256": "5644cc90a5ce21dc24f2ba387e7ae0b4bd05bd258f0fcb1dacaf631eb1afcdca",
+      "documentationSourceSha256": "bf39539bf8009fc8bc99d2abe7c7490b23e5e2ada676857d700e7b76fdf345aa",
+      "sourceOptionTableLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "debug",
+        "dry-run",
+        "help",
+        "no-ensure-shutdown",
+        "no-sync",
+        "progress",
+        "restore-target-wal",
+        "source-pgdata",
+        "source-server",
+        "target-pgdata",
+        "version",
+        "write-recovery-conf"
+      ],
+      "resolvedLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "sourceSha256": "3b9fa53448a29270de0668a3d782fb3c31446485ffcd4a69d1ecdad41fbacaae",
+      "documentationSourceSha256": "3aa855ce9fa90e37a262fb15613dd43519e4b798874423308110a2551ff2b5f3",
+      "sourceOptionTableLongOptions": [
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "config-file",
+        "debug",
+        "dry-run",
+        "help",
+        "no-ensure-shutdown",
+        "no-sync",
+        "progress",
+        "restore-target-wal",
+        "source-pgdata",
+        "source-server",
+        "target-pgdata",
+        "version",
+        "write-recovery-conf"
+      ],
+      "resolvedLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "sourceSha256": "c8323673b9c22a5c7ae180a02590cb5fc66d097a36bc44f554015c358f7263fd",
+      "documentationSourceSha256": "e4fafcd62678288d7178b21eb3b2085c170ec9dcac8f96baf376fee11fb29f79",
+      "sourceOptionTableLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "config-file",
+        "debug",
+        "dry-run",
+        "help",
+        "no-ensure-shutdown",
+        "no-sync",
+        "progress",
+        "restore-target-wal",
+        "source-pgdata",
+        "source-server",
+        "target-pgdata",
+        "version",
+        "write-recovery-conf"
+      ],
+      "resolvedLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "sourceSha256": "b8f6539538511905befe42f140706d9a6cc80337bb722d02bc2df6f76dd0b7d9",
+      "documentationSourceSha256": "f924ab3154a8348c0047921c5de646273ae24a7735b73cd02502b2cd13cf6451",
+      "sourceOptionTableLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "config-file",
+        "debug",
+        "dry-run",
+        "help",
+        "no-ensure-shutdown",
+        "no-sync",
+        "progress",
+        "restore-target-wal",
+        "source-pgdata",
+        "source-server",
+        "sync-method",
+        "target-pgdata",
+        "version",
+        "write-recovery-conf"
+      ],
+      "resolvedLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--sync-method",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "sourceSha256": "913bf162d4be495fe20342c0e3586fa1aa9d38319b8bf9f5626a97078a8ba0b8",
+      "documentationSourceSha256": "1b862960772cc2f4bd632b85ae857c0a32e45194fb52d7d86c22c91da7900464",
+      "sourceOptionTableLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--sync-method",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgrewind.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "config-file",
+        "debug",
+        "dry-run",
+        "help",
+        "no-ensure-shutdown",
+        "no-sync",
+        "progress",
+        "restore-target-wal",
+        "source-pgdata",
+        "source-server",
+        "sync-method",
+        "target-pgdata",
+        "version",
+        "write-recovery-conf"
+      ],
+      "resolvedLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--sync-method",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "sourceSha256": "8cd6fb3a54238d013ead923842a2f93abeb144250736da3adae5f19b678cebb2",
+      "documentationSourceSha256": "edd62c42c7e32296af45b75b08e1e1094d580219138fd955e12a55b45f4df5ca",
+      "sourceOptionTableLongOptions": [
+        "--config-file",
+        "--debug",
+        "--dry-run",
+        "--help",
+        "--no-ensure-shutdown",
+        "--no-sync",
+        "--progress",
+        "--restore-target-wal",
+        "--source-pgdata",
+        "--source-server",
+        "--sync-method",
+        "--target-pgdata",
+        "--version",
+        "--write-recovery-conf"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    }
+  },
+  "verification": {
+    "inventoryAudit": "All supported major manuals and stable parser option tables compared independently on 2026-10-02. Source/documentation SHA256 recorded per major.",
+    "apiAudit": "Every inventory entry binds to a public Options property, GetHelpAsync or executable probe.",
+    "constraints": "See docs/server-applications-phase-7.md and internal validators.",
+    "environment": "Caller overrides are passed only to the process; upstream ambient environment defaults remain available."
+  }
+}

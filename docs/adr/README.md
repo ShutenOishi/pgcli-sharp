@@ -76,3 +76,5 @@ Do not silently edit an old Accepted ADR to make history appear different.
 ## Template
 
 Copy [0000-template.md](0000-template.md) for new decisions.
+
+| [0015](0015-server-application-boundaries.md) | Separate server applications and detached-server I/O | Accepted |

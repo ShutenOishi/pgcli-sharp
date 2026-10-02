@@ -119,6 +119,8 @@ External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase
 
 ## Phase 7 - Server applications
 
+**Status: In progress (2026-10-02).** Six researched, typed server wrappers are implemented on the Phase 7 branch; final CI/merge gates are pending. See [research and usage](server-applications-phase-7.md), [completion evidence](phase-7-completion.md), and ADR-0015.
+
 Add server-side administrative executables in a clearly separated namespace/category, for example:
 
 - `initdb`

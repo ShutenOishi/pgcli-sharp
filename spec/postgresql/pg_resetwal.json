@@ -1,0 +1,968 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_resetwal",
+  "researchedAt": "2026-10-02",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/app-pgresetwal.html",
+      "11": "https://www.postgresql.org/docs/11/app-pgresetwal.html",
+      "12": "https://www.postgresql.org/docs/12/app-pgresetwal.html",
+      "13": "https://www.postgresql.org/docs/13/app-pgresetwal.html",
+      "14": "https://www.postgresql.org/docs/14/app-pgresetwal.html",
+      "15": "https://www.postgresql.org/docs/15/app-pgresetwal.html",
+      "16": "https://www.postgresql.org/docs/16/app-pgresetwal.html",
+      "17": "https://www.postgresql.org/docs/17/app-pgresetwal.html",
+      "18": "https://www.postgresql.org/docs/18/app-pgresetwal.html"
+    },
+    "upstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_resetwal/pg_resetwal.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_resetwal/pg_resetwal.c"
+    }
+  },
+  "options": [
+    {
+      "id": "help",
+      "spellings": {
+        "short": [
+          "-?"
+        ],
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "GetHelpAsync"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--help": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": [
+          "-V"
+        ],
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--version": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "pgdata",
+      "spellings": {
+        "short": [
+          "-D"
+        ],
+        "long": [
+          "--pgdata"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "DataDirectory"
+      },
+      "semantics": "Required data directory. This tool does not read PGDATA; it is last-resort repair and can destroy consistency.",
+      "spellingAvailability": {
+        "--pgdata": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "commit-timestamp-ids",
+      "spellings": {
+        "short": [
+          "-c"
+        ],
+        "long": [
+          "--commit-timestamp-ids"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "CommitTimestampIds"
+      },
+      "semantics": "Oldest,newest commit-timestamp IDs; each is 0 or at least 2 through 16, at least 3 from 17.",
+      "spellingAvailability": {
+        "--commit-timestamp-ids": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "epoch",
+      "spellings": {
+        "short": [
+          "-e"
+        ],
+        "long": [
+          "--epoch"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TransactionIdEpoch"
+      },
+      "semantics": "Transaction ID epoch; UInt32.MaxValue is reserved.",
+      "spellingAvailability": {
+        "--epoch": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "force",
+      "spellings": {
+        "short": [
+          "-f"
+        ],
+        "long": [
+          "--force"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Force"
+      },
+      "semantics": "Force reset despite unsafe control-file state.",
+      "spellingAvailability": {
+        "--force": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "next-wal-file",
+      "spellings": {
+        "short": [
+          "-l"
+        ],
+        "long": [
+          "--next-wal-file"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NextWalFile"
+      },
+      "semantics": "Next WAL file name: exactly 24 hexadecimal characters.",
+      "spellingAvailability": {
+        "--next-wal-file": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "multixact-ids",
+      "spellings": {
+        "short": [
+          "-m"
+        ],
+        "long": [
+          "--multixact-ids"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "MultiTransactionIds"
+      },
+      "semantics": "Next,oldest multitransaction IDs. Oldest must be positive; next zero is accepted from 15.",
+      "spellingAvailability": {
+        "--multixact-ids": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "dry-run",
+      "spellings": {
+        "short": [
+          "-n"
+        ],
+        "long": [
+          "--dry-run"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "DryRun"
+      },
+      "semantics": "Display proposed values without changing WAL/control files.",
+      "spellingAvailability": {
+        "--dry-run": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "next-oid",
+      "spellings": {
+        "short": [
+          "-o"
+        ],
+        "long": [
+          "--next-oid"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NextObjectId"
+      },
+      "semantics": "Positive next object ID.",
+      "spellingAvailability": {
+        "--next-oid": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "multixact-offset",
+      "spellings": {
+        "short": [
+          "-O"
+        ],
+        "long": [
+          "--multixact-offset"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "MultiTransactionOffset"
+      },
+      "semantics": "Next multitransaction offset; UInt32.MaxValue accepted from 15.",
+      "spellingAvailability": {
+        "--multixact-offset": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "oldest-transaction-id",
+      "spellings": {
+        "short": [
+          "-u"
+        ],
+        "long": [
+          "--oldest-transaction-id"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "OldestTransactionId"
+      },
+      "semantics": "Oldest transaction ID, at least 3.",
+      "spellingAvailability": {
+        "--oldest-transaction-id": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "next-transaction-id",
+      "spellings": {
+        "short": [
+          "-x"
+        ],
+        "long": [
+          "--next-transaction-id"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NextTransactionId"
+      },
+      "semantics": "Next transaction ID: positive through 11, at least 3 from 12.",
+      "spellingAvailability": {
+        "--next-transaction-id": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "wal-segsize",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--wal-segsize"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 11,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "WalSegmentSizeMegabytes"
+      },
+      "semantics": "WAL segment size: power of two, 1-1024 MiB (PostgreSQL 11+).",
+      "spellingAvailability": {
+        "--wal-segsize": {
+          "majorSince": 11,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "char-signedness",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--char-signedness"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "CharSignedness"
+      },
+      "semantics": "Override cluster char signedness (PostgreSQL 18+).",
+      "spellingAvailability": {
+        "--char-signedness": {
+          "majorSince": 18,
+          "majorUntil": 18
+        }
+      }
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--help",
+        "--version"
+      ],
+      "sourceSha256": "2d156f63c6da43b2912ec678b5098317a55d993adb595e45bdae3e1cf78e3bbb",
+      "documentationSourceSha256": "6bee0b0d098b2ad70b34bca974a59909d2b04b80fc8282557541777d39e4f4cf",
+      "sourceOptionTableLongOptions": [],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "c69f45e801f9e26d7d16203c309a2b9f309a9573876ce4a6964d5bec6b736733",
+      "documentationSourceSha256": "05682ed0f3510776acbfe3335a042cb2b775bfe82deb615933a3c6dec53e1e15",
+      "sourceOptionTableLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "b4d74936bab623c67df138c542faa0627ee76f20b1a86f85c2e60b831c8b9541",
+      "documentationSourceSha256": "3d51b784905119349210144ef260da07f2287fc9745a3ff823c1dd017b7cb516",
+      "sourceOptionTableLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "db9f88a2e2b2d46448f44bfc7405e1f9c6a0df047aee41a8a01cf9e39dc3b7d7",
+      "documentationSourceSha256": "3d51b784905119349210144ef260da07f2287fc9745a3ff823c1dd017b7cb516",
+      "sourceOptionTableLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "738c75212f577b7367e6b5261b474ec00bb3613867a6d8141ede8c7ad3d3cf7a",
+      "documentationSourceSha256": "3d51b784905119349210144ef260da07f2287fc9745a3ff823c1dd017b7cb516",
+      "sourceOptionTableLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "01d249434970f430e753ad9d26ee51a9889947cc931ea91fd753a7b740adc0f1",
+      "documentationSourceSha256": "3d51b784905119349210144ef260da07f2287fc9745a3ff823c1dd017b7cb516",
+      "sourceOptionTableLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "d9010e5cd8c44cd35c129d195376119613b0bc1729d00d7fa7ceed0a705edf19",
+      "documentationSourceSha256": "3d51b784905119349210144ef260da07f2287fc9745a3ff823c1dd017b7cb516",
+      "sourceOptionTableLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "078f5976d45e713279a1e333dade479c3f57820e6053c022736694e4a21013c5",
+      "documentationSourceSha256": "1b42d7f17f39c23dffb38425ee53d7d5fbedb2ce9dfff956b1e2cb9f569e3da8",
+      "sourceOptionTableLongOptions": [
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/app-pgresetwal.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "char-signedness",
+        "commit-timestamp-ids",
+        "dry-run",
+        "epoch",
+        "force",
+        "help",
+        "multixact-ids",
+        "multixact-offset",
+        "next-oid",
+        "next-transaction-id",
+        "next-wal-file",
+        "oldest-transaction-id",
+        "pgdata",
+        "version",
+        "wal-segsize"
+      ],
+      "resolvedLongOptions": [
+        "--char-signedness",
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--help",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--version",
+        "--wal-segsize"
+      ],
+      "sourceSha256": "7190b25e90c31fd268adf1aa30345d9dba691e073e6d363bb065ed0933a246f0",
+      "documentationSourceSha256": "f7d2dd1ae18887ba05b1986d04cc6c1667a2f2c269674fac14b27f6289512a39",
+      "sourceOptionTableLongOptions": [
+        "--char-signedness",
+        "--commit-timestamp-ids",
+        "--dry-run",
+        "--epoch",
+        "--force",
+        "--multixact-ids",
+        "--multixact-offset",
+        "--next-oid",
+        "--next-transaction-id",
+        "--next-wal-file",
+        "--oldest-transaction-id",
+        "--pgdata",
+        "--wal-segsize"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    }
+  },
+  "verification": {
+    "inventoryAudit": "All supported major manuals and stable parser option tables compared independently on 2026-10-02. Source/documentation SHA256 recorded per major.",
+    "apiAudit": "Every inventory entry binds to a public Options property, GetHelpAsync or executable probe.",
+    "constraints": "See docs/server-applications-phase-7.md and internal validators.",
+    "environment": "Caller overrides are passed only to the process; upstream ambient environment defaults remain available."
+  }
+}

@@ -1,0 +1,1429 @@
+{
+  "schemaVersion": 1,
+  "tool": "pg_upgrade",
+  "researchedAt": "2026-10-02",
+  "scope": {
+    "postgresqlMajors": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "toolAvailableSince": 10
+  },
+  "sources": {
+    "perMajorDocumentation": {
+      "10": "https://www.postgresql.org/docs/10/pgupgrade.html",
+      "11": "https://www.postgresql.org/docs/11/pgupgrade.html",
+      "12": "https://www.postgresql.org/docs/12/pgupgrade.html",
+      "13": "https://www.postgresql.org/docs/13/pgupgrade.html",
+      "14": "https://www.postgresql.org/docs/14/pgupgrade.html",
+      "15": "https://www.postgresql.org/docs/15/pgupgrade.html",
+      "16": "https://www.postgresql.org/docs/16/pgupgrade.html",
+      "17": "https://www.postgresql.org/docs/17/pgupgrade.html",
+      "18": "https://www.postgresql.org/docs/18/pgupgrade.html"
+    },
+    "upstreamSource": {
+      "10": "https://github.com/postgres/postgres/blob/REL_10_STABLE/src/bin/pg_upgrade/option.c",
+      "11": "https://github.com/postgres/postgres/blob/REL_11_STABLE/src/bin/pg_upgrade/option.c",
+      "12": "https://github.com/postgres/postgres/blob/REL_12_STABLE/src/bin/pg_upgrade/option.c",
+      "13": "https://github.com/postgres/postgres/blob/REL_13_STABLE/src/bin/pg_upgrade/option.c",
+      "14": "https://github.com/postgres/postgres/blob/REL_14_STABLE/src/bin/pg_upgrade/option.c",
+      "15": "https://github.com/postgres/postgres/blob/REL_15_STABLE/src/bin/pg_upgrade/option.c",
+      "16": "https://github.com/postgres/postgres/blob/REL_16_STABLE/src/bin/pg_upgrade/option.c",
+      "17": "https://github.com/postgres/postgres/blob/REL_17_STABLE/src/bin/pg_upgrade/option.c",
+      "18": "https://github.com/postgres/postgres/blob/REL_18_STABLE/src/bin/pg_upgrade/option.c"
+    }
+  },
+  "options": [
+    {
+      "id": "old-datadir",
+      "spellings": {
+        "short": [
+          "-d"
+        ],
+        "long": [
+          "--old-datadir"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "OldDataDirectory"
+      },
+      "semantics": "Old cluster configuration directory; null uses PGDATAOLD.",
+      "spellingAvailability": {
+        "--old-datadir": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "new-datadir",
+      "spellings": {
+        "short": [
+          "-D"
+        ],
+        "long": [
+          "--new-datadir"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NewDataDirectory"
+      },
+      "semantics": "New cluster configuration directory; null uses PGDATANEW.",
+      "spellingAvailability": {
+        "--new-datadir": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "old-bindir",
+      "spellings": {
+        "short": [
+          "-b"
+        ],
+        "long": [
+          "--old-bindir"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "OldBinaryDirectory"
+      },
+      "semantics": "Old executable directory; null uses PGBINOLD.",
+      "spellingAvailability": {
+        "--old-bindir": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "new-bindir",
+      "spellings": {
+        "short": [
+          "-B"
+        ],
+        "long": [
+          "--new-bindir"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NewBinaryDirectory"
+      },
+      "semantics": "New executable directory; null uses PGBINNEW or upstream executable directory.",
+      "spellingAvailability": {
+        "--new-bindir": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "old-options",
+      "spellings": {
+        "short": [
+          "-o"
+        ],
+        "long": [
+          "--old-options"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "OldServerOptions"
+      },
+      "semantics": "Ordered upstream old-postgres option fragments; trusted input only.",
+      "spellingAvailability": {
+        "--old-options": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "new-options",
+      "spellings": {
+        "short": [
+          "-O"
+        ],
+        "long": [
+          "--new-options"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": true,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NewServerOptions"
+      },
+      "semantics": "Ordered upstream new-postgres option fragments; trusted input only.",
+      "spellingAvailability": {
+        "--new-options": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "old-port",
+      "spellings": {
+        "short": [
+          "-p"
+        ],
+        "long": [
+          "--old-port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "OldPort"
+      },
+      "semantics": "Old cluster port; null uses PGPORTOLD/default 50432.",
+      "spellingAvailability": {
+        "--old-port": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "new-port",
+      "spellings": {
+        "short": [
+          "-P"
+        ],
+        "long": [
+          "--new-port"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NewPort"
+      },
+      "semantics": "New cluster port; null uses PGPORTNEW/default 50432.",
+      "spellingAvailability": {
+        "--new-port": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "username",
+      "spellings": {
+        "short": [
+          "-U"
+        ],
+        "long": [
+          "--username"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Username"
+      },
+      "semantics": "Cluster install user; null preserves PGUSER/upstream default.",
+      "spellingAvailability": {
+        "--username": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "check",
+      "spellings": {
+        "short": [
+          "-c"
+        ],
+        "long": [
+          "--check"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "CheckOnly"
+      },
+      "semantics": "Run compatibility checks without performing the upgrade.",
+      "spellingAvailability": {
+        "--check": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "link",
+      "spellings": {
+        "short": [
+          "-k"
+        ],
+        "long": [
+          "--link"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TransferMode"
+      },
+      "semantics": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable.",
+      "spellingAvailability": {
+        "--link": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "retain",
+      "spellings": {
+        "short": [
+          "-r"
+        ],
+        "long": [
+          "--retain"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Retain"
+      },
+      "semantics": "Retain SQL and log files after success.",
+      "spellingAvailability": {
+        "--retain": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "jobs",
+      "spellings": {
+        "short": [
+          "-j"
+        ],
+        "long": [
+          "--jobs"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Jobs"
+      },
+      "semantics": "Positive simultaneous job count.",
+      "spellingAvailability": {
+        "--jobs": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "verbose",
+      "spellings": {
+        "short": [
+          "-v"
+        ],
+        "long": [
+          "--verbose"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "Verbose"
+      },
+      "semantics": "Enable verbose upgrade diagnostics.",
+      "spellingAvailability": {
+        "--verbose": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "help",
+      "spellings": {
+        "short": [
+          "-?"
+        ],
+        "long": [
+          "--help"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "GetHelpAsync"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--help": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "version",
+      "spellings": {
+        "short": [
+          "-V"
+        ],
+        "long": [
+          "--version"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 10,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "binding": "Executable version probe"
+      },
+      "semantics": "Utility or alias; see API property and per-major documentation.",
+      "spellingAvailability": {
+        "--version": {
+          "majorSince": 10,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "socketdir",
+      "spellings": {
+        "short": [
+          "-s"
+        ],
+        "long": [
+          "--socketdir"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "SocketDirectory"
+      },
+      "semantics": "Unix socket directory (PostgreSQL 12+).",
+      "spellingAvailability": {
+        "--socketdir": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "clone",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--clone"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 12,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TransferMode"
+      },
+      "semantics": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable.",
+      "spellingAvailability": {
+        "--clone": {
+          "majorSince": 12,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-sync",
+      "spellings": {
+        "short": [
+          "-N"
+        ],
+        "long": [
+          "--no-sync"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 15,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoSync"
+      },
+      "semantics": "Skip durable synchronization (PostgreSQL 15+).",
+      "spellingAvailability": {
+        "--no-sync": {
+          "majorSince": 15,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "copy",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--copy"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 16,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TransferMode"
+      },
+      "semantics": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable.",
+      "spellingAvailability": {
+        "--copy": {
+          "majorSince": 16,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "copy-file-range",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--copy-file-range"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TransferMode"
+      },
+      "semantics": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable.",
+      "spellingAvailability": {
+        "--copy-file-range": {
+          "majorSince": 17,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "sync-method",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--sync-method"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 17,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "SyncMethod"
+      },
+      "semantics": "Filesystem sync method (PostgreSQL 17+); syncfs requires Linux.",
+      "spellingAvailability": {
+        "--sync-method": {
+          "majorSince": 17,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "no-statistics",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--no-statistics"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "NoStatistics"
+      },
+      "semantics": "Do not transfer planner statistics (PostgreSQL 18+).",
+      "spellingAvailability": {
+        "--no-statistics": {
+          "majorSince": 18,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "set-char-signedness",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--set-char-signedness"
+        ]
+      },
+      "argumentMode": "required",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "CharSignedness"
+      },
+      "semantics": "Override cluster char signedness (PostgreSQL 18+).",
+      "spellingAvailability": {
+        "--set-char-signedness": {
+          "majorSince": 18,
+          "majorUntil": 18
+        }
+      }
+    },
+    {
+      "id": "swap",
+      "spellings": {
+        "short": [],
+        "long": [
+          "--swap"
+        ]
+      },
+      "argumentMode": "none",
+      "repeatable": false,
+      "availability": {
+        "majorSince": 18,
+        "majorUntil": 18
+      },
+      "defaults": {
+        "wrapper": "Unset options are omitted; enum mode defaults are documented on the public API.",
+        "upstream": "Use per-major manual/parser default; see semantics and research notes."
+      },
+      "api": {
+        "property": "TransferMode"
+      },
+      "semantics": "File transfer policy. Null uses copying; Copy works before --copy was added in 16. Link/Swap can make the old cluster unusable.",
+      "spellingAvailability": {
+        "--swap": {
+          "majorSince": 18,
+          "majorUntil": 18
+        }
+      }
+    }
+  ],
+  "versions": {
+    "10": {
+      "documentation": "https://www.postgresql.org/docs/10/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "3e2b62adc971be1f658a368c5852c6481c695b6cadc9eaa695c52d1cf40003ce",
+      "documentationSourceSha256": "9f873d698f654d87bb221c6bb81c1e290a822612b43ae5b26885f397640313f7",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "11": {
+      "documentation": "https://www.postgresql.org/docs/11/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "c00149038b8951edc9bd9d4d09d4c85524f7cb0e75f6b3861f13550496a4f641",
+      "documentationSourceSha256": "162f562e1d708a06e3af453f9d01d9edb914e3a2809356b45f488068d2ad740c",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "12": {
+      "documentation": "https://www.postgresql.org/docs/12/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "clone",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "socketdir",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--clone",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "71d1aec8ce820d15fb145d446dd924d285fe568abd33b86b242f699670523d14",
+      "documentationSourceSha256": "7d39f812c7c57c19bfb71fdbd51817083447f608429dff976a208acebec55f16",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--clone",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "13": {
+      "documentation": "https://www.postgresql.org/docs/13/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "clone",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "socketdir",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--clone",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "706b8dc6514bbd310d1804d0b252a114a37337a626c5dff7f7f08be973b82487",
+      "documentationSourceSha256": "b3bd68dba67bc2a929ce0741eb2794febe70d76e2e4ff5af5f0f4d2547f7ec9f",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--clone",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "14": {
+      "documentation": "https://www.postgresql.org/docs/14/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "clone",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "socketdir",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--clone",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "5fb62498eca8751d2867298b236607a3c7ee6cd033c4a0587369831d1dbf5fd3",
+      "documentationSourceSha256": "255195ffdcf5ac1d96787e7b1b37f206b88c5a0a1b477fb50b8e40831ea288e9",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--clone",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "15": {
+      "documentation": "https://www.postgresql.org/docs/15/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "clone",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "no-sync",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "socketdir",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--clone",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "383b61b7b5a9255da696c04f793d43bb9250fec5fa5cfe28c3c4df155be8b070",
+      "documentationSourceSha256": "6df413feb10d01efa0a873a88826e5f5d85d40d9348b59ba5717880e6058c435",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--clone",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "16": {
+      "documentation": "https://www.postgresql.org/docs/16/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "clone",
+        "copy",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "no-sync",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "socketdir",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--clone",
+        "--copy",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "4bc60a4cfc0e3d4b5acc57a2b7439369ceb3d73d8354c11e9b5cde5248ee30ca",
+      "documentationSourceSha256": "a0a76a3a60ca053ace7ef977990315a764c369c949d6c5a9df7b623fdd25eab0",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--clone",
+        "--copy",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "17": {
+      "documentation": "https://www.postgresql.org/docs/17/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "clone",
+        "copy",
+        "copy-file-range",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "no-sync",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "socketdir",
+        "sync-method",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--clone",
+        "--copy",
+        "--copy-file-range",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--sync-method",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "a85ef0ad46fbab6055578c0f218aca9ab53bd8d37227d2c9d17f7bec9fcaa06a",
+      "documentationSourceSha256": "aeae3463584bb78a1c915a330343ad34deac7e68f5fc0631f2f2c7eaa178e81f",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--clone",
+        "--copy",
+        "--copy-file-range",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--socketdir",
+        "--sync-method",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    },
+    "18": {
+      "documentation": "https://www.postgresql.org/docs/18/pgupgrade.html",
+      "toolAvailable": true,
+      "optionIdsInCurrentMajorDocumentation": [
+        "check",
+        "clone",
+        "copy",
+        "copy-file-range",
+        "help",
+        "jobs",
+        "link",
+        "new-bindir",
+        "new-datadir",
+        "new-options",
+        "new-port",
+        "no-statistics",
+        "no-sync",
+        "old-bindir",
+        "old-datadir",
+        "old-options",
+        "old-port",
+        "retain",
+        "set-char-signedness",
+        "socketdir",
+        "swap",
+        "sync-method",
+        "username",
+        "verbose",
+        "version"
+      ],
+      "resolvedLongOptions": [
+        "--check",
+        "--clone",
+        "--copy",
+        "--copy-file-range",
+        "--help",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-statistics",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--set-char-signedness",
+        "--socketdir",
+        "--swap",
+        "--sync-method",
+        "--username",
+        "--verbose",
+        "--version"
+      ],
+      "sourceSha256": "597481d7c7db58252d1da9ad42e2656897b17ababd369017af315002eaf6f470",
+      "documentationSourceSha256": "068b695f2ce70b323081c1716f0f4d5d491524d93687a099e8c4e4f6d36574cb",
+      "sourceOptionTableLongOptions": [
+        "--check",
+        "--clone",
+        "--copy",
+        "--copy-file-range",
+        "--jobs",
+        "--link",
+        "--new-bindir",
+        "--new-datadir",
+        "--new-options",
+        "--new-port",
+        "--no-statistics",
+        "--no-sync",
+        "--old-bindir",
+        "--old-datadir",
+        "--old-options",
+        "--old-port",
+        "--retain",
+        "--set-char-signedness",
+        "--socketdir",
+        "--swap",
+        "--sync-method",
+        "--username",
+        "--verbose"
+      ],
+      "auditNote": "Parser union includes documented short-only, command and pre-parsed utility entries. initdb --show is source-only before 17; pg_resetwal long spellings start at 11; --pgdata is source-supported before documented in 17."
+    }
+  },
+  "verification": {
+    "inventoryAudit": "All supported major manuals and stable parser option tables compared independently on 2026-10-02. Source/documentation SHA256 recorded per major.",
+    "apiAudit": "Every inventory entry binds to a public Options property, GetHelpAsync or executable probe.",
+    "constraints": "See docs/server-applications-phase-7.md and internal validators.",
+    "environment": "Caller overrides are passed only to the process; upstream ambient environment defaults remain available."
+  }
+}
