@@ -28,7 +28,7 @@ public sealed class DropUserOptions
 }
 
 /// <summary><para>EN: Executes dropuser.</para><para>JA: dropuser を実行します。</para></summary>
-public sealed class DropUser
+public sealed partial class DropUser
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a dropuser wrapper.</para><para>JA: dropuser wrapper を作成します。</para></summary>
@@ -41,6 +41,7 @@ public sealed class DropUser
     /// <summary><para>EN: Validates and executes dropuser.</para><para>JA: dropuser を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(DropUserOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

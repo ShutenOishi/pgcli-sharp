@@ -22,7 +22,7 @@ public sealed class PgServerIo
 }
 
 /// <summary><para>EN: Execution metadata. Success is the tool process result, not proof of cluster health or rollback safety. </para><para>JA: 実行メタデータです。成功はツールプロセスの結果で、クラスタの正常性や取り消し安全性の証明ではありません。</para></summary>
-public class PgServerResult
+public class PgServerResult : IPgExecutionResult
 {
     internal PgServerResult(MaintenanceExecutionInfo info)
     {

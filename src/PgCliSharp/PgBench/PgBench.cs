@@ -301,7 +301,7 @@ public sealed class PgBenchResult : PgMaintenanceResult
 }
 
 /// <summary><para>EN: Executes pgbench with typed PostgreSQL 10-18 options.</para><para>JA: PostgreSQL 10〜18 の型付きオプションで pgbench を実行します。</para></summary>
-public sealed class PgBench
+public sealed partial class PgBench
 {
     private readonly MaintenanceExecutor _executor;
 
@@ -319,6 +319,7 @@ public sealed class PgBench
     /// <summary><para>EN: Validates and executes pgbench. Exit codes 0-1 are typed for PostgreSQL 10-11; PostgreSQL 12+ additionally defines runtime-error status 2.</para><para>JA: pgbench を検証して実行します。PostgreSQL 10〜11 は終了コード 0〜1、PostgreSQL 12 以降は実行時 error の 2 も型付き status として返します。</para></summary>
     public async Task<PgBenchResult> ExecuteAsync(PgBenchOptions options, PgBenchIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

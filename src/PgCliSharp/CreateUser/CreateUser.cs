@@ -54,7 +54,7 @@ public sealed class CreateUserOptions
 }
 
 /// <summary><para>EN: Executes createuser.</para><para>JA: createuser を実行します。</para></summary>
-public sealed class CreateUser
+public sealed partial class CreateUser
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a createuser wrapper.</para><para>JA: createuser wrapper を作成します。</para></summary>
@@ -67,6 +67,7 @@ public sealed class CreateUser
     /// <summary><para>EN: Validates and executes createuser.</para><para>JA: createuser を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(CreateUserOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

@@ -109,7 +109,7 @@ internal static class PgRestoreOptionAvailability
     internal static void Ensure(
         PgRestoreOptionAvailabilityInfo availability,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         if ((int)selectedVersion < (int)availability.Since ||
             (int)selectedVersion > (int)availability.Until)
@@ -121,7 +121,7 @@ internal static class PgRestoreOptionAvailability
                 availability.Until);
         }
 
-        if (availability.MinimumVersions.TryGetValue(
+        if (executableVersion is not null && availability.MinimumVersions.TryGetValue(
                 selectedVersion,
                 out Version? minimumVersion) &&
             executableVersion.NumericVersion < minimumVersion)

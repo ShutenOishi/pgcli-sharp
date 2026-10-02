@@ -241,7 +241,7 @@ public sealed class PgBaseBackupResult : PgBackupWalResult
 }
 
 /// <summary><para>EN: Executes pg_basebackup with typed PostgreSQL 10-18 options.</para><para>JA: 型付き PostgreSQL 10〜18 オプションで pg_basebackup を実行します。</para></summary>
-public sealed class PgBaseBackup
+public sealed partial class PgBaseBackup
 {
     private readonly IProcessRunner _runner;
     private readonly PostgreSqlExecutableVersionProvider _versions;
@@ -268,6 +268,7 @@ public sealed class PgBaseBackup
     /// <summary><para>EN: Validates and executes pg_basebackup.</para><para>JA: pg_basebackup を検証して実行します。</para></summary>
     public async Task<PgBaseBackupResult> ExecuteAsync(PgBaseBackupOptions options, PgBaseBackupDestination destination, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
         if (destination is null) throw new ArgumentNullException(nameof(destination));

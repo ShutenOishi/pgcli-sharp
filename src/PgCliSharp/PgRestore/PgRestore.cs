@@ -9,7 +9,7 @@ namespace PgCliSharp;
 /// <para>EN: Executes a caller-selected pg_restore executable with typed, version-aware archive input and restore options.</para>
 /// <para>JA: 呼び出し側が選択した pg_restore 実行ファイルを、型付きかつバージョン対応のアーカイブ入力・復元オプションで実行します。</para>
 /// </summary>
-public sealed class PgRestore
+public sealed partial class PgRestore
 {
     private readonly IProcessRunner _processRunner;
     private readonly PostgreSqlExecutableVersionProvider _versionProvider;
@@ -65,6 +65,7 @@ public sealed class PgRestore
         TimeSpan? timeout = null,
         CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null)
         {

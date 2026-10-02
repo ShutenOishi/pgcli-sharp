@@ -8,7 +8,7 @@ internal static class PgDumpAllValidator
         PgDumpAllOptions options,
         PgDumpAllOutput output,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         ValidateEnumValues(options, output, selectedVersion);
         ValidateScalarValues(options, selectedVersion);
@@ -94,7 +94,7 @@ internal static class PgDumpAllValidator
     private static void ValidateAvailability(
         PgDumpAllOptions options,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         EnsureIf(
             options.IncludeOids,
@@ -320,7 +320,7 @@ internal static class PgDumpAllValidator
         bool requested,
         PgDumpAllOptionAvailabilityInfo availability,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         if (requested)
         {

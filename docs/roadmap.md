@@ -146,6 +146,7 @@ Tools that can alter or recover data directories require especially explicit doc
 - Verify Windows/Linux/macOS behavior where applicable and record where legacy PostgreSQL packages prevent a reproducible combination.
 - Freeze breaking API changes.
 - Complete README/examples.
+- User-approved ADR-0018 adds configuration lambdas, execution snapshots, offline validation/commands, shared result metadata and awaited psql completion; review the additive compiled API contract and complete its CI gates before CP-04.
 - Explicitly decide whether the preserved Phase 3 `0.1.0-alpha.1` candidate is published or superseded, then revalidate the selected source/package/notes provenance before enabling any publication manifest.
 - Release candidates followed by `1.0.0`.
 

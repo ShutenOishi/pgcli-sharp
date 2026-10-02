@@ -63,7 +63,7 @@ public sealed class PgVerifyBackupResult : PgBackupWalResult
 }
 
 /// <summary><para>EN: Executes PostgreSQL 13+ pg_verifybackup.</para><para>JA: PostgreSQL 13+ の pg_verifybackup を実行します。</para></summary>
-public sealed class PgVerifyBackup
+public sealed partial class PgVerifyBackup
 {
     private readonly IProcessRunner _runner;
     private readonly PostgreSqlExecutableVersionProvider _versions;
@@ -91,6 +91,7 @@ public sealed class PgVerifyBackup
     /// <summary><para>EN: Validates and executes pg_verifybackup.</para><para>JA: pg_verifybackup を検証して実行します。</para></summary>
     public async Task<PgVerifyBackupResult> ExecuteAsync(PgVerifyBackupOptions options, PgVerifyBackupInput input, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
         if (input is null) throw new ArgumentNullException(nameof(input));

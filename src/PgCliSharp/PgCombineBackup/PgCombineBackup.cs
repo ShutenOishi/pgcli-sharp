@@ -56,7 +56,7 @@ public sealed class PgCombineBackupResult : PgBackupWalResult
 }
 
 /// <summary><para>EN: Executes PostgreSQL 17+ pg_combinebackup.</para><para>JA: PostgreSQL 17+ の pg_combinebackup を実行します。</para></summary>
-public sealed class PgCombineBackup
+public sealed partial class PgCombineBackup
 {
     private readonly IProcessRunner _runner;
     private readonly PostgreSqlExecutableVersionProvider _versions;
@@ -84,6 +84,7 @@ public sealed class PgCombineBackup
     /// <summary><para>EN: Validates and executes pg_combinebackup.</para><para>JA: pg_combinebackup を検証して実行します。</para></summary>
     public async Task<PgCombineBackupResult> ExecuteAsync(PgCombineBackupOptions options, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

@@ -46,7 +46,7 @@ public sealed class ReindexDbOptions
 }
 
 /// <summary><para>EN: Executes reindexdb.</para><para>JA: reindexdb を実行します。</para></summary>
-public sealed class ReindexDb
+public sealed partial class ReindexDb
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a reindexdb wrapper.</para><para>JA: reindexdb wrapper を作成します。</para></summary>
@@ -59,6 +59,7 @@ public sealed class ReindexDb
     /// <summary><para>EN: Validates and executes reindexdb.</para><para>JA: reindexdb を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(ReindexDbOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

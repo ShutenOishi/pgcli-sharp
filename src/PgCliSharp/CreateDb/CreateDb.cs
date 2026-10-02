@@ -52,7 +52,7 @@ public sealed class CreateDbOptions
 }
 
 /// <summary><para>EN: Executes createdb with typed PostgreSQL 10-18 options.</para><para>JA: PostgreSQL 10〜18 の型付きオプションで createdb を実行します。</para></summary>
-public sealed class CreateDb
+public sealed partial class CreateDb
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a createdb wrapper for an explicit executable path/version.</para><para>JA: 明示的な executable path/version の createdb wrapper を作成します。</para></summary>
@@ -65,6 +65,7 @@ public sealed class CreateDb
     /// <summary><para>EN: Validates and executes createdb.</para><para>JA: createdb を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(CreateDbOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

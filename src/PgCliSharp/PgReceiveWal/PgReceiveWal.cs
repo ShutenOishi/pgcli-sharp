@@ -120,7 +120,7 @@ public sealed class PgReceiveWalResult : PgBackupWalResult
 }
 
 /// <summary><para>EN: Executes pg_receivewal using typed PostgreSQL 10-18 options.</para><para>JA: PostgreSQL 10〜18 の型付きオプションで pg_receivewal を実行します。</para></summary>
-public sealed class PgReceiveWal
+public sealed partial class PgReceiveWal
 {
     private readonly IProcessRunner _runner;
     private readonly PostgreSqlExecutableVersionProvider _versions;
@@ -147,6 +147,7 @@ public sealed class PgReceiveWal
     /// <summary><para>EN: Validates and executes pg_receivewal.</para><para>JA: pg_receivewal を検証して実行します。</para></summary>
     public async Task<PgReceiveWalResult> ExecuteAsync(PgReceiveWalOptions options, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

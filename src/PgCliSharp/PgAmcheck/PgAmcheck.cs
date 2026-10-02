@@ -80,7 +80,7 @@ public sealed class PgAmcheckOptions
 }
 
 /// <summary><para>EN: Executes PostgreSQL 14+ pg_amcheck.</para><para>JA: PostgreSQL 14 以降の pg_amcheck を実行します。</para></summary>
-public sealed class PgAmcheck
+public sealed partial class PgAmcheck
 {
     private readonly MaintenanceExecutor _executor;
     /// <summary><para>EN: Creates a pg_amcheck wrapper and rejects PostgreSQL 10-13 before process startup.</para><para>JA: pg_amcheck wrapper を作成し、PostgreSQL 10〜13 は process 起動前に拒否します。</para></summary>
@@ -94,6 +94,7 @@ public sealed class PgAmcheck
     /// <summary><para>EN: Validates and executes pg_amcheck.</para><para>JA: pg_amcheck を検証して実行します。</para></summary>
     public async Task<PgMaintenanceResult> ExecuteAsync(PgAmcheckOptions options, PgMaintenanceIo? io = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

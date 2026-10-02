@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0017. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0018. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -87,6 +87,18 @@ Use:
 
 Avoid pairs of booleans that can represent impossible states when a single enum can model the state safely.
 
+### Configuration and offline commands (ADR-0018)
+
+Every wrapper also supports lambda configuration through extension methods, offline
+`Validate` and `CreateCommand`. Execution captures a private copy of Options,
+ordered collections and environment before the first await. Existing instance
+Options APIs remain source-compatible, including null-call overload resolution.
+The immutable command description exposes exact tokens/environment explicitly;
+default string output redacts all values. Offline patch assertions do not bypass
+actual executable probing. Stream routing is metadata, not a generated pipeline.
+See [Configuration and commands / 設定とコマンド生成](configuration-and-commands.md)
+and [ADR-0018](adr/0018-offline-commands-and-configuration-snapshots.md).
+
 ## 6. Version-specific behavior
 
 Every option that differs by PostgreSQL version must have machine-testable compatibility metadata or equivalent validation logic.
@@ -147,6 +159,11 @@ Phase 6 additionally separates finite one-shot execution from long-lived redirec
 Do not assume stdout is text. Some PostgreSQL tools can emit binary archives.
 
 Execution APIs should support streams and file-based output as appropriate. A common result may contain fields such as exit code, duration, parsed executable version, and stderr diagnostics, but should not force large stdout payloads into a string or byte array.
+
+Results implement the minimal read-only `IPgExecutionResult` metadata contract;
+tool-specific statuses and stderr ownership stay distinct. `PsqlSession.CompleteAsync`
+signals EOF and awaits process completion/drain with cancellation, while preserving
+the existing session timeout and caller-owned stream contract.
 
 ## 10. Exceptions and diagnostics
 

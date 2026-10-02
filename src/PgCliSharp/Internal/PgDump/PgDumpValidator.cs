@@ -8,7 +8,7 @@ internal static class PgDumpValidator
         PgDumpOptions options,
         PgDumpOutput output,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
 #if NETSTANDARD2_0
         if (options is null)
@@ -121,7 +121,7 @@ internal static class PgDumpValidator
     private static void ValidateAvailability(
         PgDumpOptions options,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         EnsureIf(options.IncludeOids, PgDumpOptionAvailabilityCatalog.Oids, selectedVersion, executableVersion);
         EnsureIf(options.NoSynchronizedSnapshots, PgDumpOptionAvailabilityCatalog.NoSynchronizedSnapshots, selectedVersion, executableVersion);
@@ -324,7 +324,7 @@ internal static class PgDumpValidator
         bool requested,
         PgDumpOptionAvailabilityInfo availability,
         PostgreSqlMajorVersion selectedVersion,
-        PostgreSqlExecutableVersion executableVersion)
+        PostgreSqlExecutableVersion? executableVersion)
     {
         if (requested)
         {

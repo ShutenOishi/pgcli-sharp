@@ -133,7 +133,7 @@ public enum PgBackupSyncMethod
 /// <para>EN: Base execution metadata shared by Phase 4 command results.</para>
 /// <para>JA: Phase 4 コマンド結果で共有する実行メタデータです。</para>
 /// </summary>
-public abstract class PgBackupWalResult
+public abstract class PgBackupWalResult : IPgExecutionResult
 {
     internal PgBackupWalResult(int exitCode, TimeSpan duration, Version executableVersion, string rawExecutableVersion, string standardError)
     {

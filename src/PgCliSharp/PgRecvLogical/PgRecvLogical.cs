@@ -119,7 +119,7 @@ public sealed class PgRecvLogicalResult : PgBackupWalResult
 }
 
 /// <summary><para>EN: Executes pg_recvlogical using typed PostgreSQL 10-18 options.</para><para>JA: PostgreSQL 10〜18 の型付きオプションで pg_recvlogical を実行します。</para></summary>
-public sealed class PgRecvLogical
+public sealed partial class PgRecvLogical
 {
     private readonly IProcessRunner _runner;
     private readonly PostgreSqlExecutableVersionProvider _versions;
@@ -146,6 +146,7 @@ public sealed class PgRecvLogical
     /// <summary><para>EN: Validates and executes pg_recvlogical.</para><para>JA: pg_recvlogical を検証して実行します。</para></summary>
     public async Task<PgRecvLogicalResult> ExecuteAsync(PgRecvLogicalOptions options, PgRecvLogicalOutput? output = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
+        options = PgCliSharp.Internal.Configuration.OptionsSnapshot.Copy(options);
 #if NETSTANDARD2_0
         if (options is null) throw new ArgumentNullException(nameof(options));
 #else

@@ -4,7 +4,7 @@ namespace PgCliSharp;
 /// <para>EN: Contains pg_dumpall execution metadata without buffering the SQL script.</para>
 /// <para>JA: SQL スクリプトを全量バッファリングせず、pg_dumpall の実行メタデータを保持します。</para>
 /// </summary>
-public sealed class PgDumpAllResult
+public sealed class PgDumpAllResult : IPgExecutionResult
 {
     internal PgDumpAllResult(
         int exitCode,

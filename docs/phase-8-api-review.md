@@ -2,6 +2,23 @@
 
 ## English
 
+### User-approved additions after the original freeze (ADR-0018)
+
+[ADR-0018](adr/0018-offline-commands-and-configuration-snapshots.md) adds lambda
+configuration, offline validation/command generation, pre-await Options snapshots,
+`IPgExecutionResult` and awaited psql EOF/completion. Existing instance signatures,
+defaults, Options types and tool-specific status/I/O semantics remain. Extensions
+preserve untyped null-call resolution. The reviewed current compiled baseline has
+**185 exported types and 2,863 contract lines**. Its only replacements of existing
+lines are seven result types' interface lists and their 28 getter flags: C# emits
+implicit interface implementations as final virtual slots. Return/property shapes
+and access remain unchanged; no existing member is removed. Tests still reject
+unreviewed drift and compare all assets. Read the [consumer guide](configuration-and-commands.md)
+for exact/offline version assertions, conservative secret masking, shell syntax
+and external stream routing. The original CP-03 audit below records its historical
+177-type baseline; the new additions are explicitly reviewed, not silently frozen
+as cosmetic changes. Publication/candidate decisions remain separate.
+
 Baseline source: completed CP-02 main `3f230bd8bddf59b0bed5aeb8bb7589c77b9f88bf`.
 Status: reviewed compiled baseline and gates implemented; final-head/exact-main
 CI are required before CP-03 completion. Phase 8 is not release-ready.
@@ -109,3 +126,8 @@ ADR-0017 により安定化中の破壊的 shape 変更を凍結し、ベース�
 これは意味上の全互換性、翻訳の意味、全 custom attribute、過去の全バイナリ、
 全 OS 実機の保証ではありません。最終 head と正確な main CI の成功で CP-03 を完了とし、
 CP-04 のライセンス・候補・公開前検証と公開承認は残します。
+
+ADR-0018 の追加では既存署名・既定値を維持し、ラムダ設定・設定コピー・オフライン検証／
+コマンド生成・共通結果・psql 終了待ちを導入します。現在のレビュー済みベースラインは
+185公開型・2,863行です。既存行の置換はインターフェイス実装に伴う7型と28 getter の
+コンパイラーフラグで、既存メンバーの削除・名前／型変更はありません。公開判断は別です。

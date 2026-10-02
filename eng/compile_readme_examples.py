@@ -17,7 +17,8 @@ def main():
         for index, snippet in enumerate(snippets, 1):
             # Namespace imports become file-scoped imports; using declarations stay.
             snippet = re.sub(r"^using [\w.]+;\n", "", snippet, flags=re.M)
-            blocks.append("static async Task Example" + str(len(blocks) + 1) + "() {\n" + snippet + "\n}")
+            signature = "static async Task" if re.search(r"\bawait\b", snippet) else "static void"
+            blocks.append(signature + " Example" + str(len(blocks) + 1) + "() {\n" + snippet + "\n}")
             print("Compile-only: " + name + " C# block " + str(index), flush=True)
     frameworks = "net8.0;net10.0"
     legacy = ""
@@ -34,7 +35,7 @@ def main():
             legacy + '</ItemGroup></Project>', encoding="utf-8")
         (folder / "Examples.cs").write_text("using System;\nusing System.IO;\nusing System.Text;\nusing System.Threading.Tasks;\nusing PgCliSharp;\nusing PgCliSharp.ServerApplications;\ninternal static class Examples {\n" + "\n".join(blocks) + "\n}", encoding="utf-8")
         subprocess.run(["dotnet", "build", str(project), "--configuration", "Release", "--nologo",
-                        "-p:UseSharedCompilation=false", "-nodeReuse:false"], cwd=root, check=True)
+                        "-p:UseSharedCompilation=false", "-nodeReuse:false", "-maxcpucount:1"], cwd=root, check=True)
 
 
 if __name__ == "__main__":

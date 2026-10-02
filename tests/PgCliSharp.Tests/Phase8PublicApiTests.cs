@@ -71,7 +71,13 @@ public sealed class Phase8PublicApiTests(ITestOutputHelper output)
             Assert.Equal(typeof(string), wrapper.GetProperty("ExecutablePath")!.PropertyType);
             Type options = assembly.GetType(wrapper.FullName + "Options", throwOnError: true)!;
             Assert.True(options.IsSealed);
-            foreach (MethodInfo method in wrapper.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Where(method => !method.IsSpecialName))
+            MethodInfo command = wrapper.GetMethod("CreateCommand")!;
+            MethodInfo validation = wrapper.GetMethod("Validate")!;
+            Assert.Equal(typeof(PgCommand), command.ReturnType);
+            Assert.Equal(typeof(PgValidationResult), validation.ReturnType);
+            Assert.Equal(options, command.GetParameters()[0].ParameterType);
+            Assert.Equal(options, validation.GetParameters()[0].ParameterType);
+            foreach (MethodInfo method in wrapper.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Where(method => !method.IsSpecialName && method.Name.EndsWith("Async", StringComparison.Ordinal)))
             {
                 Assert.EndsWith("Async", method.Name);
                 Assert.True(method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task<>));
