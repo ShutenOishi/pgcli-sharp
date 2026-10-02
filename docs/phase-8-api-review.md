@@ -3,8 +3,8 @@
 ## English
 
 Baseline source: completed CP-02 main `3f230bd8bddf59b0bed5aeb8bb7589c77b9f88bf`.
-Status: review and gates implemented; final-head/exact-main CI and a populated
-compiled baseline are required before CP-03 completion. Phase 8 is not release-ready.
+Status: reviewed compiled baseline and gates implemented; final-head/exact-main
+CI are required before CP-03 completion. Phase 8 is not release-ready.
 
 ### Naming and consistency decisions
 
@@ -55,7 +55,8 @@ claim that arbitrary upstream stderr is scrubbed.
 ### Checked contract and examples
 
 `tests/api/PublicApi.txt` records the compiled contract. The collector normalizes
-BCL type names without assembly versions and sorts ordinally; it includes type
+BCL type names without assembly versions and sorts ordinally; inherited BCL
+interfaces and zero-valued reflection flag aliases are normalized. It includes type
 shape, bases/interfaces, public/protected methods and accessors, fields/events,
 named parameters, default values, generic constraints, enum values, modifiers and
 nullable/obsolete/flags metadata. All three library assets match one baseline
@@ -78,7 +79,13 @@ every native OS scenario. CP-01/CP-02 and independent behavior/spec tests remain
 necessary. CP-04's license/candidate/provenance decisions and explicit publication
 authorization remain outstanding. Both manifests stay false with Phase 3 source.
 
-Completion evidence will be indexed by the CP-03 pull request, including exact
+Initial compiled capture on Linux/macOS/net8/net10 and Windows/net48/net8/net10
+found **177 exported types and 2,675 contract lines**. After excluding inherited
+BCL interfaces/zero flag display aliases, all seven captures agree. The collector
+and baseline are now checked against each compiled target, rather than inferred
+from a source-text parser. Source API names/shapes are unchanged from CP-02.
+
+Completion evidence is indexed by [PR #16](https://github.com/ShutenOishi/pgcli-sharp/pull/16), including exact
 tested head, merge SHA and both CI runs; no untested follow-up commit is needed.
 
 ## 日本語

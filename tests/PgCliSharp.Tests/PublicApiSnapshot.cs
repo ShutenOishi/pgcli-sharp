@@ -15,24 +15,25 @@ internal static class PublicApiSnapshot
         foreach (Type type in types)
         {
             string owner = Name(type);
-            lines.Add("TYPE " + owner + " " + type.Attributes + " base=" +
+            lines.Add("TYPE " + owner + " " + AttributeFlags(type.Attributes) + " base=" +
                 (type.BaseType is null ? "-" : Name(type.BaseType)) + " interfaces=" +
-                string.Join(",", type.GetInterfaces().Select(Name).OrderBy(name => name, StringComparer.Ordinal)) + Metadata(type.GetCustomAttributesData()));
+                string.Join(",", type.GetInterfaces().Except(type.BaseType?.GetInterfaces() ?? Array.Empty<Type>())
+                    .Select(Name).OrderBy(name => name, StringComparer.Ordinal)) + Metadata(type.GetCustomAttributesData()));
             foreach (Type argument in type.GetGenericArguments().Where(argument => argument.IsGenericParameter))
                 lines.Add("CONSTRAINT " + owner + " " + Constraint(argument));
             foreach (ConstructorInfo constructor in type.GetConstructors(Declared).Where(Visible))
-                lines.Add("CTOR " + owner + " " + constructor.Attributes + Parameters(constructor.GetParameters()));
+                lines.Add("CTOR " + owner + " " + AttributeFlags(constructor.Attributes) + Parameters(constructor.GetParameters()));
             foreach (MethodInfo method in type.GetMethods(Declared).Where(Visible))
             {
                 string generics = method.IsGenericMethod ? "<" + string.Join(",", method.GetGenericArguments().Select(Constraint)) + ">" : "";
-                lines.Add("METHOD " + owner + "." + method.Name + generics + " " + method.Attributes +
+                lines.Add("METHOD " + owner + "." + method.Name + generics + " " + AttributeFlags(method.Attributes) +
                     " returns=" + ParameterType(method.ReturnParameter) + Parameters(method.GetParameters()) + Metadata(method.GetCustomAttributesData()));
             }
             foreach (PropertyInfo property in type.GetProperties(Declared).Where(property => property.GetAccessors(true).Any(Visible)))
                 lines.Add("PROPERTY " + owner + "." + property.Name + " " + Name(property.PropertyType) +
                     Parameters(property.GetIndexParameters()) + Metadata(property.GetCustomAttributesData()));
             foreach (FieldInfo field in type.GetFields(Declared).Where(field => !field.IsSpecialName && (field.IsPublic || field.IsFamily || field.IsFamilyOrAssembly)))
-                lines.Add("FIELD " + owner + "." + field.Name + " " + field.Attributes + " " + Name(field.FieldType) +
+                lines.Add("FIELD " + owner + "." + field.Name + " " + AttributeFlags(field.Attributes) + " " + Name(field.FieldType) +
                     (field.IsLiteral ? " value=" + Value(field.GetRawConstantValue()) : "") + Metadata(field.GetCustomAttributesData()));
             foreach (EventInfo item in type.GetEvents(Declared).Where(item => item.GetAddMethod(true) is MethodInfo method && Visible(method)))
                 lines.Add("EVENT " + owner + "." + item.Name + " " + Name(item.EventHandlerType!) + Metadata(item.GetCustomAttributesData()));
@@ -41,6 +42,10 @@ internal static class PublicApiSnapshot
     }
 
     private static bool Visible(MethodBase method) => method.IsPublic || method.IsFamily || method.IsFamilyOrAssembly;
+
+    // Framework's Enum.ToString() may include names for zero-valued aliases.
+    private static string AttributeFlags(Enum value) => string.Join(", ", value.ToString().Split(',')
+        .Select(name => name.Trim()).Where(name => Convert.ToUInt64(Enum.Parse(value.GetType(), name), CultureInfo.InvariantCulture) != 0));
 
     private static string Parameters(ParameterInfo[] parameters) => "(" + string.Join(",", parameters.Select(parameter =>
         parameter.Name + ":" + ParameterType(parameter) + " flags=" + parameter.Attributes +

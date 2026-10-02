@@ -30,6 +30,8 @@ public sealed class Phase8PublicApiTests(ITestOutputHelper output)
         Assert.Contains(lines, line => line.Contains(".ProtectedOperation ") && line.Contains("Family"));
         Assert.Contains(lines, line => line.Contains(".Ready ") && line.Contains("value=3"));
         Assert.Contains(lines, line => line.Contains("System.String") && line.Contains("Nullable"));
+        Assert.Contains(lines, line => line.StartsWith("TYPE ", StringComparison.Ordinal) && line.Contains("base=System.Enum interfaces="));
+        Assert.DoesNotContain(lines, line => line.Contains("System.ISpanFormattable"));
         Assert.Equal(lines, PublicApiSnapshot.Capture(new[] { typeof(SnapshotStatus), typeof(SnapshotFixture) }));
     }
 

@@ -22,7 +22,8 @@ match the same baseline. It covers public/exported types and declared public or
 protected constructors, methods/accessors, properties, fields/events, bases and
 interfaces, generic constraints, named parameters/defaults, enum constants,
 required/optional modifiers and compiler nullable metadata. BCL assembly identity
-and inherited BCL members are deliberately excluded to avoid framework noise.
+and inherited BCL members/interfaces are deliberately excluded to avoid framework
+noise; zero-valued reflection flag display aliases are normalized.
 
 Mismatch fails CI; diagnostics can show the actual inventory but never rewrite
 the baseline. Baseline changes require an explicit reviewed diff and rationale.
