@@ -42,9 +42,9 @@ There is no public rename/removal, TFM or runtime-dependency change here. The
 snapshot is a conservative shape gate, not a complete semantic compatibility
 analyzer: it does not prove behavior, translation meaning, reflection-only
 private details, every attribute contract, binary compatibility against every
-historical package, native execution on every OS or release readiness. Protected
-nested types are not currently present; introducing them requires extending the
-inventory collector as part of that review. Full Phase 8 and publication remain
+historical package, native execution on every OS or release readiness. Reachable
+public/protected nested types are included, even though no protected nested type
+exists in the current library. Full Phase 8 and publication remain
 separate; ADR-0012 continues to disable publication. License/candidate decisions
 are not made by this API freeze.
 

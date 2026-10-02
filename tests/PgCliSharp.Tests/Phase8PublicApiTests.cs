@@ -9,7 +9,7 @@ public sealed class Phase8PublicApiTests(ITestOutputHelper output)
     [Fact]
     public void PublicAndProtectedContract_MatchesReviewedBaseline()
     {
-        string[] actual = PublicApiSnapshot.Capture(typeof(PostgreSqlMajorVersion).Assembly.GetExportedTypes());
+        string[] actual = PublicApiSnapshot.Capture(PublicApiSnapshot.ContractTypes(typeof(PostgreSqlMajorVersion).Assembly));
         string[] expected = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "api", "PublicApi.txt"))
             .Where(line => line.Length > 0 && line[0] != '#').ToArray();
         if (!expected.SequenceEqual(actual, StringComparer.Ordinal))
@@ -32,11 +32,13 @@ public sealed class Phase8PublicApiTests(ITestOutputHelper output)
         Assert.Contains(lines, line => line.Contains("System.String") && line.Contains("Nullable"));
         Assert.Contains(lines, line => line.StartsWith("TYPE ", StringComparison.Ordinal) && line.Contains("base=System.Enum interfaces="));
         Assert.DoesNotContain(lines, line => line.Contains("System.ISpanFormattable"));
+        Assert.Contains(PublicApiSnapshot.ContractTypes(typeof(SnapshotFixture).Assembly), type => type.Name == "ProtectedTypeFixture");
         Assert.Equal(lines, PublicApiSnapshot.Capture(new[] { typeof(SnapshotStatus), typeof(SnapshotFixture) }));
     }
 
     public class SnapshotFixture
     {
+        protected class ProtectedTypeFixture { }
         public virtual string? Operation(int amount = 7) => amount == 7 ? null : "value";
         protected virtual void ProtectedOperation() { }
     }

@@ -9,6 +9,11 @@ internal static class PublicApiSnapshot
     private const BindingFlags Declared = BindingFlags.Public | BindingFlags.NonPublic |
         BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
+    internal static IEnumerable<Type> ContractTypes(Assembly assembly) => assembly.GetTypes().Where(ExternallyAccessible);
+
+    private static bool ExternallyAccessible(Type type) => type.IsPublic ||
+        ((type.IsNestedPublic || type.IsNestedFamily || type.IsNestedFamORAssem) && ExternallyAccessible(type.DeclaringType!));
+
     internal static string[] Capture(IEnumerable<Type> types)
     {
         var lines = new List<string>();

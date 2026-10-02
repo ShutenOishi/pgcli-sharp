@@ -59,7 +59,8 @@ BCL type names without assembly versions and sorts ordinally; inherited BCL
 interfaces and zero-valued reflection flag aliases are normalized. It includes type
 shape, bases/interfaces, public/protected methods and accessors, fields/events,
 named parameters, default values, generic constraints, enum values, modifiers and
-nullable/obsolete/flags metadata. All three library assets match one baseline
+nullable/obsolete/flags metadata. Public/protected nested types are included when
+their containing type is externally accessible. All three library assets match one baseline
 through net8/net10 and Windows net48 tests. Missing/changed baselines fail; no
 automatic regeneration occurs. A deliberate fixture checks ordering, optional
 defaults, protected methods, enum values and nullable metadata.
