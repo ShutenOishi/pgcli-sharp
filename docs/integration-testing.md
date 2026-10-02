@@ -4,7 +4,7 @@
 
 PgCliSharp keeps deterministic unit and compatibility tests independent of local PostgreSQL installations, but those tests are not counted as real PostgreSQL execution evidence.
 
-CI therefore has a separate Linux integration matrix for representative PostgreSQL majors 16 and 18. Each job installs an isolated PostgreSQL server/client toolchain and runs the public PgCliSharp API against disposable databases.
+CI has a separate ubuntu-24.04/net10.0 matrix for pinned source builds of PostgreSQL 10-18. Each job verifies the official archive SHA256, builds an isolated server/client toolchain and runs public APIs against owned socket-only clusters. [CP-02 matrix and exclusions](phase-8-real-binary-matrix.md) and ADR-0016 define the scope.
 
 | Scenario | Wrapper path exercised |
 |---|---|
@@ -14,7 +14,7 @@ CI therefore has a separate Linux integration matrix for representative PostgreS
 | post-start command exchange and EOF | redirected `PsqlSession` |
 | initialization and one-transaction benchmark | `PgBench` |
 
-The job records the actual CLI and server versions in the workflow log/summary. It uses `net10.0` on `ubuntu-latest` and never connects to a user-owned PostgreSQL environment.
+The job records actual CLI/server versions, binary hashes, OS/TFM, build metadata, TRX outcomes and exclusions in JSON development artifacts. Required configuration validation prevents omissions from becoming passes. It never connects to a user-owned environment. Artifact sourceCommit records the checkout/Actions SHA; testedHeadSha records the PR head separately because checkout may use GitHub's temporary PR merge ref.
 
 Phase 8 expands this evidence toward PostgreSQL 10-18 where reproducible maintained runners are available. A major/patch or OS combination that cannot be reproduced in maintained CI must be listed with its exclusion reason and corresponding official-source/specification plus deterministic regression evidence. Mock/fake-runner tests are never relabeled as real PostgreSQL evidence.
 
@@ -24,25 +24,25 @@ The test class is gated by `PGCLI_REAL_PG_*` environment variables so normal uni
 
 通常の unit/compatibility test は PostgreSQL のローカル導入に依存させませんが、それらを実 PostgreSQL 実行の証拠として数えることもしません。
 
-CI には代表バージョン PostgreSQL 16 / 18 を対象とする Linux 統合テスト matrix を分離して設けます。各 job は使い捨ての PostgreSQL server/client 環境を構築し、利用者所有環境には接続せず、公開 PgCliSharp API から専用 database を操作します。
+CI には PostgreSQL 10〜18 の固定ソースを対象とする ubuntu-24.04/net10.0 の matrix を設けます。公式 SHA256 を確認してビルドし、TCP無効の使い捨てクラスタで公開 API を実行します。利用者所有環境には接続せず、CP-02 文書と ADR-0016 に範囲・除外を記録します。
 
-検証シナリオは有限 `Psql` による seed/query、`PgDump` custom archive、`PgRestore` direct restore、起動後に書き込みと EOF を行う redirected `PsqlSession`、`PgBench` の初期化と最小 benchmark です。実際の CLI/server version は workflow log/summary に残します。
+有限 `Psql`、`PgDump`／`PgRestore`、redirected `PsqlSession`、`PgBench`、クラスタ smoke に加え、13以降の実巻き戻しと16→18コピー移行を検証します。実 CLI／server 版・hash・OS／TFM・結果・除外を JSON/TRX に残し、必須設定やテスト欠落を合格にしません。
 
 Phase 8 では、再現可能な runner が用意できる範囲で PostgreSQL 10〜18 へ証拠を拡張します。維持可能な CI で再現できない major/patch/OS は除外理由と、公式 source/specification および決定論的 regression test による補完証拠を明記します。fake/mock の合格を実 PostgreSQL 合格として扱いません。
 
 通常 test は `PGCLI_REAL_PG_*` 環境変数が無い場合に real-PG シナリオを実行しないため、PostgreSQL の導入を要求しません。
 
-## Phase 7 server application smoke scenarios
+## Server application smoke and migration scenarios
 
 `RealPostgreSqlServerApplicationsTests` runs alongside the existing real-binary
-scenarios in PostgreSQL 16/18 Linux jobs. It creates a unique disposable cluster,
-checks/disables/enables checksums, executes pg_resetwal with DryRun, and exercises
+scenarios in PostgreSQL 10-18 Linux jobs. It creates a unique disposable cluster,
+checks/disables/enables checksums from 12, executes pg_resetwal with DryRun, and exercises
 pg_ctl Start/Status/Stop with an owned log and socket directory. Cleanup checks
 status before stopping a possibly running server and deletes only the owned
 directory. It never resets production WAL or invokes an upgrade/rewind against
-external clusters. Upgrade/rewind migrations and Windows service lifecycle remain
-Phase 8 real-binary coverage work.
+external clusters. CP-02 adds scoped divergent rewind (13+) and a 16-to-18 Copy
+migration. Windows/macOS real binaries and Windows service lifecycle remain untested.
 
 日本語: Phase 7 の実バイナリ検証は、専用の破棄可能なクラスタで初期化・チェックサム操作・
-WAL リセット dry-run・起動／状態確認／停止を実施します。移行・巻き戻し・Windows サービス操作の
-実証や全履歴版の matrix は Phase 8 へ引き継ぎます。
+WAL リセット dry-run・起動／状態確認／停止を実施します。CP-02 に掲載した巻き戻し・移行は
+専用クラスタで検証し、Windows／macOS実機・サービスや他の除外は未検証として残します。

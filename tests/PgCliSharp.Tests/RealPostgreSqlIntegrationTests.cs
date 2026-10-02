@@ -9,16 +9,7 @@ public sealed class RealPostgreSqlIntegrationTests
     [Fact]
     public async Task RepresentativeRealPostgreSql_BackupRestorePsqlSessionAndPgBench()
     {
-        string? binaryDirectory = Environment.GetEnvironmentVariable("PGCLI_REAL_PG_BIN");
-        string? majorText = Environment.GetEnvironmentVariable("PGCLI_REAL_PG_MAJOR");
-
-        if (string.IsNullOrWhiteSpace(binaryDirectory) ||
-            !int.TryParse(majorText, out int major))
-        {
-            return;
-        }
-
-        PostgreSqlMajorVersion version = (PostgreSqlMajorVersion)major;
+        if (!RealPostgreSqlTestEnvironment.TryGet(out string binaryDirectory, out PostgreSqlMajorVersion version)) return;
         string host = RequiredEnvironment("PGCLI_REAL_PG_HOST");
         int port = int.Parse(
             RequiredEnvironment("PGCLI_REAL_PG_PORT"),

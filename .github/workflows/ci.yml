@@ -51,6 +51,10 @@ jobs:
         shell: bash
         run: bash eng/validate-compatibility-specs.sh
 
+      - name: Validate real PostgreSQL evidence tooling
+        if: runner.os == 'Linux'
+        run: python3 -m unittest discover -s eng -p test_real_postgresql_evidence.py
+
       - name: Restore
         run: dotnet restore PgCliSharp.slnx
 
@@ -100,13 +104,27 @@ jobs:
   real-postgresql:
     name: Real PostgreSQL ${{ matrix.postgresql }} (Linux/net10.0)
     needs: build-test-pack
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         postgresql:
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15
           - 16
+          - 17
           - 18
+    timeout-minutes: 25
+    env:
+      PGCLI_PREFIX_ROOT: ${{ runner.temp }}/pgclisharp-postgresql
+      PGCLI_REAL_PG_BIN: ${{ runner.temp }}/pgclisharp-postgresql/${{ matrix.postgresql }}/bin
+      PGCLI_REAL_PG_MAJOR: ${{ matrix.postgresql }}
+      PGCLI_REAL_PG_REQUIRED: 'true'
+      PGCLI_EVIDENCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
     steps:
       - name: Checkout
@@ -119,61 +137,60 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Install PostgreSQL
+      - name: Install source-build prerequisites
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql-common
-          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
-          sudo apt-get update
-          sudo apt-get install -y "postgresql-${{ matrix.postgresql }}" "postgresql-client-${{ matrix.postgresql }}"
+          sudo apt-get install -y build-essential bison flex zlib1g-dev pkg-config
 
-          if ! sudo pg_lsclusters --no-header | grep -E "^${{ matrix.postgresql }}[[:space:]]+main[[:space:]]" >/dev/null; then
-            sudo pg_createcluster "${{ matrix.postgresql }}" main
-          fi
+      - name: Cache verified PostgreSQL installations
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/pgclisharp-postgresql
+          key: pg-source-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.postgresql }}-${{ hashFiles('eng/postgresql-source-versions.json', 'eng/build-postgresql-source.sh') }}
 
-          if ! sudo pg_ctlcluster "${{ matrix.postgresql }}" main status >/dev/null 2>&1; then
-            sudo pg_ctlcluster "${{ matrix.postgresql }}" main start
-          fi
-
-          pg_port="$(sudo pg_lsclusters --no-header | awk -v version="${{ matrix.postgresql }}" '$1 == version && $2 == "main" { print $3; exit }')"
-          test -n "$pg_port"
-
-          db_user="$(id -un)"
-          sudo -u postgres createuser -p "$pg_port" --superuser "$db_user"
-
-          for database in pgclisharp_source pgclisharp_target pgclisharp_bench; do
-            sudo -u postgres createdb -p "$pg_port" -O "$db_user" "$database"
-          done
-
-          echo "PGCLI_REAL_PG_MAJOR=${{ matrix.postgresql }}" >> "$GITHUB_ENV"
-          echo "PGCLI_REAL_PG_BIN=/usr/lib/postgresql/${{ matrix.postgresql }}/bin" >> "$GITHUB_ENV"
-          echo "PGCLI_REAL_PG_HOST=/var/run/postgresql" >> "$GITHUB_ENV"
-          echo "PGCLI_REAL_PG_PORT=$pg_port" >> "$GITHUB_ENV"
-          echo "PGCLI_REAL_PG_USER=$db_user" >> "$GITHUB_ENV"
-          echo "PGCLI_REAL_PG_SOURCE_DB=pgclisharp_source" >> "$GITHUB_ENV"
-          echo "PGCLI_REAL_PG_TARGET_DB=pgclisharp_target" >> "$GITHUB_ENV"
-          echo "PGCLI_REAL_PG_BENCH_DB=pgclisharp_bench" >> "$GITHUB_ENV"
-
-      - name: Record PostgreSQL versions
+      - name: Build pinned PostgreSQL sources
         shell: bash
         run: |
-          "$PGCLI_REAL_PG_BIN/psql" --version
-          server_version="$("$PGCLI_REAL_PG_BIN/psql" -h "$PGCLI_REAL_PG_HOST" -p "$PGCLI_REAL_PG_PORT" -U "$PGCLI_REAL_PG_USER" -d postgres -Atqc 'show server_version')"
-          {
-            echo "### Real PostgreSQL ${{ matrix.postgresql }}"
-            echo
-            echo "- CLI: $("$PGCLI_REAL_PG_BIN/psql" --version)"
-            echo "- Server: $server_version"
-            echo "- Port: $PGCLI_REAL_PG_PORT"
-            echo "- OS: ubuntu-latest"
-            echo "- TFM: net10.0"
-            echo "- Scenarios: PgDump/PgRestore, finite Psql, redirected PsqlSession, PgBench, disposable initdb/checksums/resetwal dry-run/pg_ctl lifecycle"
-          } >> "$GITHUB_STEP_SUMMARY"
+          bash eng/build-postgresql-source.sh "$PGCLI_REAL_PG_MAJOR"
+          if [ "$PGCLI_REAL_PG_MAJOR" = 18 ]; then
+            bash eng/build-postgresql-source.sh 16
+            echo "PGCLI_REAL_PG_UPGRADE_FROM_BIN=$PGCLI_PREFIX_ROOT/16/bin" >> "$GITHUB_ENV"
+          fi
+
+      - name: Start owned socket-only PostgreSQL cluster
+        shell: bash
+        run: bash eng/setup-real-postgresql.sh
 
       - name: Run real PostgreSQL wrapper integration
         run: >
           dotnet test tests/PgCliSharp.Tests/PgCliSharp.Tests.csproj
           --framework net10.0
           --configuration Release
-          --filter "FullyQualifiedName~RealPostgreSqlIntegrationTests|FullyQualifiedName~RealPostgreSqlServerApplicationsTests"
+          --filter "FullyQualifiedName~RealPostgreSql"
+          --logger "trx;LogFileName=real-postgresql.trx"
+          --results-directory "${{ runner.temp }}/pgcli-evidence"
+
+      - name: Record exact binary, server and scenario evidence
+        if: always()
+        shell: bash
+        run: python3 eng/record_real_postgresql_evidence.py "$RUNNER_TEMP/pgcli-evidence"
+
+      - name: Stop owned cluster
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${PGCLI_REAL_PG_ROOT:-}" ] && [ -f "$PGCLI_REAL_PG_ROOT/data/postmaster.pid" ]; then
+            "$PGCLI_REAL_PG_BIN/pg_ctl" -D "$PGCLI_REAL_PG_ROOT/data" -m fast -t 30 -w stop
+          fi
+
+      - name: Upload real-executable evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-postgresql-${{ matrix.postgresql }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/pgcli-evidence/*
+            ${{ runner.temp }}/pgcli-real-*/*.log
+            /tmp/pgcli-phase8-*/*.log
+          if-no-files-found: error

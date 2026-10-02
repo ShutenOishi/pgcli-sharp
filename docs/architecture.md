@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0015. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0016. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -255,7 +255,7 @@ Use three logical test layers:
 2. Compatibility tests: supported option inventory by PostgreSQL major version.
 3. Integration tests: invoke real PostgreSQL executables/containers for representative end-to-end behavior.
 
-The CI baseline includes disposable Linux PostgreSQL 16 and 18 environments for public-wrapper backup/restore, finite and redirected psql, and pgbench execution. This is representative real-executable evidence, not a claim that the full PostgreSQL 10-18 matrix is already complete. Phase 8 expands and records the matrix according to `docs/integration-testing.md`.
+Phase 8 CP-02 expands the representative Linux matrix to pinned official-source PostgreSQL 10-18 builds under ADR-0016. It adds scoped divergent rewind (13+) and a real 16-to-18 Copy upgrade. Exact CLI/server/OS/TFM/TRX evidence and exclusions are recorded. This is not full patch/OS/tool coverage; Windows/macOS real binaries and service lifecycle remain untested. See `docs/phase-8-real-binary-matrix.md` and `docs/integration-testing.md`.
 
 Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and CliWrap compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
 
