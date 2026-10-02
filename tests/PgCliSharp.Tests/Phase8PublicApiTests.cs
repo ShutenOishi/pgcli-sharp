@@ -5,12 +5,13 @@ namespace PgCliSharp.Tests;
 
 public sealed class Phase8PublicApiTests(ITestOutputHelper output)
 {
+    private static readonly string[] ConstructorParameterNames = { "executablePath", "version" };
     [Fact]
     public void PublicAndProtectedContract_MatchesReviewedBaseline()
     {
         string[] actual = PublicApiSnapshot.Capture(typeof(PostgreSqlMajorVersion).Assembly.GetExportedTypes());
         string[] expected = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "api", "PublicApi.txt"))
-            .Where(line => line.Length > 0 && !line.StartsWith("#", StringComparison.Ordinal)).ToArray();
+            .Where(line => line.Length > 0 && line[0] != '#').ToArray();
         if (!expected.SequenceEqual(actual, StringComparer.Ordinal))
         {
             // Intentional mismatch diagnostics, never an automatic baseline rewrite.
@@ -62,7 +63,7 @@ public sealed class Phase8PublicApiTests(ITestOutputHelper output)
         {
             ConstructorInfo constructor = Assert.Single(wrapper.GetConstructors());
             Assert.Equal(new[] { typeof(string), typeof(PostgreSqlMajorVersion) }, constructor.GetParameters().Select(parameter => parameter.ParameterType));
-            Assert.Equal(new[] { "executablePath", "version" }, constructor.GetParameters().Select(parameter => parameter.Name));
+            Assert.Equal(ConstructorParameterNames, constructor.GetParameters().Select(parameter => parameter.Name));
             Assert.Equal(typeof(string), wrapper.GetProperty("ExecutablePath")!.PropertyType);
             Type options = assembly.GetType(wrapper.FullName + "Options", throwOnError: true)!;
             Assert.True(options.IsSealed);
