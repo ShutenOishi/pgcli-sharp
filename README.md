@@ -231,7 +231,14 @@ dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
 
 The `netstandard2.0` process backend uses CliWrap internally according to ADR-0008. Modern targets use the .NET BCL process APIs directly.
 
-## Releases
+## License
+
+PgCliSharp is [MIT licensed](LICENSE): commercial use and proprietary distribution
+of modifications are allowed without source disclosure. Retain the copyright
+and permission notice. PostgreSQL executables are not bundled and keep their own
+license. See [Licensing / ライセンス](docs/licensing.md) for dependency boundaries.
+
+## Release status
 
 [GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases) preserves the existing Phase 0-2 milestone releases.
 
@@ -252,7 +259,7 @@ When implementation work changes a material project-wide decision, add or supers
 All 25 wrappers support lambda configuration, offline validation and command generation. Options are copied before asynchronous execution. See [the English/Japanese guide](docs/configuration-and-commands.md) for stream routing, patch-version checks and secret handling.
 
 ```csharp
-var dump = new PgDump(@"C:\Program Files\PostgreSQL8in\pg_dump.exe", PostgreSqlMajorVersion.V18);
+var dump = new PgDump(@"C:\Program Files\PostgreSQL\18\bin\pg_dump.exe", PostgreSqlMajorVersion.V18);
 PgCommand command = dump.CreateCommand(
     configureOptions: options =>
     {

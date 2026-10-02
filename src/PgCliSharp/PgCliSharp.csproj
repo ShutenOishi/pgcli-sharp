@@ -16,6 +16,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>First public preview of the typed pg_dump, pg_restore, and pg_dumpall backup/restore core. / pg_dump・pg_restore・pg_dumpall の型付きバックアップ／リストア中核を含む初回公開プレビュー。</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
@@ -26,6 +27,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" Link="LICENSE" />
+    <None Include="../../docs/licensing.md" Pack="true" PackagePath="docs/" Link="docs/licensing.md" />
     <None Include="../../README.md" Pack="true" PackagePath="/" Link="README.md" />
     <None Include="../../README.ja.md" Pack="true" PackagePath="/" Link="README.ja.md" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" PrivateAssets="All" />

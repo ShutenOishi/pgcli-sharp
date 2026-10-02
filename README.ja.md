@@ -234,7 +234,13 @@ dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
 - `netstandard2.0`: ADR-0008 に基づき、内部のプロセス実行互換層として CliWrap を使用します。
 - `net8.0` / `net10.0`: .NET BCL のプロセス API を直接使用します。
 
-## Releases
+## ライセンス
+
+PgCliSharpは[MIT](LICENSE)です。商用利用・改変版の非公開配布を認め、ソース提供を
+求めません。著作権表示と許諾文は保持してください。PostgreSQL実行ファイルは同梱せず、
+その独自ライセンスは変更しません。依存関係の扱いは[日英ガイド](docs/licensing.md)をご覧ください。
+
+## リリース状況
 
 [GitHub Releases](https://github.com/ShutenOishi/pgcli-sharp/releases) には、Phase 0〜2 の既存 milestone Release を維持します。
 
@@ -255,7 +261,7 @@ Phase 3 以降は ADR-0012 により、実装完了と外部公開を分離し�
 全25ラッパーでラムダ設定・オフライン検証・コマンド生成を利用できます。非同期実行前に設定をコピーします。ストリーム接続・パッチ版検証・秘密情報の扱いは[日英ガイド](docs/configuration-and-commands.md)をご覧ください。
 
 ```csharp
-var dump = new PgDump(@"C:\Program Files\PostgreSQL8in\pg_dump.exe", PostgreSqlMajorVersion.V18);
+var dump = new PgDump(@"C:\Program Files\PostgreSQL\18\bin\pg_dump.exe", PostgreSqlMajorVersion.V18);
 PgCommand command = dump.CreateCommand(
     configureOptions: options =>
     {

@@ -12,8 +12,8 @@ not imply API freeze, full real-binary compatibility or publication approval.
 |---|---|---|
 | CP-01 | Generated XML EN/JA ordering, resources, diagnostic data and public dependency boundaries | Complete: PR #14; exact-main CI 36997454961 |
 | CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Linux checkpoint complete: PR #15; exact-main CI 37006276018; exclusions retained |
-| CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Review/gates implemented; final CI required; see [API review](phase-8-api-review.md) |
-| CP-04 | Preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Pending; publication requires separate explicit authorization |
+| CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Complete including ADR-0018: PR #17; exact-main CI 37077909665; see [API review](phase-8-api-review.md) |
+| CP-04 | License, preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | MIT selected (ADR-0019); candidate/provenance audit pending; publication requires separate explicit authorization |
 
 ### CP-01 audit and changes
 
@@ -71,9 +71,9 @@ execution. Older upstream-EOL binaries must stay isolated.
 
 Both manifests remain disabled and preserve Phase 3 source
 `cccf8d9fbe1f2e1104676ab94a7863209c0220dd` and package `0.1.0-alpha.1`.
-The existing NuGet metadata validator also reports that no repository license
-decision has been accepted; CP-04 must resolve that before publication rather
-than inventing a license or interpreting metadata validation as release readiness.
+ADR-0019 adopts MIT for original code/documentation and packages. This resolves
+the license choice only; selected-source candidate/provenance and resolved
+dependency-license audits remain pending. Metadata success is not release readiness.
 No NuGet push, new tag, GitHub Release or Release asset is authorized by this
 checkpoint. Phase 8 completion is not claimed. ADR-0012 and the final-release
 workflow require a reviewed candidate decision and explicit authorization before
@@ -93,10 +93,11 @@ CP-01 では生成 XML 文書の日英順序、公開シグネチャへの内部
 CP-02 の Linux 10〜18 実バイナリ matrix、13以降の実巻き戻し、16→18コピー移行を追加します。
 PR #15 と正確な main CI 37006276018 の全12ジョブが合格し、Linux範囲は完了です。
 Windows／macOS実機・サービスや掲載した除外は未検証です。
-CP-03 は [公開APIレビュー](phase-8-api-review.md) と凍結検証を追加し、最終 CI 条件を確認します。
-CP-04 の候補選定・ライセンス判断・公開前検証は未完了です。
+CP-03とADR-0018の追加はPR #17、main `ddce19c77f9bd2a39eaa71eada9907c97b23aceb`、
+CI 37077909665の全12ジョブ成功で完了しました。
+CP-04はADR-0019によりMITを選択し、候補選定・推移的依存・公開前検証は未完了です。
 16／18 の既存実証はその範囲を保ち、未検証の版を合格・再現不可とは扱いません。
 
 公開設定は無効のまま、Phase 3 の固定ソースと候補を保存します。NuGet・新規タグ・
 GitHub Release・assets は作成せず、候補の明示判断と別途の公開承認を待ちます。
-ライセンスも未決定であり、公開前に明示的な決定が必要です。
+MITの選択は公開承認ではありません。ライセンス本文と日英の説明をパッケージへ含めます。
