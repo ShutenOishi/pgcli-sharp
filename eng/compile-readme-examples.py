@@ -11,7 +11,7 @@ def main():
     root = Path(__file__).resolve().parent.parent
     blocks = []
     for name in ("README.md", "README.ja.md"):
-        snippets = re.findall(r"```csharp\n(.*?)\n```", (root / name).read_text(), re.S)
+        snippets = re.findall(r"```csharp\n(.*?)\n```", (root / name).read_text(encoding="utf-8"), re.S)
         if not snippets:
             raise ValueError("Missing C# examples: " + name)
         for index, snippet in enumerate(snippets, 1):
@@ -31,9 +31,10 @@ def main():
         project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFrameworks>' + frameworks +
             '</TargetFrameworks><LangVersion>latest</LangVersion><Nullable>enable</Nullable><TreatWarningsAsErrors>true</TreatWarningsAsErrors>' +
             '<IsPackable>false</IsPackable></PropertyGroup><ItemGroup><ProjectReference Include="' + reference + '" />' +
-            legacy + '</ItemGroup></Project>')
-        (folder / "Examples.cs").write_text("using System;\nusing System.IO;\nusing System.Text;\nusing System.Threading.Tasks;\nusing PgCliSharp;\nusing PgCliSharp.ServerApplications;\ninternal static class Examples {\n" + "\n".join(blocks) + "\n}")
-        subprocess.run(["dotnet", "build", str(project), "--configuration", "Release", "--nologo"], cwd=root, check=True)
+            legacy + '</ItemGroup></Project>', encoding="utf-8")
+        (folder / "Examples.cs").write_text("using System;\nusing System.IO;\nusing System.Text;\nusing System.Threading.Tasks;\nusing PgCliSharp;\nusing PgCliSharp.ServerApplications;\ninternal static class Examples {\n" + "\n".join(blocks) + "\n}", encoding="utf-8")
+        subprocess.run(["dotnet", "build", str(project), "--configuration", "Release", "--nologo",
+                        "-p:UseSharedCompilation=false", "-nodeReuse:false"], cwd=root, check=True)
 
 
 if __name__ == "__main__":
