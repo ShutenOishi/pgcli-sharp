@@ -207,7 +207,7 @@ public sealed class Phase7InventoryArgumentCoverageTests
     }
 
     [Fact]
-    public void InitDb_Noclean_HasItsAuditedArgumentBinding()
+    public void InitDb_LegacyNocleanAlias_HasItsAuditedArgumentBinding()
     {
         var o = new InitDbOptions();
         o.NoClean = true;
@@ -225,7 +225,7 @@ public sealed class Phase7InventoryArgumentCoverageTests
     }
 
     [Fact]
-    public void InitDb_Nosync_HasItsAuditedArgumentBinding()
+    public void InitDb_LegacyNosyncAlias_HasItsAuditedArgumentBinding()
     {
         var o = new InitDbOptions();
         o.NoSync = true;
