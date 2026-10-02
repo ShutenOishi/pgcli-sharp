@@ -41,8 +41,8 @@ not imply API freeze, full real-binary compatibility or publication approval.
   audited.
 - ADR-0015 is moved into the actual ADR index table (it had been below Template).
 
-The CP-01 pull request titled **Phase 8 CP-01: documentation and diagnostic
-stabilization / 文書・診断の安定化** records its exact tested head, merge SHA and
+The [CP-01 pull request #14](https://github.com/ShutenOishi/pgcli-sharp/pull/14)
+records its exact tested head, merge SHA and
 exact-main CI. No untested evidence-only follow-up commit is needed.
 
 ### Remaining real-executable evidence
@@ -62,6 +62,9 @@ not substitute for them. Older upstream-EOL binaries must stay isolated.
 
 Both manifests remain disabled and preserve Phase 3 source
 `cccf8d9fbe1f2e1104676ab94a7863209c0220dd` and package `0.1.0-alpha.1`.
+The existing NuGet metadata validator also reports that no repository license
+decision has been accepted; CP-04 must resolve that before publication rather
+than inventing a license or interpreting metadata validation as release readiness.
 No NuGet push, new tag, GitHub Release or Release asset is authorized by this
 checkpoint. Phase 8 completion is not claimed. ADR-0012 and the final-release
 workflow require a reviewed candidate decision and explicit authorization before
@@ -84,3 +87,4 @@ CP-03 の全 API 命名／互換性レビューと凍結、CP-04 の候補選定
 
 公開設定は無効のまま、Phase 3 の固定ソースと候補を保存します。NuGet・新規タグ・
 GitHub Release・assets は作成せず、候補の明示判断と別途の公開承認を待ちます。
+ライセンスも未決定であり、公開前に明示的な決定が必要です。
