@@ -249,14 +249,14 @@ jobs:
         run: python eng/native_postgresql.py stop
       - name: Preserve native evidence and failure logs
         if: always()
+        timeout-minutes: 2
+        run: python eng/native_postgresql.py stage native-artifacts
+      - name: Upload native evidence from one portable artifact root
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: native-postgresql-18-${{ matrix.os }}-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/native-evidence/*
-            ${{ runner.temp }}/pgcli-native-build-*/*.log
-            ${{ runner.temp }}/pgcli-native-*/*.log
-            /tmp/pgcli-native-*/*.log
+          path: native-artifacts/**
           if-no-files-found: error
 
   real-postgresql:

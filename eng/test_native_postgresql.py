@@ -8,10 +8,43 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 
-from native_postgresql import SCENARIO, check_trx, collect, pin
+from native_postgresql import SCENARIO, check_trx, collect, pin, stage
 
 
 class NativeEvidenceTests(unittest.TestCase):
+    def test_staging_preserves_owned_text_evidence_and_rejects_foreign_logs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            build = root / 'build'
+            fixture = root / 'fixture'
+            evidence = root / 'native-evidence'
+            for directory in (build, fixture, evidence):
+                directory.mkdir()
+            build_owner = {'root': str(build), 'run': '123'}
+            owner = {'root': str(fixture), 'binary': str(root / 'bin'), 'run': '123'}
+            (build / 'BUILD-OWNER.json').write_text(json.dumps(build_owner))
+            (fixture / 'OWNER.json').write_text(json.dumps(owner))
+            (build / 'build.log').write_text('build log')
+            (fixture / 'server.log').write_text('server log')
+            (evidence / 'report.json').write_text('{}')
+            (evidence / 'report.trx').write_text('<TestRun />')
+            for directory in (build, fixture, evidence):
+                (directory / 'do-not-ship.dll').write_bytes(b'not evidence')
+            env = {'RUNNER_TEMP': str(root), 'GITHUB_RUN_ID': '123', 'PGCLI_NATIVE_BUILD_ROOT': str(build),
+                   'PGCLI_REAL_PG_ROOT': str(fixture), 'PGCLI_REAL_PG_BIN': owner['binary']}
+            target = root / 'staged'
+            with patch.dict(os.environ, env):
+                stage(target)
+                self.assertEqual({path.relative_to(target).as_posix() for path in target.rglob('*') if path.is_file()},
+                                 {'evidence/report.json', 'evidence/report.trx', 'build/BUILD-OWNER.json',
+                                  'build/build.log', 'fixture/OWNER.json', 'fixture/server.log'})
+                for path, receipt in ((build / 'BUILD-OWNER.json', build_owner), (fixture / 'OWNER.json', owner)):
+                    with self.subTest(receipt=path.name):
+                        path.write_text(json.dumps(dict(receipt, run='foreign')))
+                        with self.assertRaises(ValueError):
+                            stage(root / ('foreign-' + path.name))
+                        path.write_text(json.dumps(receipt))
+
     def fixture(self, invalid=None):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

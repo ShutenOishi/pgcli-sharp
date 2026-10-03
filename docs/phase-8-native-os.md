@@ -62,6 +62,15 @@ upstream Windows startup code explicitly inherits handles. This is a plausible
 explanation to verify against retained server logs, not an established cause of
 the separate net48 stall. Setup/collection/stop also have explicit step caps.
 
+The superseded Windows 37113210668 log identifies pg_ctl stdout communication
+as the 120-second timeout, followed by unbounded pipe communication interrupted
+on cancellation. Initdb progressed past its original permission error. The same
+job also exposed an upload failure from mixed Windows/Unix absolute glob roots;
+its native artifact was not retained, so no server-log confirmation is claimed.
+Native evidence/logs now stage under one workspace artifact root after validating
+build/fixture ownership receipts; only JSON/TRX/XML/log files are copied. This
+retains portable failure evidence without uploading PostgreSQL binaries/data.
+
 | OS | Required real execution | Scope |
 |---|---|---|
 | Linux | Existing pinned 10–18/net10.0 matrix | Existing representative scenarios plus scoped checksum/rewind/16→18 Copy migration |
@@ -142,6 +151,13 @@ TRX19件と完了／drain570組を独立確認しました。Windowsはビルド
 pg_ctlの長寿命な子が継承し得るstdoutパイプのEOF待ちを避け、所有setup.logへ出力し
 制御PIDの終了を待ちます。サーバーログで確認する仮説で、別のnet48停止の原因とは
 断定しません。起動・証拠収集・停止のstepにも明示的な時間上限を設定します。
+
+置換されたWindowsログで、initdbが以前の権限エラーを越え、pg_ctlのstdout通信が
+120秒でtimeoutした後もpipe待ちに入り、取消で中断したことを確認しました。
+同じjobではWindows／Unix絶対globの混在によるupload失敗もあり、native成果物は
+残せていません。サーバーログを確認済みとは扱いません。所有receiptを検証してから
+証拠・ログだけをworkspace内の単一rootへ集め、実行ファイルやDBをアップロードせず
+各OSで失敗証拠を保持できる形にします。
 
 Linuxの既存10〜18検証を維持し、Windows／macOSに同じ版・hashの18.6をネイティブ
 ビルドして追加します。公開APIでバックアップ／行のリストア確認、有限・セッションpsql、

@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import shutil
 import socket
 import subprocess
 import sys
@@ -53,6 +54,8 @@ def download(url, path, expected):
 def build():
     row = pin()
     work = Path(tempfile.mkdtemp(prefix="pgcli-native-build-", dir=os.environ["RUNNER_TEMP"]))
+    (work / "BUILD-OWNER.json").write_text(json.dumps({"root": str(work), "run": os.environ["GITHUB_RUN_ID"]}), encoding="utf-8")
+    export({"PGCLI_NATIVE_BUILD_ROOT": str(work)})
     prefix = Path(os.environ["RUNNER_TEMP"]) / "pgcli-native-prefix"
     url = f'https://ftp.postgresql.org/pub/source/v{row["version"]}/postgresql-{row["version"]}.tar.bz2'
     archive = work / "source.tar.bz2"
@@ -193,7 +196,36 @@ def stop():
         run(executable(os.environ["PGCLI_REAL_PG_BIN"], "pg_ctl"), "-D", root / "data", "-m", "fast", "-t", "30", "-w", "stop")
 
 
+def stage(folder):
+    target = Path(folder)
+    target.mkdir(parents=True, exist_ok=True)
+    evidence = Path(os.environ["RUNNER_TEMP"]) / "native-evidence"
+    for path in evidence.rglob("*"):
+        if path.is_file() and path.suffix in (".json", ".trx", ".xml", ".log"):
+            destination = target / "evidence" / path.relative_to(evidence)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, destination)
+    work = os.environ.get("PGCLI_NATIVE_BUILD_ROOT")
+    if work:
+        work = Path(work)
+        if json.loads((work / "BUILD-OWNER.json").read_text()) != {"root": str(work), "run": os.environ["GITHUB_RUN_ID"]}:
+            raise ValueError("Build log ownership mismatch")
+        destination = target / "build"
+        destination.mkdir(exist_ok=True)
+        for path in [work / "BUILD-OWNER.json", *work.glob("*.log")]:
+            shutil.copy2(path, destination / path.name)
+    if os.environ.get("PGCLI_REAL_PG_ROOT"):
+        root = owned()
+        destination = target / "fixture"
+        destination.mkdir(exist_ok=True)
+        for path in [*root.glob("*.log"), *root.glob("*.json")]:
+            shutil.copy2(path, destination / path.name)
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "collect":
         sys.exit(collect(sys.argv[2]))
+    if sys.argv[1] == "stage":
+        stage(sys.argv[2])
+        sys.exit(0)
     {"build": build, "setup": setup, "stop": stop}[sys.argv[1]]()
