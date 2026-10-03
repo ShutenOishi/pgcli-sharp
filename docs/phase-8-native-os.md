@@ -16,6 +16,15 @@ direct binary producer mode used by the write-fault/noncooperative-output tests
 on each OS. Ten/six-second deadlines, assertions and production code are unchanged.
 This removes a shell dependency; it does not prove the observed timeout's cause.
 
+Follow-up CI 37111416924 passed the Windows net8/net10 full suites but aborted
+net48 after the two-minute inactivity watchdog. Its preserved Blame sequence
+identifies the zero-byte PsqlCompletion binary-drain case as incomplete; it does
+not identify the blocked operation or root cause. Native jobs again were skipped.
+The next controls revision adds separate parent/child timestamped stage logs to
+the existing artifact, covering start, write, CompleteAsync, child EOF and drain.
+Assertions and the fifteen-second process deadline remain unchanged; diagnostic
+instrumentation is not reported as a production fix or a successful native run.
+
 | OS | Required real execution | Scope |
 |---|---|---|
 | Linux | Existing pinned 10–18/net10.0 matrix | Existing representative scenarios plus scoped checksum/rewind/16→18 Copy migration |
@@ -67,6 +76,12 @@ and [Meson build procedure](https://www.postgresql.org/docs/18/install-meson.htm
 実CLI jobは未実行で、成功には数えません。PowerShellを使う連続出力fixtureを
 直接起動する.NET子プロセスへ置き換え、10／6秒の期限・検証・本番コードは維持します。
 シェル依存を除く変更であり、観測された停止原因を断定するものではありません。
+
+続くCI 37111416924はWindowsのnet8／net10全件に成功しましたが、net48は2分の
+進行停止で打ち切られました。保存した実行順序では入力0バイトのEOF／drainテストが
+未完了であり、停止した操作や原因はまだ不明です。親子プロセスの開始・書き込み・
+完了要求・EOF・drainを時刻付きファイルに記録して絞り込みます。15秒の期限と検証を
+維持し、診断追加を本番修正や実CLI成功として数えません。
 
 Linuxの既存10〜18検証を維持し、Windows／macOSに同じ版・hashの18.6をネイティブ
 ビルドして追加します。公開APIでバックアップ／行のリストア確認、有限・セッションpsql、

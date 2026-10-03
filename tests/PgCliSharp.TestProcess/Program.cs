@@ -1,6 +1,13 @@
 // Minimal binary pipe fixture. Never invokes a shell or PostgreSQL.
+string? trace = Environment.GetEnvironmentVariable("PGCLI_TEST_TRACE_FILE");
+void Record(string stage)
+{
+    if (trace is not null) File.AppendAllText(trace, $"{DateTime.UtcNow:O} {stage}\n");
+}
+Record("entry");
 Console.Error.WriteLine("ready");
 Console.Error.Flush();
+Record("ready");
 if (args.Length == 1 && args[0] == "produce")
 {
     using Stream producer = Console.OpenStandardOutput();
@@ -19,7 +26,10 @@ if (args.Length == 1 && args[0] == "wait")
 }
 using Stream input = Console.OpenStandardInput();
 using Stream output = Console.OpenStandardOutput();
+Record("copy-enter");
 input.CopyTo(output);
+Record("eof");
 Console.Error.WriteLine("eof");
 output.Flush();
 Console.Error.WriteLine("drained");
+Record("drained");

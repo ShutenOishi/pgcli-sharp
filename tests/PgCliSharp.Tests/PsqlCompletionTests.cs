@@ -17,18 +17,34 @@ public sealed class PsqlCompletionTests
 
     private static async Task VerifyBinaryCompletionAsync(int size)
     {
+        string? traceDirectory = Environment.GetEnvironmentVariable("PGCLI_TEST_TRACE_DIRECTORY");
+        string? trace = traceDirectory is null ? null : Path.Combine(traceDirectory, $"{typeof(object).Assembly.GetName().Version}-{size}-{Guid.NewGuid():N}");
+        void Record(string stage)
+        {
+            if (trace is null) return;
+            Directory.CreateDirectory(traceDirectory!);
+            File.AppendAllText(trace + ".parent.log", $"{DateTime.UtcNow:O} {stage}\n");
+        }
         using var output = new MemoryStream();
         using var error = new MemoryStream();
         (string executable, string[] arguments) = ManagedTestProcess.Command();
-        IProcessSession process = new ProcessSessionRunner().Start(new ProcessSessionStartRequest(executable, arguments, output, error, TimeSpan.FromSeconds(15)), CancellationToken.None);
+        Record("start-enter");
+        IProcessSession process = new ProcessSessionRunner().Start(new ProcessSessionStartRequest(executable, arguments, output, error, TimeSpan.FromSeconds(15), trace is null ? null : new Dictionary<string, string> { ["PGCLI_TEST_TRACE_FILE"] = trace + ".child.log" }), CancellationToken.None);
+        Record("start-returned");
         using var session = new PsqlSession(process, executable, new Version(18, 6), "18.6");
         byte[] payload = Enumerable.Range(0, size).Select(index => (byte)(index % 256)).ToArray();
+        Record("write-enter");
 #if NET8_0_OR_GREATER
         await session.StandardInput.WriteAsync(payload.AsMemory());
 #else
         await session.StandardInput.WriteAsync(payload, 0, payload.Length);
 #endif
-        PsqlSessionResult result = await session.CompleteAsync();
+        Record("write-returned");
+        Record("complete-enter");
+        Task<PsqlSessionResult> completion = session.CompleteAsync();
+        Record("complete-returned");
+        PsqlSessionResult result = await completion;
+        Record("completion-finished");
         Assert.Equal(PsqlExitStatus.Success, result.Status);
         Assert.Same(result, await session.CompleteAsync());
         Assert.Equal(payload, output.ToArray());

@@ -71,10 +71,14 @@ jobs:
 
       - name: Test
         timeout-minutes: 10
+        env:
+          PGCLI_TEST_TRACE_DIRECTORY: ${{ github.workspace }}/test-results/process-stages
         run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore --logger trx --results-directory test-results --blame-hang-timeout 2m --blame-hang-dump-type none --diag test-results/vstest.log
 
       - name: Repeat Windows binary completion tests without retrying failures
         timeout-minutes: 10
+        env:
+          PGCLI_TEST_TRACE_DIRECTORY: ${{ github.workspace }}/test-results/process-stages
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
