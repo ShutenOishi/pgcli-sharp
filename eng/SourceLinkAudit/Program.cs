@@ -1,10 +1,12 @@
 using System.IO.Compression;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Text.Json;
 
-if (args.Length != 2) throw new ArgumentException("Expected source SHA and snupkg path.");
+if (args.Length != 3) throw new ArgumentException("Expected source SHA, snupkg and nupkg paths.");
 string expected = "https://raw.githubusercontent.com/ShutenOishi/pgcli-sharp/" + args[0] + "/*";
 using ZipArchive archive = ZipFile.OpenRead(args[1]);
+using ZipArchive package = ZipFile.OpenRead(args[2]);
 int count = 0;
 foreach (ZipArchiveEntry entry in archive.Entries.Where(entry => entry.FullName.EndsWith(".pdb", StringComparison.Ordinal)))
 {
@@ -13,6 +15,16 @@ foreach (ZipArchiveEntry entry in archive.Entries.Where(entry => entry.FullName.
     bytes.Position = 0;
     using MetadataReaderProvider provider = MetadataReaderProvider.FromPortablePdbStream(bytes);
     MetadataReader reader = provider.GetMetadataReader();
+    ZipArchiveEntry dll = package.GetEntry(entry.FullName.Replace(".pdb", ".dll", StringComparison.Ordinal))
+        ?? throw new InvalidDataException("Missing associated DLL.");
+    using var assembly = new MemoryStream();
+    using (Stream input = dll.Open()) input.CopyTo(assembly);
+    assembly.Position = 0;
+    using var pe = new PEReader(assembly);
+    DebugDirectoryEntry[] debug = pe.ReadDebugDirectory().Where(item => item.Type == DebugDirectoryEntryType.CodeView).ToArray();
+    if (debug.Length != 1 || reader.DebugMetadataHeader is null ||
+        pe.ReadCodeViewDebugDirectoryData(debug[0]).Guid != new Guid(reader.DebugMetadataHeader.Id.AsSpan(0, 16)))
+        throw new InvalidDataException("PDB does not match associated DLL: " + entry.FullName);
     var links = reader.CustomDebugInformation.Select(reader.GetCustomDebugInformation)
         .Where(item => reader.GetGuid(item.Kind) == new Guid("CC110556-A091-4D38-9FEC-25AB9A351A6A")).ToArray();
     if (links.Length != 1) throw new InvalidDataException("Missing or duplicate SourceLink: " + entry.FullName);

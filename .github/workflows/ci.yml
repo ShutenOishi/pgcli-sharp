@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   build-test-pack:
@@ -58,6 +59,8 @@ jobs:
           python3 -m unittest discover -s eng -p test_readme_examples.py
           python3 -m unittest discover -s eng -p test_licensing.py
           python3 -m unittest discover -s eng -p test_candidate_audit.py
+          python3 -m unittest discover -s eng -p test_candidate_preflight.py
+          python3 eng/validate_candidate.py
 
       - name: Restore
         run: dotnet restore PgCliSharp.slnx
@@ -133,35 +136,59 @@ jobs:
             artifacts/DEVELOPMENT-PACKAGE-PROVENANCE.txt
           if-no-files-found: error
 
-  candidate-audit:
-    name: Unpublished candidate audit (Linux)
+  release-preflight:
+    name: Release preflight
     needs: build-test-pack
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/candidate-preflight.yml
+    with:
+      require_publication_enabled: false
+
+  candidate-audit:
+    name: Unpublished candidate audit (${{ matrix.os }})
+    needs: build-test-pack
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout audit controls
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate selected source main CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python eng/verify_candidate_ci.py
       - name: Read pinned candidate source
         id: candidate
-        run: |
-          python3 -c 'import json, os; c=json.load(open(".github/release-candidate.json")); assert c["publication_enabled"] is False; open(os.environ["GITHUB_OUTPUT"], "a").write("source=" + c["source_commit"] + "\n")'
+        shell: bash
+        run: python eng/validate_candidate.py --outputs >> "$GITHUB_OUTPUT"
       - name: Checkout immutable selected source
         uses: actions/checkout@v6
         with:
-          ref: ${{ steps.candidate.outputs.source }}
+          ref: ${{ steps.candidate.outputs.source_commit }}
           path: candidate-source
           fetch-depth: 0
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.0.100
+          dotnet-version: |
+            8.0.x
+            10.0.100
       - name: Build, inspect and consume candidate without publication
-        run: python3 eng/audit_candidate.py candidate-source candidate-artifacts
+        shell: bash
+        run: |
+          python eng/audit_candidate.py candidate-source candidate-artifacts
+          cp source-ci-verification.json candidate-artifacts/source-ci-verification.json
       - name: Upload unpublished candidate and audit evidence
         uses: actions/upload-artifact@v4
         with:
-          name: pgclisharp-unpublished-candidate-${{ github.sha }}
+          name: pgclisharp-unpublished-candidate-${{ matrix.os }}-${{ github.sha }}
           path: candidate-artifacts/*
           if-no-files-found: error
 

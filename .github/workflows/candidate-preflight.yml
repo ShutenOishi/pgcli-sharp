@@ -1,0 +1,89 @@
+name: Candidate preflight
+
+on:
+  workflow_call:
+    inputs:
+      require_publication_enabled:
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      source_commit:
+        value: ${{ jobs.preflight.outputs.source_commit }}
+      version:
+        value: ${{ jobs.preflight.outputs.version }}
+      tag:
+        value: ${{ jobs.preflight.outputs.tag }}
+      title:
+        value: ${{ jobs.preflight.outputs.title }}
+      nuget_user:
+        value: ${{ jobs.preflight.outputs.nuget_user }}
+      prerelease:
+        value: ${{ jobs.preflight.outputs.prerelease }}
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  preflight:
+    name: Verify reviewed preview without publication
+    runs-on: ubuntu-latest
+    outputs:
+      source_commit: ${{ steps.candidate.outputs.source_commit }}
+      version: ${{ steps.candidate.outputs.version }}
+      tag: ${{ steps.candidate.outputs.tag }}
+      title: ${{ steps.candidate.outputs.title }}
+      nuget_user: ${{ steps.candidate.outputs.nuget_user }}
+      prerelease: ${{ steps.candidate.outputs.prerelease }}
+    steps:
+      - name: Checkout reviewed control state
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate publication request and candidate metadata
+        id: candidate
+        shell: bash
+        env:
+          PUBLISH_REQUESTED: ${{ inputs.require_publication_enabled }}
+        run: |
+          set -euo pipefail
+          if [ "$PUBLISH_REQUESTED" = true ]; then
+            python eng/validate_candidate.py --require-enabled
+          fi
+          python eng/validate_candidate.py --outputs >> "$GITHUB_OUTPUT"
+      - name: Verify exact-source main CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python eng/verify_candidate_ci.py
+      - name: Checkout immutable selected source separately
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.candidate.outputs.source_commit }}
+          path: candidate-source
+          fetch-depth: 0
+      - name: Verify main ancestry
+        env:
+          SOURCE_COMMIT: ${{ steps.candidate.outputs.source_commit }}
+        run: git merge-base --is-ancestor "$SOURCE_COMMIT" origin/main
+      - name: Setup candidate SDK and runtime
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            ${{ steps.candidate.outputs.sdk_version }}
+      - name: Build and audit the exact candidate with CI controls
+        run: |
+          python eng/audit_candidate.py candidate-source candidate-artifacts
+          cp source-ci-verification.json candidate-artifacts/source-ci-verification.json
+      - name: Upload reviewed preflight artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-nuget-preview
+          path: candidate-artifacts/*
+          if-no-files-found: error
+

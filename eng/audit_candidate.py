@@ -3,11 +3,14 @@ import argparse
 import hashlib
 import html
 import json
+import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
+from validate_candidate import validate
 
 ROOT = Path(__file__).resolve().parent.parent
 FRAMEWORKS = ("netstandard2.0", "net8.0", "net10.0")
@@ -45,12 +48,20 @@ def audit_package(package, source, candidate):
         assert meta.find("repository").get("commit") == candidate["source_commit"]
         assert meta.find("license").get("type") == "expression"
         assert meta.findtext("license") == "MIT"
-        for name in ("LICENSE", "README.md", "README.ja.md", "docs/licensing.md"):
+        docs = ("LICENSE", "README.md", "README.ja.md", "docs/licensing.md",
+                "THIRD-PARTY-NOTICES.md", "docs/third-party/dotnet-notices.txt")
+        for name in docs:
             assert archive.read(name) == (source / name).read_bytes(), name
         actual_libs = {name for name in archive.namelist() if name.startswith("lib/")}
         expected_libs = {f"lib/{tfm}/PgCliSharp.{ext}" for tfm in FRAMEWORKS for ext in ("dll", "xml")}
         expected_libs.update(f"lib/{tfm}/ja/PgCliSharp.resources.dll" for tfm in FRAMEWORKS)
         assert actual_libs == expected_libs, "Unexpected/missing library payload"
+        payload = archive.namelist()
+        assert len(payload) == len(set(payload)), "Duplicate archive entries"
+        core = [name for name in payload if name.startswith("package/services/metadata/core-properties/") and name.endswith(".psmdcp")]
+        assert len(core) == 1
+        assert set(payload) == expected_libs | set(docs) | {
+            "PgCliSharp.nuspec", "_rels/.rels", "[Content_Types].xml", core[0]}, "Unexpected shipped file"
         groups = meta.findall("dependencies/group")
         assert len(groups) == 3
         assert {group.get("targetFramework") for group in groups} == {".NETStandard2.0", "net8.0", "net10.0"}
@@ -93,6 +104,10 @@ def audit_dependencies(assets_path):
                 notices.append({"file": file.name, "sha256": sha256(file.read_bytes()),
                                 "text": file.read_text(encoding="utf-8-sig")})
         assert expression == "MIT" or not runtime_frameworks, "Non-MIT runtime dependency requires review: " + identity
+        if identity == "Microsoft.NETCore.Platforms/1.1.0":
+            assert all(path.endswith("/_._") for tfm in frameworks
+                       for key in ("compile", "runtime", "native", "runtimeTargets")
+                       for path in assets["targets"][tfm][identity].get(key, {})), "Legacy reference binary requires review"
         records.append({"package": identity, "license": expression, "license_evidence": evidence,
                         "copyright": meta.findtext("copyright"), "runtime_frameworks": runtime_frameworks,
                         "frameworks": frameworks, "nuget_sha512": item["sha512"], "notices": notices})
@@ -111,19 +126,40 @@ def audit_symbols(package, candidate):
 
 
 def audit_consumer(dotnet, output, candidate, common):
-    """Compile only: no PostgreSQL commands or user processes are executed."""
+    """Compile all assets and execute offline wrapper code, never PostgreSQL."""
     with tempfile.TemporaryDirectory(prefix="pgclisharp-candidate-consumer-") as directory:
         folder = Path(directory)
         project = folder / "Consumer.csproj"
+        frameworks = list(FRAMEWORKS) + (["net48"] if os.name == "nt" else [])
+        reference = '<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="[1.0.3]" PrivateAssets="all" />' if os.name == "nt" else ''
         project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFrameworks>' +
-            ';'.join(FRAMEWORKS) + '</TargetFrameworks><LangVersion>latest</LangVersion>' +
+            ';'.join(frameworks) + '</TargetFrameworks><LangVersion>latest</LangVersion>' +
+            '<OutputType Condition="\'$(TargetFramework)\' != \'netstandard2.0\'">Exe</OutputType>' +
             '<TreatWarningsAsErrors>true</TreatWarningsAsErrors></PropertyGroup><ItemGroup>' +
             '<PackageReference Include="PgCliSharp" Version="[' + html.escape(candidate['version']) +
-            ']" /></ItemGroup></Project>', encoding="utf-8")
-        (folder / "Smoke.cs").write_text('using PgCliSharp;\ninternal static class Smoke {\n' +
-            'internal static PgCommand Create() => new PgDump("/not-executed/pg_dump", ' +
-            'PostgreSqlMajorVersion.V18).CreateCommand(options => options.Database = "appdb", ' +
-            'PgDumpOutput.ToFile("appdb.dump"));\n}\n', encoding="utf-8")
+            ']" />' + reference + '</ItemGroup></Project>', encoding="utf-8")
+        (folder / "Smoke.cs").write_text('''using System;
+using System.Reflection;
+using System.Runtime.Versioning;
+using PgCliSharp;
+internal static class Smoke {
+    public static void Main() {
+        PgCommand command = new PgDump("/not-executed/pg_dump", PostgreSqlMajorVersion.V18)
+            .CreateCommand(options => options.Database = "appdb", PgDumpOutput.ToFile("appdb.dump"));
+        if (command.ExecutablePath != "/not-executed/pg_dump") throw new Exception("Wrong offline command.");
+#if NET48 || NETSTANDARD2_0
+        string expected = ".NETStandard,Version=v2.0";
+#elif NET8_0
+        string expected = ".NETCoreApp,Version=v8.0";
+#else
+        string expected = ".NETCoreApp,Version=v10.0";
+#endif
+        string actual = typeof(PgDump).Assembly.GetCustomAttribute<TargetFrameworkAttribute>().FrameworkName;
+        if (actual != expected) throw new Exception("Wrong package asset: " + actual);
+        Console.WriteLine("Verified offline runtime consumer: " + actual);
+    }
+}
+''', encoding="utf-8")
         run(dotnet, "restore", str(project), "--source", str(output), "--source",
             "https://api.nuget.org/v3/index.json", "--packages", str(folder / "packages"), *common, cwd=output)
         assets_path = folder / "obj/project.assets.json"
@@ -132,10 +168,29 @@ def audit_consumer(dotnet, output, candidate, common):
             target = assets["targets"][".NETStandard,Version=v2.0" if tfm == "netstandard2.0" else tfm]
             assert "PgCliSharp/" + candidate['version'] in target
         run(dotnet, "build", str(project), "-c", "Release", "--no-restore", *common, cwd=output)
+        runtime_frameworks = [tfm for tfm in frameworks if tfm != "netstandard2.0"]
+        for tfm in runtime_frameworks:
+            run(dotnet, "run", "--project", str(project), "-c", "Release", "-f", tfm,
+                "--no-build", "--no-restore", cwd=output)
+        reference_tools = []
+        for identity in list(assets["libraries"]):
+            if identity.startswith("Microsoft.NETFramework.ReferenceAssemblies"):
+                assert identity in ("Microsoft.NETFramework.ReferenceAssemblies/1.0.3",
+                                    "Microsoft.NETFramework.ReferenceAssemblies.net48/1.0.3")
+                assert all(not target[identity].get(key) for target in assets['targets'].values()
+                           if identity in target for key in ('runtime', 'native', 'runtimeTargets'))
+                item = assets['libraries'].pop(identity)
+                path = folder / 'packages' / item['path']
+                nuspec = next(path.glob('*.nuspec'))
+                meta = metadata(nuspec.read_bytes())
+                reference_tools.append({'package': identity, 'role': 'consumer build reference assemblies only',
+                    'nuget_sha512': item['sha512'], 'license_url': meta.findtext('licenseUrl'),
+                    'nuspec_sha256': sha256(nuspec.read_bytes()), 'redistributed': False})
         # Exclude the package under audit; it is already verified independently.
         del assets["libraries"]["PgCliSharp/" + candidate['version']]
         assets_path.write_text(json.dumps(assets), encoding="utf-8")
-        return {"frameworks": list(FRAMEWORKS), "execution": False,
+        return {"frameworks": frameworks, "runtime_frameworks": runtime_frameworks, "postgresql_execution": False,
+                "reference_build_tools": reference_tools,
                 "dependencies": audit_dependencies(assets_path)}
 
 
@@ -149,10 +204,12 @@ def main():
     args = parser.parse_args()
     source, output = args.source.resolve(), args.output.resolve()
     candidate = json.loads((ROOT / ".github/release-candidate.json").read_text(encoding="utf-8"))
-    assert candidate["publication_enabled"] is False
+    validate(candidate)
     actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=source, text=True).strip()
     assert actual == candidate["source_commit"], "Wrong candidate source"
     run("git", "diff", "--exit-code", "HEAD", cwd=source)
+    untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], cwd=source, text=True).splitlines()
+    assert set(untracked) <= {"src/PgCliSharp/packages.lock.json"}, "Untracked candidate source files"
     output.mkdir(parents=True, exist_ok=True)
     (output / "global.json").write_text(json.dumps({"sdk": {"version": candidate["sdk_version"],
         "rollForward": "disable", "allowPrerelease": False}}) + "\n", encoding="utf-8")
@@ -172,18 +229,44 @@ def main():
     audit_symbols(symbols, candidate)
     dependencies = audit_dependencies(project.parent / "obj/project.assets.json")
     consumer = audit_consumer(args.dotnet, output, candidate, common)
+    reviewed = {name + '/' + version for name, version in re.findall(
+        r'^\| ([A-Za-z0-9.]+) \| ([0-9.]+) \| MIT \|',
+        (source / 'THIRD-PARTY-NOTICES.md').read_text(encoding='utf-8'), re.M)}
+    runtime = {record['package'] for record in consumer['dependencies'] if record['runtime_frameworks']}
+    assert runtime == reviewed, 'Runtime dependency notice inventory mismatch'
+    assert sha256((source / 'docs/third-party/dotnet-notices.txt').read_bytes()) == '6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21'
     run(args.dotnet, "run", "--project", str(ROOT / "eng/SourceLinkAudit"), "-c", "Release",
-        "-p:UseSharedCompilation=false", "--", candidate["source_commit"], str(symbols), cwd=output)
+        "-p:UseSharedCompilation=false", "--", candidate["source_commit"], str(symbols), str(package), cwd=output)
+    audit_tool = ROOT / 'eng/SourceLinkAudit/bin/Release/net10.0/SourceLinkAudit.dll'
+    invalid = subprocess.run([args.dotnet, str(audit_tool), '0' * 40, str(symbols), str(package)],
+                             cwd=output, capture_output=True, text=True)
+    assert invalid.returncode != 0 and 'SourceLink does not reference' in invalid.stderr, 'Wrong-SHA negative test did not fail'
+    with tempfile.TemporaryDirectory(prefix='pgcli-symbol-pair-') as directory:
+        mismatch = Path(directory) / 'mismatch.nupkg'
+        with zipfile.ZipFile(package) as original, zipfile.ZipFile(mismatch, 'w') as changed:
+            for entry in original.infolist():
+                data = original.read('lib/netstandard2.0/PgCliSharp.dll' if entry.filename == 'lib/net10.0/PgCliSharp.dll' else entry.filename)
+                changed.writestr(entry, data)
+        invalid = subprocess.run([args.dotnet, str(audit_tool), candidate['source_commit'], str(symbols), str(mismatch)],
+                                 cwd=output, capture_output=True, text=True)
+        assert invalid.returncode != 0 and 'PDB does not match' in invalid.stderr, 'Mismatched-DLL negative test did not fail'
     lock = project.parent / "packages.lock.json"
     (output / "packages.lock.json").write_bytes(lock.read_bytes())
     (output / "release-notes.md").write_bytes((ROOT / candidate["notes_file"]).read_bytes())
     result.update({"candidate": candidate, "symbols_sha256": sha256(symbols.read_bytes()),
                    "lock_sha256": sha256(lock.read_bytes()), "dependencies": dependencies, "consumer": consumer,
                    "sdk": sdk,
-                   "schema_version": 1, "publication_performed": False, "publication_ready": False,
-                   "source_link": {"verified_portable_pdbs": 3, "url":
+                   "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
+                   "schema_version": 2, "technical_audit_passed": True, "publication_performed": False, "publication_ready": False,
+                   "source_link": {"verified_portable_pdbs": 3, "dll_pdb_pairs_verified": True,
+                       "wrong_sha_rejected": True, "mismatched_dll_rejected": True, "url":
                        "https://raw.githubusercontent.com/ShutenOishi/pgcli-sharp/" + candidate["source_commit"] + "/*"},
-                   "remaining_license_review": [record["package"] for record in dependencies if record["license"] != "MIT"]})
+                   "distribution_scope_review": {"complete": True, "dependency_binaries_embedded": False,
+                       "legacy_reference_package_embedded": False, "downstream_distribution_cleared": False},
+                   "remaining_license_review": [],
+                   "remaining_publication_gates": ["explicit approval and reviewed enablement", "nuget.org Trusted Publishing policy verification"],
+                   "control_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+                   "os": os.name})
     (output / "candidate-audit.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("Candidate package, dependency licenses and SourceLink verified:", package.name)
 

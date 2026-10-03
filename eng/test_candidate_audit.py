@@ -27,11 +27,15 @@ class CandidateAuditTests(unittest.TestCase):
         candidate = {"version": "0.1.0-alpha.2", "source_commit": "a" * 40, "package_release_notes": "notes"}
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
-            for name in ("LICENSE", "README.md", "README.ja.md", "docs/licensing.md"):
+            names = ("LICENSE", "README.md", "README.ja.md", "docs/licensing.md",
+                     "THIRD-PARTY-NOTICES.md", "docs/third-party/dotnet-notices.txt")
+            for name in names:
                 file = folder / name
-                file.parent.mkdir(exist_ok=True)
+                file.parent.mkdir(parents=True, exist_ok=True)
                 file.write_bytes(b"source")
-            entries = {name: b"source" for name in ("LICENSE", "README.md", "README.ja.md", "docs/licensing.md")}
+            entries = {name: b"source" for name in names}
+            entries.update({'_rels/.rels': b'metadata', '[Content_Types].xml': b'metadata',
+                            'package/services/metadata/core-properties/test.psmdcp': b'metadata'})
             for tfm in audit.FRAMEWORKS:
                 for name in ("PgCliSharp.dll", "PgCliSharp.xml", "ja/PgCliSharp.resources.dll"):
                     entries[f"lib/{tfm}/{name}"] = b"payload"
@@ -56,6 +60,10 @@ class CandidateAuditTests(unittest.TestCase):
             del missing['lib/net8.0/ja/PgCliSharp.resources.dll']
             with self.assertRaises(AssertionError):
                 check(missing, xml)
+            extra = copy.copy(entries)
+            extra['runtime.json'] = b'unexpected third-party payload'
+            with self.assertRaisesRegex(AssertionError, 'Unexpected shipped file'):
+                check(extra, xml)
 
     def test_unknown_legacy_license_fails(self):
         with tempfile.TemporaryDirectory() as directory:

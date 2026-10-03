@@ -2,8 +2,8 @@
 
 ## English
 
-Status: preparation in progress; final exact-head/main CI and selected-source
-re-audit are required. No external publication is enabled or authorized here.
+Status: final controls prepared; completion requires the exact final PR/main CI
+and three-OS selected-source audits. CI artifacts and PR evidence record those results. No external publication is enabled or authorized here.
 
 ### Windows completion investigation
 
@@ -45,8 +45,10 @@ Package audit must fail unexpected shipped files and any non-MIT runtime assets.
 ### Candidate and final gates
 
 README EN/JA now describe alpha.2 and local feed usage, not an available NuGet
-release. Final candidate selection must move to a fresh tested main containing
-these docs/notices/fixture, preserving previous selections as history. The
+release. Selected source is `f0eb822c62def95e3cc8420b386b283437bf46cd`, containing current docs/notices/fixture.
+Source main CI 37084591633 passed all 13 jobs at attempt 1; independently inspected
+Windows TRX has 360 successful binary completions across net48/net8/net10.
+Previous selections are retained as history. The
 candidate audit and release preflight must use the same fixed source, version,
 SDK, lock, notes and verification controls. The old disabled Phase 3 manifests
 remain historical records. Promoting 1.0 or creating public artifacts requires
@@ -64,6 +66,7 @@ Windowsの3対象ではさらに反復します。失敗を再実行で隠さず
 参照パッケージは同梱せず、原文・hashを残し、その配布境界でレビューを閉じます。
 アプリや.NETランタイム等を同梱する他の配布まで承認するものではありません。
 
-最終CIと新しい固定ソースの候補再監査は残ります。日英READMEの版・利用手順を更新し、
-新ソース・SDK・lock・説明・検証controlsを揃えます。旧履歴と無効の公開設定は保持し、
+新しい固定ソースmain CI 37084591633は初回で全13ジョブ成功、WindowsのTRXでは
+3対象合計360回のバイナリ終了待ちに成功しました。日英README・SDK・lock・説明を揃え、
+最終controlsのPR／main CIと3OS候補監査を準備完了の条件にします。旧履歴と無効の公開設定は保持し、
 NuGet・タグ・Releaseの公開や1.0への昇格は別途判断します。
