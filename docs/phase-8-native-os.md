@@ -37,6 +37,20 @@ Native jobs run independently so their build/runtime diagnostics are available
 while deterministic Windows failures are investigated. All 18 jobs must still
 pass on the same final PR/main commits; this does not waive the deterministic gate.
 
+CI 37112630503 passed the three deterministic jobs (Windows 360 independently
+verified completion traces), nine Linux real jobs, candidate/preflight jobs and
+macOS native scenario. macOS artifact 11270380850 matches the exact PR head,
+merge SHA, run ID, source hash, arm64/Clang build, server 180006 and one Passed
+net10.0 scenario. Windows native build succeeded but initdb could not create its
+data directory under Python's private temporary ACL. The fixture now grants only
+the actual current user SID inherited full control on its newly owned root,
+retaining PostgreSQL's restricted-token execution. No parent/global/other-user ACL
+is changed. This addresses the observed provisioning boundary; confirmation still
+requires a new native run. Windows net48 stress expands from three to ten rounds
+(other TFMs remain three), stopping on the first failure. The prior intermittent
+completion observation stall remains unresolved until diagnosed; passing repeats
+are evidence of those repeats, not a claimed fix or automatic 1.0 acceptance.
+
 | OS | Required real execution | Scope |
 |---|---|---|
 | Linux | Existing pinned 10–18/net10.0 matrix | Existing representative scenarios plus scoped checksum/rewind/16→18 Copy migration |
@@ -102,6 +116,14 @@ CI 37112048520ではWindowsの全3対象とnet48反復1回目が成功し、2回
 追加せず、メモリダンプはアップロード前に削除します。期限・検証は維持します。
 実CLIジョブは独立に起動し、Windowsの通常テスト調査中にもビルド・実行診断を得ます。
 最終PR／mainの同一commitで全18ジョブ成功という条件は変えません。
+
+CI 37112630503は通常3OS・Linux実CLI9件・候補／preflight・macOS実CLIが成功し、
+Windowsの完了trace360件とmacOS成果物11270380850の版・hash・arm64・実TRXを
+独立確認しました。Windowsはネイティブビルド成功後、専用temp内のdata作成権限で
+止まりました。新規所有rootだけに現在のユーザーSIDを継承可能な形で明示し、
+PostgreSQLの制限tokenは維持します。親・全体・他ユーザーのACLは変更しません。
+修正の確認は新しい実行が必要です。net48反復は3から10回へ増やし、失敗時は即終了します。
+以前の完了待ち停止は原因未解明として残し、成功した反復を原因修正や1.0承認とは扱いません。
 
 Linuxの既存10〜18検証を維持し、Windows／macOSに同じ版・hashの18.6をネイティブ
 ビルドして追加します。公開APIでバックアップ／行のリストア確認、有限・セッションpsql、

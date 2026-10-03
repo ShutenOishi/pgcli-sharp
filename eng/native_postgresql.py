@@ -1,9 +1,11 @@
 """Owned PostgreSQL 18 native fixture; no publication or user-cluster access."""
+import csv
 import hashlib
 import json
 import os
 from pathlib import Path
 import platform
+import re
 import socket
 import subprocess
 import sys
@@ -92,6 +94,15 @@ def setup():
     owner = {"root": str(root), "binary": os.environ["PGCLI_REAL_PG_BIN"], "run": os.environ["GITHUB_RUN_ID"]}
     (root / "OWNER.json").write_text(json.dumps(owner), encoding="utf-8")
     export({"PGCLI_REAL_PG_ROOT": str(root)})
+    if os.name == "nt":
+        # mkdtemp's OWNER RIGHTS ACL may resolve to the Administrators owner.
+        # PostgreSQL removes that group from its token: grant the actual user SID
+        # explicitly, on this newly owned directory only, for the restricted child.
+        sid = next(csv.reader([run("whoami", "/user", "/fo", "csv", "/nh")]))[1]
+        if not re.fullmatch(r"S-\d+(?:-\d+)+", sid):
+            raise ValueError("Invalid current Windows user SID")
+        run("icacls", root, "/grant", "*" + sid + ":(OI)(CI)F")
+        (root / "WINDOWS-ACL.json").write_text(json.dumps({"userSid": sid, "acl": run("icacls", root)}, indent=2), encoding="utf-8")
     binary = Path(owner["binary"])
     user = "pgcli_owned"
     run(executable(binary, "initdb"), "-D", root / "data", "-A", "trust", "-U", user, "--locale=C", "--encoding=UTF8")
@@ -141,6 +152,8 @@ def collect(folder):
         if any(build_receipt[key] != row[key] for key in ("major", "version", "sha256")) or build_receipt["system"] != platform.system():
             raise ValueError("Source/platform provenance mismatch")
         evidence["sourceBuild"] = build_receipt
+        if os.name == "nt":
+            evidence["ownedWindowsAcl"] = json.loads((root / "WINDOWS-ACL.json").read_text())
         evidence["cliVersions"] = {}
         for name in ("postgres", "initdb", "pg_ctl", "createdb", "psql", "pg_dump", "pg_restore", "pgbench"):
             path = executable(binary, name)
