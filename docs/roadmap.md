@@ -134,7 +134,7 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase 8 - 1.0 stabilization
 
-**Status: In progress (2026-10-03); not release-ready.** CP-01 and the CP-02 [scoped nine-major Linux checkpoint](phase-8-real-binary-matrix.md) are complete; exclusions remain. CP-03 including ADR-0018 is complete (PR #17; main `ddce19c77f9bd2a39eaa71eada9907c97b23aceb`; exact-main CI 37077909665, all 12 jobs successful). CP-04 selects MIT under ADR-0019; publication-candidate/provenance and dependency-license audits remain pending. See [stabilization checkpoints](phase-8-stabilization.md). Publication manifests remain disabled.
+**Status: In progress (2026-10-03); not release-ready.** CP-01 and the CP-02 [scoped nine-major Linux checkpoint](phase-8-real-binary-matrix.md) are complete; exclusions remain. CP-03 including ADR-0018 is complete (PR #17; main `ddce19c77f9bd2a39eaa71eada9907c97b23aceb`; exact-main CI 37077909665, all 12 jobs successful). CP-04 selects MIT and unpublished alpha.2 under ADR-0019/0020; [candidate/provenance and resolved-dependency auditing](phase-8-candidate-audit.md) is added. Legacy license review, intermittent Windows completion risk and publication workflow promotion remain. See [stabilization checkpoints](phase-8-stabilization.md). Publication manifests remain disabled.
 
 - Review all public APIs for naming and consistency.
 - Review exception hierarchy and structured diagnostic properties.
@@ -147,7 +147,7 @@ Tools that can alter or recover data directories require especially explicit doc
 - Freeze breaking API changes.
 - Complete README/examples.
 - User-approved ADR-0018 adds configuration lambdas, execution snapshots, offline validation/commands, shared result metadata and awaited psql completion; review the additive compiled API contract and complete its CI gates before CP-04.
-- Explicitly decide whether the preserved Phase 3 `0.1.0-alpha.1` candidate is published or superseded, then revalidate the selected source/package/notes provenance before enabling any publication manifest.
+- ADR-0020 supersedes the preserved Phase 3 preview selection with unpublished `0.1.0-alpha.2`, preserving historical manifests/source. Finish the recorded license/stability/promotion gates before enabling any publication manifest.
 - Release candidates followed by `1.0.0`.
 
 See [Real PostgreSQL integration testing](integration-testing.md) for the current representative CI scope and expansion rules.
@@ -156,7 +156,7 @@ See [Real PostgreSQL integration testing](integration-testing.md) for the curren
 
 Phase 0-2 retain their existing GitHub Releases. Starting with Phase 3, ADR-0012 separates implementation completion from external publication. A Phase is completed by a reviewed `main` merge, exact-commit Linux/macOS/Windows CI, compatibility/research evidence, and updated repository documentation. New NuGet pushes, GitHub Release tags, Releases, and Release assets are deferred until the final release phase.
 
-The deferred Phase 3 publication manifests remain checked in for provenance, with `publication_enabled: false` and release source commit `cccf8d9fbe1f2e1104676ab94a7863209c0220dd`. The final release phase must revalidate that exact source before deciding whether to publish or explicitly supersede the prepared preview.
+The deferred Phase 3 publication manifests remain checked in for provenance, with `publication_enabled: false` and release source commit `cccf8d9fbe1f2e1104676ab94a7863209c0220dd`. ADR-0020 records a separate unpublished alpha.2 selection at `df395760a84643bebec4bab9885c610793e4b222`. The release workflow still targets the old disabled manifest; future promotion requires reviewed source/version/notes/lock handling and separate explicit authorization.
 
 ## Continuous work
 

@@ -13,7 +13,7 @@ not imply API freeze, full real-binary compatibility or publication approval.
 | CP-01 | Generated XML EN/JA ordering, resources, diagnostic data and public dependency boundaries | Complete: PR #14; exact-main CI 36997454961 |
 | CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Linux checkpoint complete: PR #15; exact-main CI 37006276018; exclusions retained |
 | CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Complete including ADR-0018: PR #17; exact-main CI 37077909665; see [API review](phase-8-api-review.md) |
-| CP-04 | License, preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | MIT selected (ADR-0019); candidate/provenance audit pending; publication requires separate explicit authorization |
+| CP-04 | License, preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Partial: MIT and unpublished alpha.2 selected (ADR-0019/0020); technical audit added; legacy license review, intermittent Windows risk and promotion remain |
 
 ### CP-01 audit and changes
 
@@ -72,8 +72,12 @@ execution. Older upstream-EOL binaries must stay isolated.
 Both manifests remain disabled and preserve Phase 3 source
 `cccf8d9fbe1f2e1104676ab94a7863209c0220dd` and package `0.1.0-alpha.1`.
 ADR-0019 adopts MIT for original code/documentation and packages. This resolves
-the license choice only; selected-source candidate/provenance and resolved
-dependency-license audits remain pending. Metadata success is not release readiness.
+the license choice. ADR-0020 separately selects unpublished alpha.2 from MIT main
+`df395760a84643bebec4bab9885c610793e4b222`; old manifests remain unchanged.
+The [candidate audit](phase-8-candidate-audit.md) verifies packages, locked dependencies,
+actual PDB SourceLink and three compile-only clean consumer targets. A legacy
+Microsoft license review, unresolved Windows/net10 completion timeout risk and
+release workflow promotion remain; technical success is not release readiness.
 No NuGet push, new tag, GitHub Release or Release asset is authorized by this
 checkpoint. Phase 8 completion is not claimed. ADR-0012 and the final-release
 workflow require a reviewed candidate decision and explicit authorization before
@@ -95,7 +99,9 @@ PR #15 と正確な main CI 37006276018 の全12ジョブが合格し、Linux範
 Windows／macOS実機・サービスや掲載した除外は未検証です。
 CP-03とADR-0018の追加はPR #17、main `ddce19c77f9bd2a39eaa71eada9907c97b23aceb`、
 CI 37077909665の全12ジョブ成功で完了しました。
-CP-04はADR-0019によりMITを選択し、候補選定・推移的依存・公開前検証は未完了です。
+CP-04はMITと未公開alpha.2候補を選び、固定ソースのパッケージ・推移的依存・PDB・
+利用側コンパイル監査を追加しました。古いMicrosoft独自ライセンスの確認、Windowsの
+断続的タイムアウト調査、公開workflowへの移行は未完了です。候補監査の詳細は別紙へ記録します。
 16／18 の既存実証はその範囲を保ち、未検証の版を合格・再現不可とは扱いません。
 
 公開設定は無効のまま、Phase 3 の固定ソースと候補を保存します。NuGet・新規タグ・

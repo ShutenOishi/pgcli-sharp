@@ -28,7 +28,10 @@ not shipped runtime dependencies. Final publication requires a resolved-package
 license/notice audit including transitive packages; this guide is not that audit.
 
 The preserved Phase 3 artifacts/source are not rewritten. Adopting MIT does not
-enable publication, choose a release candidate or claim Phase 8 completion.
+enable publication or claim Phase 8 completion. The separate [unpublished
+candidate audit](phase-8-candidate-audit.md) records actual resolved dependencies,
+including one legacy Microsoft license requiring pre-publication review; it is
+not blanket MIT classification or distribution clearance.
 
 ## 日本語
 
@@ -47,3 +50,5 @@ netstandard2.0のみCliWrap 3.10.5へ依存します。同パッケージの表�
 権利表示を置き換えません。依存物を再配布する際は元の表示を保持してください。
 推移的依存も含む確定パッケージのライセンス監査は公開前に実施します。
 旧Phase 3の履歴は書き換えず、公開設定は無効のままです。
+[未公開候補監査](phase-8-candidate-audit.md)は確定した推移的依存と原文を記録します。
+古いMicrosoft独自ライセンスの公開前確認を残し、依存全件をMIT・配布承認済みとは扱いません。
