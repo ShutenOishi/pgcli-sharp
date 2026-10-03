@@ -8,205 +8,120 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: "Explicitly authorize external NuGet publication"
+        description: "Explicitly authorize NuGet publication / NuGet公開を明示承認"
         required: true
         type: boolean
         default: false
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
+  actions: read
 
 jobs:
-  release:
+  preflight:
+    uses: ./.github/workflows/candidate-preflight.yml
+    with:
+      require_publication_enabled: ${{ inputs.publish }}
+  publish:
     if: ${{ inputs.publish == true }}
-    name: Publish NuGet preview
+    needs: preflight
+    name: Publish the audited preview after explicit approval
     runs-on: ubuntu-latest
     environment: release
-
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
     steps:
-      - name: Checkout publication control state
+      - name: Checkout reviewed control state
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
-      - name: Setup .NET
+      - name: Download exact preflight artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: reviewed-nuget-preview
+          path: reviewed
+      - name: Verify preflight source, version and package hashes
+        env:
+          SOURCE_COMMIT: ${{ needs.preflight.outputs.source_commit }}
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path('reviewed')
+          audit = json.loads((root / 'candidate-audit.json').read_text())
+          assert audit['candidate']['publication_enabled'] is True
+          assert audit['candidate']['source_commit'] == os.environ['SOURCE_COMMIT']
+          assert audit['candidate']['version'] == os.environ['VERSION']
+          assert audit['distribution_scope_review']['complete'] is True
+          assert audit['remaining_license_review'] == []
+          for name, expected in ((audit['file'], audit['sha256']),
+              ('PgCliSharp.' + os.environ['VERSION'] + '.snupkg', audit['symbols_sha256'])):
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == expected
+          PY
+      - name: Setup .NET for NuGet client
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
-
-      - name: Validate release metadata
-        shell: bash
-        run: bash eng/validate-nuget-release.sh
-
-      - name: Read and guard release manifest
-        id: release
+          dotnet-version: 10.0.100
+      - name: Reject existing immutable version or tag before NuGet login
+        env:
+          VERSION: ${{ needs.preflight.outputs.version }}
+          TAG: ${{ needs.preflight.outputs.tag }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(jq -r '.publication_enabled' .github/nuget-release.json)" = "true"
-
-          echo "package_id=$(jq -r '.package_id' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-          echo "version=$(jq -r '.version' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-          echo "tag=$(jq -r '.tag' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-          echo "title=$(jq -r '.title' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-          echo "notes_file=$(jq -r '.notes_file' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-          echo "nuget_user=$(jq -r '.nuget_user' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-          echo "prerelease=$(jq -r '.prerelease' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-          echo "source_commit=$(jq -r '.release_source_commit' .github/nuget-release.json)" >> "$GITHUB_OUTPUT"
-
-      - name: Preserve release notes
-        env:
-          NOTES_FILE: ${{ steps.release.outputs.notes_file }}
-        shell: bash
-        run: cp "$NOTES_FILE" "$RUNNER_TEMP/nuget-release-notes.md"
-
-      - name: Verify deferred source commit
-        env:
-          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          git cat-file -e "$SOURCE_COMMIT^{commit}"
-          git merge-base --is-ancestor "$SOURCE_COMMIT" origin/main
-
-      - name: Verify exact-source main CI
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          run_json="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$SOURCE_COMMIT" --event push --limit 1 --json status,conclusion,databaseId)"
-          status="$(jq -r '.[0].status // empty' <<<"$run_json")"
-          conclusion="$(jq -r '.[0].conclusion // empty' <<<"$run_json")"
-          run_id="$(jq -r '.[0].databaseId // empty' <<<"$run_json")"
-          test "$status" = "completed"
-          test "$conclusion" = "success"
-          echo "Exact-source CI succeeded: $run_id"
-
-      - name: Checkout deferred release source
-        env:
-          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
-        shell: bash
-        run: git checkout --detach "$SOURCE_COMMIT"
-
-      - name: Preflight immutable release identity
-        id: preflight
-        env:
-          PACKAGE_ID: ${{ steps.release.outputs.package_id }}
-          VERSION: ${{ steps.release.outputs.version }}
-          TAG: ${{ steps.release.outputs.tag }}
-          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          tag_exists=false
-          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
-            tag_exists=true
-            git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
-            test "$(git rev-list -n1 "$TAG")" = "$SOURCE_COMMIT"
+          tag_refs="$(git ls-remote --tags origin "refs/tags/$TAG")"
+          if [ -n "$tag_refs" ]; then
+            echo "Tag already exists; inspect the prior publication before retrying." >&2
+            exit 1
           fi
-
-          package_lower="$(tr '[:upper:]' '[:lower:]' <<<"$PACKAGE_ID")"
-          index_url="https://api.nuget.org/v3-flatcontainer/$package_lower/index.json"
-          status="$(curl -sS -o /tmp/nuget-index.json -w '%{http_code}' "$index_url")"
-
-          package_published=false
-          if [ "$status" = "200" ]; then
-            if jq -e --arg version "$VERSION" '.versions | index($version) != null' /tmp/nuget-index.json >/dev/null; then
-              package_published=true
-              package_url="https://api.nuget.org/v3-flatcontainer/$package_lower/$VERSION/$package_lower.$VERSION.nupkg"
-              curl -fsSL "$package_url" -o /tmp/published.nupkg
-              unzip -p /tmp/published.nupkg "$PACKAGE_ID.nuspec" > /tmp/published.nuspec
-              repository_line="$(grep -o '<repository[^>]*/>' /tmp/published.nuspec | head -n1)"
-              grep -F "commit=\"$SOURCE_COMMIT\"" <<<"$repository_line" >/dev/null
+          status="$(curl -sS -o "$RUNNER_TEMP/nuget-index.json" -w '%{http_code}' https://api.nuget.org/v3-flatcontainer/pgclisharp/index.json)"
+          if [ "$status" = 200 ]; then
+            if jq -e --arg version "$VERSION" '.versions | index($version) != null' "$RUNNER_TEMP/nuget-index.json" >/dev/null; then
+              echo "NuGet version already exists; inspect the prior publication before retrying." >&2
+              exit 1
             fi
-          elif [ "$status" != "404" ]; then
-            echo "Unexpected NuGet index HTTP status: $status" >&2
+          elif [ "$status" != 404 ]; then
+            echo "Unexpected NuGet HTTP status: $status" >&2
             exit 1
           fi
-
-          if [ "$tag_exists" = "true" ] && [ "$package_published" != "true" ]; then
-            echo "Tag $TAG exists but NuGet package $PACKAGE_ID $VERSION is not published." >&2
-            exit 1
-          fi
-
-          echo "package_published=$package_published" >> "$GITHUB_OUTPUT"
-
-      - name: Restore
-        run: dotnet restore PgCliSharp.slnx
-
-      - name: Build
-        run: dotnet build PgCliSharp.slnx --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
-
-      - name: Pack
-        run: dotnet pack src/PgCliSharp/PgCliSharp.csproj --configuration Release --no-build --no-restore --output artifacts
-
-      - name: Verify NuGet package artifacts
-        shell: bash
-        env:
-          EXPECTED_COMMIT: ${{ steps.release.outputs.source_commit }}
-        run: bash eng/verify-nuget-package.sh artifacts
-
       - name: NuGet login with Trusted Publishing
-        if: steps.preflight.outputs.package_published != 'true'
         id: login
         uses: NuGet/login@v1
         with:
-          user: ${{ steps.release.outputs.nuget_user }}
-
-      - name: Publish package to NuGet.org
-        if: steps.preflight.outputs.package_published != 'true'
+          user: ${{ needs.preflight.outputs.nuget_user }}
+      - name: Publish the audited package and symbols
         env:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
-          PACKAGE_ID: ${{ steps.release.outputs.package_id }}
-          VERSION: ${{ steps.release.outputs.version }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          dotnet nuget push "artifacts/$PACKAGE_ID.$VERSION.nupkg" \
-            --api-key "$NUGET_API_KEY" \
-            --source "https://api.nuget.org/v3/index.json"
-
-      - name: Create or verify version GitHub Release
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: dotnet nuget push "reviewed/PgCliSharp.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+      - name: Create immutable bilingual preview release
         env:
           GH_TOKEN: ${{ github.token }}
-          PACKAGE_ID: ${{ steps.release.outputs.package_id }}
-          VERSION: ${{ steps.release.outputs.version }}
-          TAG: ${{ steps.release.outputs.tag }}
-          TITLE: ${{ steps.release.outputs.title }}
-          PRERELEASE: ${{ steps.release.outputs.prerelease }}
-          SOURCE_COMMIT: ${{ steps.release.outputs.source_commit }}
-        shell: bash
+          SOURCE_COMMIT: ${{ needs.preflight.outputs.source_commit }}
+          VERSION: ${{ needs.preflight.outputs.version }}
+          TAG: ${{ needs.preflight.outputs.tag }}
+          TITLE: ${{ needs.preflight.outputs.title }}
+          PRERELEASE: ${{ needs.preflight.outputs.prerelease }}
+        run: |
+          prerelease_args=()
+          if [ "$PRERELEASE" = true ]; then prerelease_args+=(--prerelease); fi
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$SOURCE_COMMIT" \
+            --title "$TITLE" "${prerelease_args[@]}" --notes-file reviewed/release-notes.md \
+            "reviewed/PgCliSharp.$VERSION.nupkg" \
+            "reviewed/PgCliSharp.$VERSION.snupkg"
+      - name: Verify published release target and assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_COMMIT: ${{ needs.preflight.outputs.source_commit }}
+          VERSION: ${{ needs.preflight.outputs.version }}
+          TAG: ${{ needs.preflight.outputs.tag }}
         run: |
           set -euo pipefail
-
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
-            test "$(git rev-list -n1 "$TAG")" = "$SOURCE_COMMIT"
-          else
-            prerelease_args=()
-            if [ "$PRERELEASE" = "true" ]; then
-              prerelease_args+=(--prerelease)
-            fi
-
-            gh release create "$TAG" \
-              --repo "$GITHUB_REPOSITORY" \
-              --target "$SOURCE_COMMIT" \
-              --title "$TITLE" \
-              --notes-file "$RUNNER_TEMP/nuget-release-notes.md" \
-              "${prerelease_args[@]}" \
-              "artifacts/$PACKAGE_ID.$VERSION.nupkg" \
-              "artifacts/$PACKAGE_ID.$VERSION.snupkg"
-          fi
-
+          git fetch origin "refs/tags/$TAG:refs/tags/$TAG"
+          test "$(git rev-list -n1 "$TAG")" = "$SOURCE_COMMIT"
           assets="$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
-          grep -Fx "$PACKAGE_ID.$VERSION.nupkg" <<<"$assets"
-          grep -Fx "$PACKAGE_ID.$VERSION.snupkg" <<<"$assets"
+          grep -Fx "PgCliSharp.$VERSION.nupkg" <<<"$assets"
+          grep -Fx "PgCliSharp.$VERSION.snupkg" <<<"$assets"

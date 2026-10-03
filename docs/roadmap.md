@@ -147,7 +147,7 @@ Tools that can alter or recover data directories require especially explicit doc
 - Freeze breaking API changes.
 - Complete README/examples.
 - User-approved ADR-0018 adds configuration lambdas, execution snapshots, offline validation/commands, shared result metadata and awaited psql completion; review the additive compiled API contract and complete its CI gates before CP-04.
-- ADR-0020 supersedes the preserved Phase 3 preview selection with unpublished `0.1.0-alpha.2`, preserving historical manifests/source. Finish the recorded license/stability/promotion gates before enabling any publication manifest.
+- ADR-0021 supersedes the initial ADR-0020 selection with unpublished `0.1.0-alpha.2`, preserving historical manifests/source. Finish the recorded license/stability/promotion gates before enabling any publication manifest.
 - Release candidates followed by `1.0.0`.
 
 ADR-0021 finishes bounded preview engineering before external publication:
@@ -162,7 +162,13 @@ See [Real PostgreSQL integration testing](integration-testing.md) for the curren
 
 Phase 0-2 retain their existing GitHub Releases. Starting with Phase 3, ADR-0012 separates implementation completion from external publication. A Phase is completed by a reviewed `main` merge, exact-commit Linux/macOS/Windows CI, compatibility/research evidence, and updated repository documentation. New NuGet pushes, GitHub Release tags, Releases, and Release assets are deferred until the final release phase.
 
-The deferred Phase 3 publication manifests remain checked in for provenance, with `publication_enabled: false` and release source commit `cccf8d9fbe1f2e1104676ab94a7863209c0220dd`. ADR-0020 records a separate unpublished alpha.2 selection at `df395760a84643bebec4bab9885c610793e4b222`. The release workflow still targets the old disabled manifest; future promotion requires reviewed source/version/notes/lock handling and separate explicit authorization.
+The deferred Phase 3 manifests preserve disabled alpha.1 and its source. ADR-0021
+selects unpublished alpha.2 at `f0eb822c62def95e3cc8420b386b283437bf46cd`, retaining ADR-0020's
+older selection in manifest history. CI and manual release preflight now use the
+same locked exact-source audit; the source main CI passed all 13 jobs at attempt 1.
+Final controls require exact PR/main CI, three-OS candidate audits and the shared
+read-only preflight before bounded preview engineering is complete. Publication,
+Trusted Publishing account verification and 1.0 acceptance remain separate gates.
 
 ## Continuous work
 

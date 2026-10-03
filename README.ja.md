@@ -22,9 +22,21 @@ Phase 0〜2 の既存 GitHub Release は維持します。ADR-0012 により Pha
 
 選択したプレビュー版は `0.1.0-alpha.2` で、nuget.orgには未公開です。CIの未公開候補artifactを取得して `./candidate-packages` へ展開した場合は、利用側で次のように指定できます。
 
+利用側プロジェクトの横に次の `NuGet.Config` を作り、候補と別途解決する依存をWindows／Linux／macOSで復元できるようにします:
+
+```xml
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="candidate" value="./candidate-packages" />
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+```
+
 ```bash
-dotnet add package PgCliSharp --version 0.1.0-alpha.2 --source ./candidate-packages
-dotnet restore --source ./candidate-packages --source https://api.nuget.org/v3/index.json
+dotnet add package PgCliSharp --version 0.1.0-alpha.2
+dotnet restore
 ```
 
 対象は `netstandard2.0`、`net8.0`、`net10.0` です。別の依存パッケージもNuGetまたはオフラインfeedから復元する必要があります。PostgreSQL本体は同梱しません。artifactには候補ソース・SDK・build lock・監査記録を含めます。外部公開は別途の承認とTrusted Publishingの確認後に行い、長期API keyは保存しません。[第三者の権利表示](THIRD-PARTY-NOTICES.md)も参照してください。

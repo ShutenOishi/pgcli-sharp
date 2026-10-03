@@ -395,15 +395,8 @@ public sealed class ProcessSessionRunnerTests
 
     private static (string Executable, string[] Arguments) GetLongRunningCommand()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            string windowsDirectory = Environment.GetFolderPath(
-                Environment.SpecialFolder.Windows);
-            return (
-                Path.Combine(windowsDirectory, "System32", "ping.exe"),
-                new[] { "127.0.0.1", "-n", "6" });
-        }
-
-        return ("/bin/sleep", new[] { "5" });
+        // Cancellation/backpressure tests must own the child's lifetime. A
+        // five-second ping/sleep can finish before a delayed assertion runs.
+        return ManagedTestProcess.Command("wait");
     }
 }

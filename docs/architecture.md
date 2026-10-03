@@ -331,20 +331,21 @@ The NuGet and Phase release workflows are manual-only. They require an explicit 
 
 Ordinary CI packages are development artifacts, not publication candidates. Their artifact name and provenance record include the exact CI source SHA and explicitly state `publication_candidate=false`; package verification still checks SourceLink/repository commit against that source. This does not change the preserved Phase 3 manifest source or package version.
 
-ADR-0020 separately selects unpublished alpha.2 from MIT main
-`df395760a84643bebec4bab9885c610793e4b222`. A non-publishing CI job builds this
-immutable source with explicit version/notes overrides, fixed SDK and locked
-dependencies, inspects portable-PDB SourceLink and compiles isolated consumers.
-See [candidate audit](phase-8-candidate-audit.md) for the legacy license review,
-Windows stability risk and promotion gates. The historical disabled release
-workflow is not silently repointed by this audit.
+ADR-0021 selects unpublished alpha.2 from tested main
+`f0eb822c62def95e3cc8420b386b283437bf46cd`, retaining the original ADR-0020 selection as history.
+CI and manual `release.yml` share the read-only `candidate-preflight.yml` build/audit
+controls. The version/notes overrides, SDK and lock are fixed; source main CI and
+ancestry, own payload/notices, PDB SourceLink/DLL pairing and isolated consumer
+compilation/runtime are checked. All OS cross-compile net48; Windows also runs the netstandard asset on net48.
+The publisher uses only preflight packages whose hashes/source/version match.
 
-ADR-0021 replaces that initial source selection with a fresh tested preview source
-while retaining its history. Preview engineering includes direct managed completion
-stress fixtures and shipped third-party notices; CI/manual preflight/eventual
-publication share the same pinned build/audit controls. The legacy Microsoft
-reference package is excluded from redistributed payload and retains its own
-terms. Preview completion and 1.0/external-publication acceptance are separate.
+Direct managed completion stress evidence keeps the 15-second deadline and does
+not claim the old PowerShell timeout's cause is known. The legacy Microsoft
+reference package is excluded from shipped contents, retains its original terms
+and is not relabeled MIT. The wrapper's distribution-scope review does not clear
+downstream distributions. Publication remains disabled; explicit approval,
+reviewed enablement and account-side Trusted Publishing verification are required.
+Preview engineering completion, 1.0 acceptance and external publication are separate.
 
 ## 16. Planned implementation order
 
