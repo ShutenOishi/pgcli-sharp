@@ -28,6 +28,17 @@ def run(*args):
     return subprocess.check_output([str(arg) for arg in args], text=True, timeout=120).strip()
 
 
+def provision(root, *args):
+    # Wait for the controller process, not EOF on a pipe inherited by a server.
+    # In particular, native Windows pg_ctl starts a persistent command child.
+    log = root / "setup.log"
+    with log.open("a", encoding="utf-8") as output:
+        result = subprocess.run([str(arg) for arg in args], stdout=output, stderr=subprocess.STDOUT, timeout=120)
+    if result.returncode:
+        print(log.read_text(errors="replace")[-16000:])
+        result.check_returncode()
+
+
 def executable(binary, name):
     return Path(binary) / (name + (".exe" if os.name == "nt" else ""))
 
@@ -105,7 +116,7 @@ def setup():
         (root / "WINDOWS-ACL.json").write_text(json.dumps({"userSid": sid, "acl": run("icacls", root)}, indent=2), encoding="utf-8")
     binary = Path(owner["binary"])
     user = "pgcli_owned"
-    run(executable(binary, "initdb"), "-D", root / "data", "-A", "trust", "-U", user, "--locale=C", "--encoding=UTF8")
+    provision(root, executable(binary, "initdb"), "-D", root / "data", "-A", "trust", "-U", user, "--locale=C", "--encoding=UTF8")
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
         port = str(listener.getsockname()[1])
@@ -113,9 +124,9 @@ def setup():
     options = f"-c listen_addresses={'127.0.0.1' if os.name == 'nt' else chr(39) + chr(39)} -p {port}"
     if os.name != "nt":
         options += " -k " + str(root)
-    run(executable(binary, "pg_ctl"), "-D", root / "data", "-l", root / "server.log", "-t", "30", "-w", "-o", options, "start")
+    provision(root, executable(binary, "pg_ctl"), "-D", root / "data", "-l", root / "server.log", "-t", "30", "-w", "-o", options, "start")
     for database in ("pgclisharp_source", "pgclisharp_target", "pgclisharp_bench"):
-        run(executable(binary, "createdb"), "-h", host, "-p", port, "-U", user, database)
+        provision(root, executable(binary, "createdb"), "-h", host, "-p", port, "-U", user, database)
     export({"PGCLI_REAL_PG_HOST": host, "PGCLI_REAL_PG_PORT": port, "PGCLI_REAL_PG_USER": user,
             "PGCLI_REAL_PG_SOURCE_DB": "pgclisharp_source", "PGCLI_REAL_PG_TARGET_DB": "pgclisharp_target", "PGCLI_REAL_PG_BENCH_DB": "pgclisharp_bench"})
 

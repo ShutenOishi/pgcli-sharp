@@ -51,6 +51,17 @@ requires a new native run. Windows net48 stress expands from three to ten rounds
 completion observation stall remains unresolved until diagnosed; passing repeats
 are evidence of those repeats, not a claimed fix or automatic 1.0 acceptance.
 
+CI 37113210668 passed deterministic/candidate/preflight, Linux 10–18 and macOS
+native. Windows artifact 11271340499 independently confirms 19 Passed TRX files
+and 570 paired completion/drain traces. Windows native build succeeded, then the
+setup step remained active from 09:35:31 beyond 09:41:49 UTC. It is not a native
+success and is superseded for diagnosis. Provisioning now writes stdout/stderr to
+an owned setup.log and waits for the controller PID, rather than pipe EOF from
+handles that native pg_ctl's persistent command/server child can inherit. The
+upstream Windows startup code explicitly inherits handles. This is a plausible
+explanation to verify against retained server logs, not an established cause of
+the separate net48 stall. Setup/collection/stop also have explicit step caps.
+
 | OS | Required real execution | Scope |
 |---|---|---|
 | Linux | Existing pinned 10–18/net10.0 matrix | Existing representative scenarios plus scoped checksum/rewind/16→18 Copy migration |
@@ -124,6 +135,13 @@ Windowsの完了trace360件とmacOS成果物11270380850の版・hash・arm64・�
 PostgreSQLの制限tokenは維持します。親・全体・他ユーザーのACLは変更しません。
 修正の確認は新しい実行が必要です。net48反復は3から10回へ増やし、失敗時は即終了します。
 以前の完了待ち停止は原因未解明として残し、成功した反復を原因修正や1.0承認とは扱いません。
+
+CI 37113210668は通常・候補・Linux・macOS実CLIが成功し、Windows成果物11271340499の
+TRX19件と完了／drain570組を独立確認しました。Windowsはビルド成功後、起動stepが
+09:35:31から09:41:49以降も未完了です。実CLI成功には数えず、診断変更で置き換えます。
+pg_ctlの長寿命な子が継承し得るstdoutパイプのEOF待ちを避け、所有setup.logへ出力し
+制御PIDの終了を待ちます。サーバーログで確認する仮説で、別のnet48停止の原因とは
+断定しません。起動・証拠収集・停止のstepにも明示的な時間上限を設定します。
 
 Linuxの既存10〜18検証を維持し、Windows／macOSに同じ版・hashの18.6をネイティブ
 ビルドして追加します。公開APIでバックアップ／行のリストア確認、有限・セッションpsql、

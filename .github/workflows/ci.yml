@@ -230,6 +230,7 @@ jobs:
       - name: Build hash-verified native PostgreSQL 18
         run: python eng/native_postgresql.py build
       - name: Start exclusively owned native fixture
+        timeout-minutes: 3
         run: python eng/native_postgresql.py setup
       - name: Execute public wrappers against native PostgreSQL
         timeout-minutes: 10
@@ -240,9 +241,11 @@ jobs:
           --blame-hang-timeout 2m --blame-hang-dump-type none
       - name: Collect exact native binary, server and scenario evidence
         if: always()
+        timeout-minutes: 2
         run: python eng/native_postgresql.py collect "${{ runner.temp }}/native-evidence"
       - name: Stop only the owned native cluster
         if: always()
+        timeout-minutes: 2
         run: python eng/native_postgresql.py stop
       - name: Preserve native evidence and failure logs
         if: always()
@@ -252,8 +255,8 @@ jobs:
           path: |
             ${{ runner.temp }}/native-evidence/*
             ${{ runner.temp }}/pgcli-native-build-*/*.log
-            ${{ runner.temp }}/pgcli-native-*/server.log
-            /tmp/pgcli-native-*/server.log
+            ${{ runner.temp }}/pgcli-native-*/*.log
+            /tmp/pgcli-native-*/*.log
           if-no-files-found: error
 
   real-postgresql:
