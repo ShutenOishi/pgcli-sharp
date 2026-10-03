@@ -1,6 +1,7 @@
 # ADR-0020: Select an unpublished full-wrapper preview
 
-- Status: Accepted
+- Status: Superseded
+- Superseded by: ADR-0021
 - Date: 2026-10-03
 - Supersedes: None
 - Complements: ADR-0012, ADR-0019

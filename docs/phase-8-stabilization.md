@@ -13,7 +13,7 @@ not imply API freeze, full real-binary compatibility or publication approval.
 | CP-01 | Generated XML EN/JA ordering, resources, diagnostic data and public dependency boundaries | Complete: PR #14; exact-main CI 36997454961 |
 | CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Linux checkpoint complete: PR #15; exact-main CI 37006276018; exclusions retained |
 | CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Complete including ADR-0018: PR #17; exact-main CI 37077909665; see [API review](phase-8-api-review.md) |
-| CP-04 | License, preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Partial: MIT and unpublished alpha.2 selected (ADR-0019/0020); technical audit added; legacy license review, intermittent Windows risk and promotion remain |
+| CP-04 | License, preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Final preparation under ADR-0021: managed completion stress fixture and shipped notices; fresh source selection/preflight and final exact-main CI pending |
 
 ### CP-01 audit and changes
 
@@ -77,7 +77,10 @@ the license choice. ADR-0020 separately selects unpublished alpha.2 from MIT mai
 The [candidate audit](phase-8-candidate-audit.md) verifies packages, locked dependencies,
 actual PDB SourceLink and three compile-only clean consumer targets. A legacy
 Microsoft license review, unresolved Windows/net10 completion timeout risk and
-release workflow promotion remain; technical success is not release readiness.
+release workflow promotion remain in the initial selection. ADR-0021 and the
+[final review](phase-8-final-review.md) add the managed regression fixture,
+distribution-scope review/notices and fresh source selection. Final CI and
+candidate re-audit still gate completion of preview engineering.
 No NuGet push, new tag, GitHub Release or Release asset is authorized by this
 checkpoint. Phase 8 completion is not claimed. ADR-0012 and the final-release
 workflow require a reviewed candidate decision and explicit authorization before

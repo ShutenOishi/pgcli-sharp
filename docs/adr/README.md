@@ -77,7 +77,8 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0017](0017-freeze-reviewed-public-api-contract.md) | Freeze the reviewed public API contract | Accepted |
 | [0018](0018-offline-commands-and-configuration-snapshots.md) | Add lambda configuration, offline commands and execution snapshots | Accepted |
 | [0019](0019-adopt-mit-license.md) | Adopt the MIT license | Accepted |
-| [0020](0020-select-unpublished-full-wrapper-preview.md) | Select an unpublished full-wrapper preview | Accepted |
+| [0020](0020-select-unpublished-full-wrapper-preview.md) | Select an unpublished full-wrapper preview | Superseded |
+| [0021](0021-finish-preview-engineering-without-publication.md) | Finish preview engineering without publication | Accepted |
 
 ## Template
 

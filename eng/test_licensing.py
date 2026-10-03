@@ -16,6 +16,8 @@ class LicensingTests(unittest.TestCase):
                   if node.attrib.get("Pack") == "true"}
         self.assertIn("../../LICENSE", packed)
         self.assertIn("../../docs/licensing.md", packed)
+        self.assertIn("../../THIRD-PARTY-NOTICES.md", packed)
+        self.assertIn("../../docs/third-party/dotnet-notices.txt", packed)
 
     def test_license_identity_and_obligations(self):
         license_text = (ROOT / "LICENSE").read_text(encoding="utf-8")

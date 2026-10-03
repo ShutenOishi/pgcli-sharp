@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/PgCliSharp/PgCliSharp.csproj" />
+    <ProjectReference Include="../PgCliSharp.TestProcess/PgCliSharp.TestProcess.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,4 +43,11 @@
           Link="resx/Messages.ja.resx"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <Target Name="CopyTestProcess" AfterTargets="Build" Condition="'$(TargetFramework)' != ''">
+    <ItemGroup>
+      <TestProcessFiles Include="../PgCliSharp.TestProcess/bin/$(Configuration)/$(TargetFramework)/*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(TestProcessFiles)" DestinationFolder="$(OutDir)test-process" />
+  </Target>
 </Project>

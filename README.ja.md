@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-Phase 7 のサーバー管理6ツールまで実装し、Phase 8 の安定化を進めています。日英文書・診断と PostgreSQL 10〜18 の Linux 実バイナリ検証チェックポイントは完了しました。公開 API の命名レビューと検証ベースラインは [CP-03](docs/phase-8-api-review.md) を参照してください。Phase 8 全体完了・公開可能な状態とは扱いません。保存済みの `PgCliSharp 0.1.0-alpha.1` は ADR-0012 により外部公開を延期したままです。
+全25ラッパーとレビュー済みAPIを実装し、Phase 8で未公開 `0.1.0-alpha.2` プレビューを準備しています。ラムダ設定と実行しないコマンド生成も含みます。[最終レビュー](docs/phase-8-final-review.md)で検証範囲と公開前条件を記録します。1.0の安定性を保証するものではありません。旧alpha.1はADR-0012により履歴として保存します。
 
 初期対応範囲:
 
@@ -20,13 +20,14 @@ Phase 0〜2 の既存 GitHub Release は維持します。ADR-0012 により Pha
 
 ## NuGet プレビュー
 
-準備済みのプレビュー候補は `0.1.0-alpha.1` ですが、現時点では nuget.org に公開していません。下記は最終的に公開する場合の利用形式です。
+選択したプレビュー版は `0.1.0-alpha.2` で、nuget.orgには未公開です。CIの未公開候補artifactを取得して `./candidate-packages` へ展開した場合は、利用側で次のように指定できます。
 
 ```bash
-dotnet add package PgCliSharp --version 0.1.0-alpha.1
+dotnet add package PgCliSharp --version 0.1.0-alpha.2 --source ./candidate-packages
+dotnet restore --source ./candidate-packages --source https://api.nuget.org/v3/index.json
 ```
 
-package の target framework は `netstandard2.0`、`net8.0`、`net10.0` です。公開は最終リリース Phase まで延期します。公開を承認する場合は、記録済みの Phase 3 source commit を GitHub Actions で再検証し、NuGet Trusted Publishing/OIDC を使用します。長期 NuGet API key はリポジトリへ保存しません。
+対象は `netstandard2.0`、`net8.0`、`net10.0` です。別の依存パッケージもNuGetまたはオフラインfeedから復元する必要があります。PostgreSQL本体は同梱しません。artifactには候補ソース・SDK・build lock・監査記録を含めます。外部公開は別途の承認とTrusted Publishingの確認後に行い、長期API keyは保存しません。[第三者の権利表示](THIRD-PARTY-NOTICES.md)も参照してください。
 
 ## 主な設計方針
 

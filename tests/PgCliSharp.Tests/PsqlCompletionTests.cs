@@ -1,19 +1,28 @@
-using System.Runtime.InteropServices;
+using System.Text;
 using PgCliSharp.Internal.Execution;
 
 namespace PgCliSharp.Tests;
 
 public sealed class PsqlCompletionTests
 {
-    [Fact]
-    public async Task CompleteAsync_SignalsEofAndWaitsForBinaryDrain_WithoutDisposingCallerStreams()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(5)]
+    [InlineData(262144)]
+    public async Task CompleteAsync_SignalsEofAndWaitsForBinaryDrain_WithoutDisposingCallerStreams(int size)
+    {
+        for (int iteration = 0; iteration < 10; iteration++)
+            await VerifyBinaryCompletionAsync(size);
+    }
+
+    private static async Task VerifyBinaryCompletionAsync(int size)
     {
         using var output = new MemoryStream();
         using var error = new MemoryStream();
         (string executable, string[] arguments) = EchoCommand();
         IProcessSession process = new ProcessSessionRunner().Start(new ProcessSessionStartRequest(executable, arguments, output, error, TimeSpan.FromSeconds(15)), CancellationToken.None);
         using var session = new PsqlSession(process, executable, new Version(18, 6), "18.6");
-        byte[] payload = { 0, 128, 255, 10, 13 };
+        byte[] payload = Enumerable.Range(0, size).Select(index => (byte)(index % 256)).ToArray();
 #if NET8_0_OR_GREATER
         await session.StandardInput.WriteAsync(payload.AsMemory());
 #else
@@ -23,6 +32,8 @@ public sealed class PsqlCompletionTests
         Assert.Equal(PsqlExitStatus.Success, result.Status);
         Assert.Same(result, await session.CompleteAsync());
         Assert.Equal(payload, output.ToArray());
+        string stages = Encoding.UTF8.GetString(error.ToArray()).Replace("\r", string.Empty);
+        Assert.Equal("ready\neof\ndrained\n", stages);
         Assert.True(output.CanWrite);
         Assert.True(error.CanWrite);
     }
@@ -56,9 +67,13 @@ public sealed class PsqlCompletionTests
 
     private static (string Executable, string[] Arguments) EchoCommand()
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return ("/bin/cat", Array.Empty<string>());
-        string powershell = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsPowerShell", "v1.0", "powershell.exe");
-        return (powershell, new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[Console]::OpenStandardInput().CopyTo([Console]::OpenStandardOutput())" });
+        string helper = Path.Combine(AppContext.BaseDirectory, "test-process", "PgCliSharp.TestProcess");
+#if NET48
+        return (helper + ".exe", Array.Empty<string>());
+#else
+        string executable = Environment.GetEnvironmentVariable("DOTNET_HOST_PATH") ?? "dotnet";
+        return (executable, new[] { helper + ".dll" });
+#endif
     }
 
     private sealed class ControlledSession : IProcessSession

@@ -46,6 +46,8 @@ test -f "$work/nupkg/README.md"
 test -f "$work/nupkg/README.ja.md"
 test -f "$work/nupkg/LICENSE"
 test -f "$work/nupkg/docs/licensing.md"
+cmp THIRD-PARTY-NOTICES.md "$work/nupkg/THIRD-PARTY-NOTICES.md"
+cmp docs/third-party/dotnet-notices.txt "$work/nupkg/docs/third-party/dotnet-notices.txt"
 cmp LICENSE "$work/nupkg/LICENSE"
 grep -F '<license type="expression">MIT</license>' "$nuspec" >/dev/null
 
