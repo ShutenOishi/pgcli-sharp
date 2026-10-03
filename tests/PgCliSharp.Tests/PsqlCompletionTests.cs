@@ -19,7 +19,7 @@ public sealed class PsqlCompletionTests
     {
         using var output = new MemoryStream();
         using var error = new MemoryStream();
-        (string executable, string[] arguments) = EchoCommand();
+        (string executable, string[] arguments) = ManagedTestProcess.Command();
         IProcessSession process = new ProcessSessionRunner().Start(new ProcessSessionStartRequest(executable, arguments, output, error, TimeSpan.FromSeconds(15)), CancellationToken.None);
         using var session = new PsqlSession(process, executable, new Version(18, 6), "18.6");
         byte[] payload = Enumerable.Range(0, size).Select(index => (byte)(index % 256)).ToArray();
@@ -63,17 +63,6 @@ public sealed class PsqlCompletionTests
         process.Exit(9);
         PgProcessExecutionException failure = await Assert.ThrowsAsync<PgProcessExecutionException>(() => finishing);
         Assert.Equal(9, failure.ExitCode);
-    }
-
-    private static (string Executable, string[] Arguments) EchoCommand()
-    {
-        string helper = Path.Combine(AppContext.BaseDirectory, "test-process", "PgCliSharp.TestProcess");
-#if NET48
-        return (helper + ".exe", Array.Empty<string>());
-#else
-        string executable = Environment.GetEnvironmentVariable("DOTNET_HOST_PATH") ?? "dotnet";
-        return (executable, new[] { helper + ".dll" });
-#endif
     }
 
     private sealed class ControlledSession : IProcessSession
