@@ -160,8 +160,15 @@ internal static class Smoke {
     }
 }
 ''', encoding="utf-8")
-        run(dotnet, "restore", str(project), "--source", str(output), "--source",
-            "https://api.nuget.org/v3/index.json", "--packages", str(folder / "packages"), *common, cwd=output)
+        # Use NuGet.Config instead of repeated CLI --source values: Windows SDK
+        # can normalize a mixed local-path/URL list into an invalid local path.
+        config = folder / "NuGet.Config"
+        config.write_text('<configuration><packageSources><clear />' +
+            '<add key="candidate" value="' + html.escape(str(output), quote=True) + '" />' +
+            '<add key="nuget.org" value="https://api.nuget.org/v3/index.json" />' +
+            '</packageSources></configuration>', encoding="utf-8")
+        run(dotnet, "restore", str(project), "--configfile", str(config),
+            "--packages", str(folder / "packages"), *common, cwd=output)
         assets_path = folder / "obj/project.assets.json"
         assets = json.loads(assets_path.read_text(encoding="utf-8"))
         for tfm in FRAMEWORKS:
