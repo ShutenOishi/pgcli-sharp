@@ -20,7 +20,12 @@ run ten times; the latter exceeds an OS pipe's usual buffer and exercises
 concurrent output draining. Completion idempotence and caller stream ownership
 remain asserted. Windows repeats the five completion cases three more times per
 TFM, failing on the first failure rather than retrying until success. All TRX
-results, including failed cases, are uploaded.
+results, including failed cases, are uploaded. The CI harness additionally terminates
+a test host after two minutes without test-case progress and caps each test step
+at ten minutes. Sequence/VSTest diagnostics are retained without memory dumps.
+This bounds a stalled runner; it does not relax any test deadline or fix a stall.
+A later controls run (37086422295) stalled in Windows Test before candidate audit;
+its cancelled logs remain separate evidence, not a successful run.
 
 This removes the test's PowerShell dependency and adds regression evidence. It
 does not prove the historical cause or change production execution code. Native
@@ -59,7 +64,9 @@ an explicit later decision. Real-CLI exclusions remain those in ADR-0016.
 過去の失敗はPowerShellを使うechoテストが15秒でタイムアウトした記録です。
 原因は断定せず、制限時間は変えずに小さな.NET子プロセスへ置き換えます。
 空・小・256KiBのバイナリ、EOF後の転送完了、再完了、所有stream保持を繰り返し検証し、
-Windowsの3対象ではさらに反復します。失敗を再実行で隠さず、TRXを保存します。
+Windowsの3対象ではさらに反復します。失敗を再実行で隠さず、TRXと実行診断を保存します。
+CI側もテストの進行が2分止まった場合と各stepが10分を超えた場合に終了させます。
+停止の検出を有限にする仕組みであり、15秒の制限緩和や原因修正ではありません。
 本番ライブラリの実行コードは変更せず、実psql検証も別matrixで継続します。
 
 実行時依存9件のMIT表示と原文の.NET追加表示を同梱します。独自ライセンスの古い
