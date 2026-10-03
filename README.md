@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-PgCliSharp has completed implementation through Phase 7. Phase 8 stabilization is in progress: bilingual diagnostics/documentation and the PostgreSQL 10-18 Linux real-binary checkpoint are complete. The checked public API contract and naming review are described in [CP-03](docs/phase-8-api-review.md); this is not full Phase 8 completion or release readiness. External publication of the preserved `PgCliSharp 0.1.0-alpha.1` candidate remains deferred under ADR-0012.
+All 25 wrappers and the reviewed API are implemented. Phase 8 prepares the unpublished `0.1.0-alpha.2` preview, including lambda configuration and offline command generation. See the [final review](docs/phase-8-final-review.md) for tested scope and remaining publication gates. This is not a 1.0 stability claim. Historical alpha.1 remains preserved under ADR-0012.
 
 Initial PostgreSQL compatibility target:
 
@@ -20,13 +20,14 @@ Phase 0-2 retain their existing GitHub Releases. Under ADR-0012, Phase 3 onward 
 
 ## NuGet preview
 
-The prepared preview candidate is `0.1.0-alpha.1`, but it is not currently published to nuget.org. The following command is retained as the intended consumer form for eventual publication:
+The selected preview version is `0.1.0-alpha.2`; it is not published to nuget.org. After downloading an unpublished candidate CI artifact and extracting it to `./candidate-packages`, a local consumer can use:
 
 ```bash
-dotnet add package PgCliSharp --version 0.1.0-alpha.1
+dotnet add package PgCliSharp --version 0.1.0-alpha.2 --source ./candidate-packages
+dotnet restore --source ./candidate-packages --source https://api.nuget.org/v3/index.json
 ```
 
-The package targets `netstandard2.0`, `net8.0`, and `net10.0`. Publication is deferred until the final release phase. When authorized, GitHub Actions will revalidate the recorded Phase 3 source commit and use NuGet Trusted Publishing/OIDC; no long-lived NuGet API key is stored in the repository.
+The package targets `netstandard2.0`, `net8.0`, and `net10.0`. Local restore also needs the separate dependencies available from NuGet or an offline feed; no PostgreSQL binary is included. Candidate source, SDK, build lock and audit accompany the CI artifact. External publication requires explicit approval and Trusted Publishing verification. Long-lived NuGet API keys are not stored in this repository. See [third-party notices](THIRD-PARTY-NOTICES.md).
 
 ## pg_dump quick start
 

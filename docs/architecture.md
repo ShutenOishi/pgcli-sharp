@@ -339,6 +339,13 @@ See [candidate audit](phase-8-candidate-audit.md) for the legacy license review,
 Windows stability risk and promotion gates. The historical disabled release
 workflow is not silently repointed by this audit.
 
+ADR-0021 replaces that initial source selection with a fresh tested preview source
+while retaining its history. Preview engineering includes direct managed completion
+stress fixtures and shipped third-party notices; CI/manual preflight/eventual
+publication share the same pinned build/audit controls. The legacy Microsoft
+reference package is excluded from redistributed payload and retains its own
+terms. Preview completion and 1.0/external-publication acceptance are separate.
+
 ## 16. Planned implementation order
 
 1. Project/solution and execution infrastructure.

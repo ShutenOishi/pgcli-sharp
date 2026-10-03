@@ -24,14 +24,18 @@ whose package declares MIT and Copyright (C) Oleksii Holub. It is resolved as a
 separate NuGet dependency, not embedded or relicensed as PgCliSharp code. Modern
 net8.0/net10.0 assets do not reference CliWrap. Preserve upstream notices whenever
 redistributing dependencies. SourceLink and test tools are build/test dependencies,
-not shipped runtime dependencies. Final publication requires a resolved-package
-license/notice audit including transitive packages; this guide is not that audit.
+not shipped runtime dependencies. The reviewed runtime dependency inventory,
+copyright/permission text and upstream .NET notices are included in
+[THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md).
 
 The preserved Phase 3 artifacts/source are not rewritten. Adopting MIT does not
 enable publication or claim Phase 8 completion. The separate [unpublished
 candidate audit](phase-8-candidate-audit.md) records actual resolved dependencies,
-including one legacy Microsoft license requiring pre-publication review; it is
-not blanket MIT classification or distribution clearance.
+including one legacy Microsoft license. Its exact text/hash are preserved and
+it is excluded from PgCliSharp's nupkg/snupkg: no dependency DLL, reference
+package or runtime.json is bundled. This completes the distribution-scope
+review for this wrapper; the legacy package remains independently licensed.
+It does not clear a downstream application's different dependency/runtime bundle.
 
 ## 日本語
 
@@ -48,7 +52,10 @@ PostgreSQL本体を再配布する場合は、その著作権表示・ライセ�
 netstandard2.0のみCliWrap 3.10.5へ依存します。同パッケージの表示はMIT、
 著作権者はOleksii Holubです。NuGetが別途解決する依存であり、PgCliSharpへ埋め込んで
 権利表示を置き換えません。依存物を再配布する際は元の表示を保持してください。
-推移的依存も含む確定パッケージのライセンス監査は公開前に実施します。
+推移的な実行時依存の一覧・著作権・許諾文と.NET追加表示を
+[THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md)へ保存し、同梱します。
 旧Phase 3の履歴は書き換えず、公開設定は無効のままです。
 [未公開候補監査](phase-8-candidate-audit.md)は確定した推移的依存と原文を記録します。
-古いMicrosoft独自ライセンスの公開前確認を残し、依存全件をMIT・配布承認済みとは扱いません。
+古いMicrosoft独自ライセンスは原文・hashを残し、参照パッケージ・依存DLL・runtime.jsonを
+本ライブラリへ同梱しない配布境界を確認します。その範囲でレビューを完了し、独自条件は変更しません。
+利用側が別の依存版・.NET／PostgreSQLを同梱する場合の確認まで完了したとは扱いません。

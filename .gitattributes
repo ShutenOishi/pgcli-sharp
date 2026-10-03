@@ -1,0 +1,2 @@
+# Preserve the upstream notice byte-for-byte, including its original CRLF/spacing.
+docs/third-party/dotnet-notices.txt -text -whitespace

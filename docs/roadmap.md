@@ -150,6 +150,12 @@ Tools that can alter or recover data directories require especially explicit doc
 - ADR-0020 supersedes the preserved Phase 3 preview selection with unpublished `0.1.0-alpha.2`, preserving historical manifests/source. Finish the recorded license/stability/promotion gates before enabling any publication manifest.
 - Release candidates followed by `1.0.0`.
 
+ADR-0021 finishes bounded preview engineering before external publication:
+direct managed completion fixture/stress evidence, shipped dependency notices,
+distribution-scope license review, current README and a fresh selected-source
+preflight. See [final review](phase-8-final-review.md). Completing this preview
+does not imply 1.0 acceptance or enable publishing.
+
 See [Real PostgreSQL integration testing](integration-testing.md) for the current representative CI scope and expansion rules.
 
 ## Phase completion and deferred publication
