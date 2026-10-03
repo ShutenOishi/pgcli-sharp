@@ -25,6 +25,15 @@ the existing artifact, covering start, write, CompleteAsync, child EOF and drain
 Assertions and the fifteen-second process deadline remain unchanged; diagnostic
 instrumentation is not reported as a production fix or a successful native run.
 
+CI 37112048520 passed all three Windows full suites and the first net48 repeat,
+then stalled in the second net48 repeat's five-byte completion case. Artifact
+11270078805 records parent start/write/CompleteAsync returning and child EOF/drain,
+with no parent completion. This narrows the symptom to completion observation,
+without proving its cause. A test-only Windows hang stack reader (ClrMD 3.1.512801,
+isolated from the solution/package dependencies) now analyzes watchdog dumps on
+their originating runner. Only stack/async-state text is retained; raw dumps are
+removed before upload. The watchdog, process deadlines and assertions remain.
+
 | OS | Required real execution | Scope |
 |---|---|---|
 | Linux | Existing pinned 10–18/net10.0 matrix | Existing representative scenarios plus scoped checksum/rewind/16→18 Copy migration |
@@ -82,6 +91,12 @@ and [Meson build procedure](https://www.postgresql.org/docs/18/install-meson.htm
 未完了であり、停止した操作や原因はまだ不明です。親子プロセスの開始・書き込み・
 完了要求・EOF・drainを時刻付きファイルに記録して絞り込みます。15秒の期限と検証を
 維持し、診断追加を本番修正や実CLI成功として数えません。
+
+CI 37112048520ではWindowsの全3対象とnet48反復1回目が成功し、2回目の5バイト
+ケースで停止しました。成果物11270078805には親の開始・write・CompleteAsync復帰と
+子のEOF・drainを記録できましたが、親の完了待ちは戻っていません。次は所有CI内で
+停止時のスタックと非同期状態を読み、テキストのみ保存します。解析依存は本番・候補に
+追加せず、メモリダンプはアップロード前に削除します。期限・検証は維持します。
 
 Linuxの既存10〜18検証を維持し、Windows／macOSに同じ版・hashの18.6をネイティブ
 ビルドして追加します。公開APIでバックアップ／行のリストア確認、有限・セッションpsql、
