@@ -8,6 +8,14 @@ independent artifact inspection. Baseline: preview-controls main
 Windows/macOS exclusion for the bounded representative scope below. No 1.0
 promotion or external publication is performed.
 
+Initial controls CI 37111052935 failed Windows/net10's
+Session_OutputWriteFault_TerminatesProducerAndPropagatesOriginalFailure at its
+unchanged ten-second completion deadline. Native jobs were skipped, not passed.
+That continuous producer used PowerShell. The same managed fixture now has a
+direct binary producer mode used by the write-fault/noncooperative-output tests
+on each OS. Ten/six-second deadlines, assertions and production code are unchanged.
+This removes a shell dependency; it does not prove the observed timeout's cause.
+
 | OS | Required real execution | Scope |
 |---|---|---|
 | Linux | Existing pinned 10–18/net10.0 matrix | Existing representative scenarios plus scoped checksum/rewind/16→18 Copy migration |
@@ -54,6 +62,11 @@ Sources: [official native platform notes](https://www.postgresql.org/docs/18/ins
 and [Meson build procedure](https://www.postgresql.org/docs/18/install-meson.html), checked 2026-10-03.
 
 ## 日本語
+
+初回CI 37111052935はWindows/net10の出力失敗テストが10秒で完了せず失敗しました。
+実CLI jobは未実行で、成功には数えません。PowerShellを使う連続出力fixtureを
+直接起動する.NET子プロセスへ置き換え、10／6秒の期限・検証・本番コードは維持します。
+シェル依存を除く変更であり、観測された停止原因を断定するものではありません。
 
 Linuxの既存10〜18検証を維持し、Windows／macOSに同じ版・hashの18.6をネイティブ
 ビルドして追加します。公開APIでバックアップ／行のリストア確認、有限・セッションpsql、
