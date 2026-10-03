@@ -2,8 +2,10 @@
 
 ## English
 
-Status: implementation prepared; completion requires exact final PR/main CI and
-independent artifact inspection. Baseline: preview-controls main
+Status: implementation prepared for final verification. The current exact PR/main
+CI and independent artifact-inspection receipt is maintained in
+[PR #23](https://github.com/ShutenOishi/pgcli-sharp/pull/23); completion requires
+that verified receipt, not this status text alone. Baseline: preview-controls main
 `846943fb739efdc30b4d5a6da469eef0d8855a98`. ADR-0022 supersedes the historical
 Windows/macOS exclusion for the bounded representative scope below. No 1.0
 promotion or external publication is performed.
@@ -117,6 +119,10 @@ Sources: [official native platform notes](https://www.postgresql.org/docs/18/ins
 and [Meson build procedure](https://www.postgresql.org/docs/18/install-meson.html), checked 2026-10-03.
 
 ## 日本語
+
+最終PR／mainの検証結果と成果物確認の最新記録は
+[PR #23](https://github.com/ShutenOishi/pgcli-sharp/pull/23)に保持します。
+実装準備という本文だけで完了扱いにせず、同一commitの検証記録を確認します。
 
 初回CI 37111052935はWindows/net10の出力失敗テストが10秒で完了せず失敗しました。
 実CLI jobは未実行で、成功には数えません。PowerShellを使う連続出力fixtureを
