@@ -73,12 +73,13 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0013](0013-rich-io-process-sessions.md) | Separate rich redirected sessions from one-shot process execution | Accepted |
 | [0014](0014-supervise-process-io-and-bound-session-input.md) | Supervise process I/O and bound redirected session input | Accepted |
 | [0015](0015-server-application-boundaries.md) | Separate server applications and detached-server I/O | Accepted |
-| [0016](0016-pin-real-postgresql-evidence-and-scope-exclusions.md) | Pin real PostgreSQL evidence and scope exclusions | Accepted |
+| [0016](0016-pin-real-postgresql-evidence-and-scope-exclusions.md) | Pin real PostgreSQL evidence and scope exclusions | Superseded |
 | [0017](0017-freeze-reviewed-public-api-contract.md) | Freeze the reviewed public API contract | Accepted |
 | [0018](0018-offline-commands-and-configuration-snapshots.md) | Add lambda configuration, offline commands and execution snapshots | Accepted |
 | [0019](0019-adopt-mit-license.md) | Adopt the MIT license | Accepted |
 | [0020](0020-select-unpublished-full-wrapper-preview.md) | Select an unpublished full-wrapper preview | Superseded |
 | [0021](0021-finish-preview-engineering-without-publication.md) | Finish preview engineering without publication | Accepted |
+| [0022](0022-require-three-os-native-cli-checkpoint.md) | Require a three-OS native CLI checkpoint for 1.0 | Accepted |
 
 ## Template
 

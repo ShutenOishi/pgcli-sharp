@@ -272,7 +272,7 @@ Use three logical test layers:
 2. Compatibility tests: supported option inventory by PostgreSQL major version.
 3. Integration tests: invoke real PostgreSQL executables/containers for representative end-to-end behavior.
 
-Phase 8 CP-02 expands the representative Linux matrix to pinned official-source PostgreSQL 10-18 builds under ADR-0016. It adds scoped divergent rewind (13+) and a real 16-to-18 Copy upgrade. Exact CLI/server/OS/TFM/TRX evidence and exclusions are recorded. This is not full patch/OS/tool coverage; Windows/macOS real binaries and service lifecycle remain untested. See `docs/phase-8-real-binary-matrix.md` and `docs/integration-testing.md`.
+Phase 8 CP-02 established pinned official-source PostgreSQL 10-18 Linux builds under historical ADR-0016. ADR-0022 retains that evidence and adds required native Windows/macOS PostgreSQL 18/net10.0 representative execution as CP-05. It requires actual source/binary/server versions, hashes, owned data directories and unique Passed TRX evidence. CI and independent artifact inspection must succeed before reporting this checkpoint complete. Native older versions/other TFMs, service lifecycle, TLS/ICU/TTY/compression and additional migration/destructive scenarios remain outside this scope. See `docs/phase-8-native-os.md` and `docs/integration-testing.md`. This checkpoint does not promote 1.0 or authorize publication.
 
 Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and CliWrap compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
 

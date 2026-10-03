@@ -1,6 +1,7 @@
 # ADR-0016: Pin real PostgreSQL evidence and scope exclusions
 
-- Status: Accepted
+- Status: Superseded
+- Superseded by: ADR-0022
 - Date: 2026-10-02
 - Supersedes: None
 - Complements: ADR-0001, ADR-0008, ADR-0011, ADR-0015

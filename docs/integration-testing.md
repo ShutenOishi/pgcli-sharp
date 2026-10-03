@@ -2,6 +2,12 @@
 
 ## English
 
+ADR-0022 adds required native Windows/macOS PostgreSQL 18/net10.0 representative
+execution alongside the Linux matrix. See [CP-05 native evidence](phase-8-native-os.md)
+for owned fixtures, exact-source/CLI/server/TRX checks and retained exclusions.
+Completion requires exact PR/main CI and artifact inspection; no native success
+is inferred merely from adding the job. Publication remains postponed.
+
 PgCliSharp keeps deterministic unit and compatibility tests independent of local PostgreSQL installations, but those tests are not counted as real PostgreSQL execution evidence.
 
 CI has a separate ubuntu-24.04/net10.0 matrix for pinned source builds of PostgreSQL 10-18. Each job verifies the official archive SHA256, builds an isolated server/client toolchain and runs public APIs against owned socket-only clusters. [CP-02 matrix and exclusions](phase-8-real-binary-matrix.md) and ADR-0016 define the scope.
@@ -21,6 +27,10 @@ Phase 8 expands this evidence toward PostgreSQL 10-18 where reproducible maintai
 The test class is gated by `PGCLI_REAL_PG_*` environment variables so normal unit-test runs remain installation-independent.
 
 ## 日本語
+
+ADR-0022により、Linuxに加えてWindows／macOSのPostgreSQL 18/net10.0代表シナリオを
+1.0の必須条件にします。CP-05に所有環境・版／hash／実結果・除外を記録し、PR／main CIと
+成果物確認で完了とします。job追加だけで合格とはせず、公開は延期します。
 
 通常の unit/compatibility test は PostgreSQL のローカル導入に依存させませんが、それらを実 PostgreSQL 実行の証拠として数えることもしません。
 
