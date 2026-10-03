@@ -331,6 +331,14 @@ The NuGet and Phase release workflows are manual-only. They require an explicit 
 
 Ordinary CI packages are development artifacts, not publication candidates. Their artifact name and provenance record include the exact CI source SHA and explicitly state `publication_candidate=false`; package verification still checks SourceLink/repository commit against that source. This does not change the preserved Phase 3 manifest source or package version.
 
+ADR-0020 separately selects unpublished alpha.2 from MIT main
+`df395760a84643bebec4bab9885c610793e4b222`. A non-publishing CI job builds this
+immutable source with explicit version/notes overrides, fixed SDK and locked
+dependencies, inspects portable-PDB SourceLink and compiles isolated consumers.
+See [candidate audit](phase-8-candidate-audit.md) for the legacy license review,
+Windows stability risk and promotion gates. The historical disabled release
+workflow is not silently repointed by this audit.
+
 ## 16. Planned implementation order
 
 1. Project/solution and execution infrastructure.

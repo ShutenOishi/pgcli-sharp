@@ -1,0 +1,14 @@
+{
+  "package_id": "PgCliSharp",
+  "version": "0.1.0-alpha.2",
+  "source_commit": "df395760a84643bebec4bab9885c610793e4b222",
+  "source_main_ci": 37079780608,
+  "sdk_version": "10.0.100",
+  "publication_enabled": false,
+  "supersedes_candidate": {
+    "version": "0.1.0-alpha.1",
+    "source_commit": "cccf8d9fbe1f2e1104676ab94a7863209c0220dd"
+  },
+  "package_release_notes": "Preview of all 25 typed PostgreSQL CLI wrappers, lambda configuration, offline command generation and MIT licensing. / 全25ラッパー・ラムダ設定・コマンド生成・MITのプレビュー。",
+  "notes_file": "docs/releases/nuget-0.1.0-alpha.2.md"
+}

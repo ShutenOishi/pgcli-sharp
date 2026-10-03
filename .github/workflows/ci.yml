@@ -57,6 +57,7 @@ jobs:
           python3 -m unittest discover -s eng -p test_real_postgresql_evidence.py
           python3 -m unittest discover -s eng -p test_readme_examples.py
           python3 -m unittest discover -s eng -p test_licensing.py
+          python3 -m unittest discover -s eng -p test_candidate_audit.py
 
       - name: Restore
         run: dotnet restore PgCliSharp.slnx
@@ -111,6 +112,38 @@ jobs:
             artifacts/*.nupkg
             artifacts/*.snupkg
             artifacts/DEVELOPMENT-PACKAGE-PROVENANCE.txt
+          if-no-files-found: error
+
+  candidate-audit:
+    name: Unpublished candidate audit (Linux)
+    needs: build-test-pack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout audit controls
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Read pinned candidate source
+        id: candidate
+        run: |
+          python3 -c 'import json, os; c=json.load(open(".github/release-candidate.json")); assert c["publication_enabled"] is False; open(os.environ["GITHUB_OUTPUT"], "a").write("source=" + c["source_commit"] + "\n")'
+      - name: Checkout immutable selected source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.candidate.outputs.source }}
+          path: candidate-source
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.100
+      - name: Build, inspect and consume candidate without publication
+        run: python3 eng/audit_candidate.py candidate-source candidate-artifacts
+      - name: Upload unpublished candidate and audit evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgclisharp-unpublished-candidate-${{ github.sha }}
+          path: candidate-artifacts/*
           if-no-files-found: error
 
   real-postgresql:
