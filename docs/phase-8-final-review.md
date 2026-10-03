@@ -60,13 +60,20 @@ Package audit must fail unexpected shipped files and any non-MIT runtime assets.
 ### Candidate and final gates
 
 README EN/JA now describe alpha.2 and local feed usage, not an available NuGet
-release. Selected source is `f0eb822c62def95e3cc8420b386b283437bf46cd`, containing current docs/notices/fixture.
-Source main CI 37084591633 passed all 13 jobs at attempt 1; independently inspected
+release. Selected source is `0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d`, containing current docs/notices/fixture.
+Source main CI 37104736018 passed all 16 jobs at attempt 1; independently inspected
 Windows TRX has 360 successful binary completions across net48/net8/net10.
-Previous selections are retained as history. The consumer-feed correction also
-updates both README instructions to a project-local NuGet.Config; after this
-preparation merges, final candidate selection must include that documentation
-correction rather than modify an immutable source or ship the old instructions. The
+PR #21 head CI 37104258381 passed all 16 jobs at attempt 1. The selected main
+includes both README instructions corrected to a project-local NuGet.Config and
+test-owned wait fixtures. Windows repeats ten completion/session cases per TFM
+three times (90 additional successful cases). Source-main artifact 11267446185
+contains 12 independently inspected TRX files: full suites net8/net10 each 551,
+net48 548, and nine stress files of ten cases each, all with zero failures.
+Local locked candidate auditing compiled netstandard2.0/net8/net10/net48 with
+zero warnings/errors and executed offline net8/net10 consumers, all three
+PDB/DLL pairs, wrong-SHA/mismatched-DLL negatives and strict symbol payload checks.
+Local VSTest execution was permission-blocked; it is not counted as a pass.
+Previous selections remain history. The
 candidate audit and release preflight must use the same fixed source, version,
 SDK, lock, notes and verification controls. The old disabled Phase 3 manifests
 remain historical records. Promoting 1.0 or creating public artifacts requires
@@ -90,7 +97,11 @@ pingを使うテストの前提を見直し、テストが終了を管理する�
 参照パッケージは同梱せず、原文・hashを残し、その配布境界でレビューを閉じます。
 アプリや.NETランタイム等を同梱する他の配布まで承認するものではありません。
 
-新しい固定ソースmain CI 37084591633は初回で全13ジョブ成功、WindowsのTRXでは
-3対象合計360回のバイナリ終了待ちに成功しました。日英README・SDK・lock・説明を揃え、
+新しい固定ソースmain CI 37104736018は初回で全16ジョブ成功、WindowsのTRXでは
+3対象合計360回のバイナリ終了待ちと追加90件に成功しました。成果物11267446185の
+TRX12件を独立に確認し、通常net8/net10各551件・net48 548件、反復9ファイル各10件は
+すべて失敗0件でした。ローカル候補監査も4対象コンパイル・net8/net10実行・PDB対応・
+異常系に成功しました。ローカルVSTestは権限制限で実行できず、成功扱いにしません。
+日英README・SDK・lock・説明を揃え、
 最終controlsのPR／main CIと3OS候補監査を準備完了の条件にします。旧履歴と無効の公開設定は保持し、
 NuGet・タグ・Releaseの公開や1.0への昇格は別途判断します。

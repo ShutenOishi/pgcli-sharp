@@ -332,7 +332,7 @@ The NuGet and Phase release workflows are manual-only. They require an explicit 
 Ordinary CI packages are development artifacts, not publication candidates. Their artifact name and provenance record include the exact CI source SHA and explicitly state `publication_candidate=false`; package verification still checks SourceLink/repository commit against that source. This does not change the preserved Phase 3 manifest source or package version.
 
 ADR-0021 selects unpublished alpha.2 from tested main
-`f0eb822c62def95e3cc8420b386b283437bf46cd`, retaining the original ADR-0020 selection as history.
+`0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d`, retaining the original ADR-0020 selection as history.
 CI and manual `release.yml` share the read-only `candidate-preflight.yml` build/audit
 controls. The version/notes overrides, SDK and lock are fixed; source main CI and
 ancestry, own payload/notices, PDB SourceLink/DLL pairing and isolated consumer

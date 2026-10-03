@@ -2,10 +2,11 @@
 
 ## English
 
-ADR-0021 selects `0.1.0-alpha.2` from source `f0eb822c62def95e3cc8420b386b283437bf46cd`.
-[Source main CI 37084591633](https://github.com/ShutenOishi/pgcli-sharp/actions/runs/37084591633)
-passed all 13 jobs on its first attempt. PR #20 contains the current packaged
-README/notices and direct managed completion fixture. The previous unpublished
+ADR-0021 selects `0.1.0-alpha.2` from source `0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d`.
+[Source main CI 37104736018](https://github.com/ShutenOishi/pgcli-sharp/actions/runs/37104736018)
+passed all 16 jobs on its first attempt. PR #20 added packaged notices and the
+managed completion fixture; PR #21 adds portable README feeds, test-owned wait
+fixtures, cross-OS consumers and the shared read-only preflight. The previous unpublished
 selection remains in manifest history; historical Phase 3 manifests stay disabled.
 Final controls must pass the exact PR head and main CI before preview engineering
 is reported complete. That completion does not authorize external publication.
@@ -43,7 +44,9 @@ Three portable PDBs must map SourceLink to the selected SHA and match their
 associated DLL CodeView GUIDs. Wrong-SHA and deliberately mismatched-DLL tests
 must fail. Package inspection compares six documents byte-for-byte with source,
 including upstream .NET notices, and permits only the explicit own payload.
-Unexpected shipped files, duplicate entries and non-MIT runtime dependencies fail.
+Unexpected shipped files and duplicate entries fail in both nupkg and snupkg;
+non-MIT runtime dependencies also fail. Symbol payload negative tests add an
+unexpected DLL/RID file and a duplicate metadata entry.
 
 ### Distribution scope
 
@@ -90,8 +93,8 @@ real-CLI exclusions in ADR-0016 remain. No 1.0/RC acceptance is claimed.
 ## 日本語
 
 ADR-0021に従い、日英README・権利表示・直接起動する.NETテスト子プロセスを含む
-main `f0eb822c62def95e3cc8420b386b283437bf46cd` を未公開alpha.2のソースに固定します。
-そのmain CI 37084591633は初回で全13ジョブに成功しました。以前の選定と旧Phase 3の
+main `0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d` を未公開alpha.2のソースに固定します。
+そのmain CI 37104736018は初回で全16ジョブに成功しました。以前の選定と旧Phase 3の
 無効な公開設定は履歴として保持します。最終controlsのPR・main CI成功が準備完了の条件です。
 
 固定SDK・lock付き復元でパッケージを生成し、全ファイルの同梱範囲、日英文書と原文権利表示、

@@ -11,8 +11,8 @@ Unpublished preview candidate; not authorization to publish.
 - netstandard2.0, net8.0 and net10.0 assets, bilingual XML/diagnostics and current local-feed README.
 - Runtime dependency attribution/permission notices and unmodified .NET additional notices included.
 
-Selected source: `f0eb822c62def95e3cc8420b386b283437bf46cd`; first-attempt main CI 37084591633
-passed all 13 jobs. Version/PackageReleaseNotes overrides, SDK 10.0.100 and reviewed
+Selected source: `0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d`; first-attempt main CI 37104736018
+passed all 16 jobs. Version/PackageReleaseNotes overrides, SDK 10.0.100 and reviewed
 locked restore are recorded in the candidate audit. Payload, dependency terms,
 package hashes, actual PDB SourceLink and DLL/PDB pairing are verified. Isolated
 consumers compile all assets and run offline wrapper code on .NET 8/10; Windows
@@ -43,8 +43,8 @@ as review artifacts/local feed; no nuget.org install is currently advertised.
 MITを採用し、実行ファイルは利用側で指定します。3アセットと日英文書・診断を提供し、
 利用側依存の権利表示と原文.NET追加表示を同梱します。
 
-固定ソースは `f0eb822c62def95e3cc8420b386b283437bf46cd`、main CI 37084591633は
-初回で全13ジョブ成功です。固定SDK・lockで生成した候補のソース・同梱物・原文条件・hash・
+固定ソースは `0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d`、main CI 37104736018は
+初回で全16ジョブ成功です。固定SDK・lockで生成した候補のソース・同梱物・原文条件・hash・
 PDB／DLLの対応を監査し、利用側でコンパイルとnet8/net10、Windowsのnet48実行を検証します。
 依存DLL・PostgreSQL・.NETランタイムは同梱しません。古いMicrosoft参照用の独自条件を
 MITと読み替えず、その非同梱の境界でレビューを閉じます。下流の別配布は対象外です。

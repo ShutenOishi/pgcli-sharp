@@ -65,6 +65,29 @@ class CandidateAuditTests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError, 'Unexpected shipped file'):
                 check(extra, xml)
 
+    def test_symbols_reject_extra_and_duplicate_payload(self):
+        candidate = {"package_id": "PgCliSharp", "version": "0.1.0-alpha.2", "source_commit": "a" * 40}
+        with tempfile.TemporaryDirectory() as directory:
+            package = Path(directory) / "test.snupkg"
+            entries = [(f"lib/{tfm}/PgCliSharp.pdb", b"pdb") for tfm in audit.FRAMEWORKS]
+            entries += [("PgCliSharp.nuspec", '<package><metadata><id>PgCliSharp</id><version>0.1.0-alpha.2</version><repository commit="' + candidate["source_commit"] + '" /></metadata></package>'),
+                        ("_rels/.rels", b"metadata"), ("[Content_Types].xml", b"metadata"),
+                        ("package/services/metadata/core-properties/test.psmdcp", b"metadata")]
+
+            def check(files):
+                with zipfile.ZipFile(package, "w") as archive:
+                    for name, content in files:
+                        archive.writestr(name, content)
+                audit.audit_symbols(package, candidate)
+
+            check(entries)
+            for extra in ("runtime.json", "lib/net8.0/Dependency.dll"):
+                with self.assertRaisesRegex(AssertionError, "Unexpected symbol payload"):
+                    check(entries + [(extra, b"unexpected")])
+            with self.assertWarns(UserWarning):
+                with self.assertRaisesRegex(AssertionError, "Duplicate symbol archive entries"):
+                    check(entries + [("_rels/.rels", b"duplicate")])
+
     def test_unknown_legacy_license_fails(self):
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
