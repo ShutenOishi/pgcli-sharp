@@ -31,9 +31,10 @@ Schema 2 records selected source, audit control commit, actual SDK, OS, package
 hashes, exact dependency license/notice evidence, payload and runtime consumers.
 SDK/inputs are fixed; byte-identical packages across paths/runs are not promised.
 
-All three assets compile in a clean isolated consumer cache. net8.0/net10.0
+All three assets and a net48 consumer compile on each OS in a clean isolated cache
+outside the project source globs. net8.0/net10.0
 actually execute offline wrapper code and check the loaded assembly target;
-Windows additionally compiles/runs net48 using the netstandard2.0 asset.
+All OS compile net48 using the netstandard2.0 asset; Windows also runs it.
 netstandard2.0 itself is compile-only. Consumer reference-assembly build packages
 are recorded separately as independently licensed build tools, not MIT runtime
 dependencies or redistributed contents. No real-CLI coverage follows from this.

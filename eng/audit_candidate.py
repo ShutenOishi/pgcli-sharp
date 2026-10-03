@@ -128,10 +128,14 @@ def audit_symbols(package, candidate):
 def audit_consumer(dotnet, output, candidate, common):
     """Compile all assets and execute offline wrapper code, never PostgreSQL."""
     with tempfile.TemporaryDirectory(prefix="pgclisharp-candidate-consumer-") as directory:
-        folder = Path(directory)
+        folder = Path(directory) / "project"
+        folder.mkdir()
+        # Keep caches outside project globs; otherwise RAR can pick a modern
+        # mscorlib facade as a net48 CandidateAssemblyFile.
+        package_cache = Path(directory) / "packages"
         project = folder / "Consumer.csproj"
-        frameworks = list(FRAMEWORKS) + (["net48"] if os.name == "nt" else [])
-        reference = '<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="[1.0.3]" PrivateAssets="all" />' if os.name == "nt" else ''
+        frameworks = list(FRAMEWORKS) + ["net48"]
+        reference = '<PackageReference Condition="&apos;$(TargetFramework)&apos; == &apos;net48&apos;" Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="[1.0.3]" PrivateAssets="all" />'
         project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFrameworks>' +
             ';'.join(frameworks) + '</TargetFrameworks><LangVersion>latest</LangVersion>' +
             '<OutputType Condition="\'$(TargetFramework)\' != \'netstandard2.0\'">Exe</OutputType>' +
@@ -168,14 +172,14 @@ internal static class Smoke {
             '<add key="nuget.org" value="https://api.nuget.org/v3/index.json" />' +
             '</packageSources></configuration>', encoding="utf-8")
         run(dotnet, "restore", str(project), "--configfile", str(config),
-            "--packages", str(folder / "packages"), *common, cwd=output)
+            "--packages", str(package_cache), *common, cwd=output)
         assets_path = folder / "obj/project.assets.json"
         assets = json.loads(assets_path.read_text(encoding="utf-8"))
         for tfm in FRAMEWORKS:
             target = assets["targets"][".NETStandard,Version=v2.0" if tfm == "netstandard2.0" else tfm]
             assert "PgCliSharp/" + candidate['version'] in target
         run(dotnet, "build", str(project), "-c", "Release", "--no-restore", *common, cwd=output)
-        runtime_frameworks = [tfm for tfm in frameworks if tfm != "netstandard2.0"]
+        runtime_frameworks = [tfm for tfm in frameworks if tfm in ("net8.0", "net10.0") or (tfm == "net48" and os.name == "nt")]
         for tfm in runtime_frameworks:
             run(dotnet, "run", "--project", str(project), "-c", "Release", "-f", tfm,
                 "--no-build", "--no-restore", cwd=output)
@@ -187,7 +191,7 @@ internal static class Smoke {
                 assert all(not target[identity].get(key) for target in assets['targets'].values()
                            if identity in target for key in ('runtime', 'native', 'runtimeTargets'))
                 item = assets['libraries'].pop(identity)
-                path = folder / 'packages' / item['path']
+                path = package_cache / item['path']
                 nuspec = next(path.glob('*.nuspec'))
                 meta = metadata(nuspec.read_bytes())
                 reference_tools.append({'package': identity, 'role': 'consumer build reference assemblies only',

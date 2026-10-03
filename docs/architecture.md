@@ -336,7 +336,7 @@ ADR-0021 selects unpublished alpha.2 from tested main
 CI and manual `release.yml` share the read-only `candidate-preflight.yml` build/audit
 controls. The version/notes overrides, SDK and lock are fixed; source main CI and
 ancestry, own payload/notices, PDB SourceLink/DLL pairing and isolated consumer
-compilation/runtime are checked. Windows also runs the netstandard asset on net48.
+compilation/runtime are checked. All OS cross-compile net48; Windows also runs the netstandard asset on net48.
 The publisher uses only preflight packages whose hashes/source/version match.
 
 Direct managed completion stress evidence keeps the 15-second deadline and does

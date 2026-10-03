@@ -53,7 +53,10 @@ README EN/JA now describe alpha.2 and local feed usage, not an available NuGet
 release. Selected source is `f0eb822c62def95e3cc8420b386b283437bf46cd`, containing current docs/notices/fixture.
 Source main CI 37084591633 passed all 13 jobs at attempt 1; independently inspected
 Windows TRX has 360 successful binary completions across net48/net8/net10.
-Previous selections are retained as history. The
+Previous selections are retained as history. The consumer-feed correction also
+updates both README instructions to a project-local NuGet.Config; after this
+preparation merges, final candidate selection must include that documentation
+correction rather than modify an immutable source or ship the old instructions. The
 candidate audit and release preflight must use the same fixed source, version,
 SDK, lock, notes and verification controls. The old disabled Phase 3 manifests
 remain historical records. Promoting 1.0 or creating public artifacts requires

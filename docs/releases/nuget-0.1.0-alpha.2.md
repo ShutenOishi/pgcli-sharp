@@ -16,7 +16,7 @@ passed all 13 jobs. Version/PackageReleaseNotes overrides, SDK 10.0.100 and revi
 locked restore are recorded in the candidate audit. Payload, dependency terms,
 package hashes, actual PDB SourceLink and DLL/PDB pairing are verified. Isolated
 consumers compile all assets and run offline wrapper code on .NET 8/10; Windows
-also runs net48. No dependency or PostgreSQL/runtime binaries are embedded.
+also runs net48, which is cross-compiled on every OS. No dependency or PostgreSQL/runtime binaries are embedded.
 Legacy Microsoft reference terms remain independently recorded; the wrapper's
 actual distribution scope is reviewed, not downstream bundled distributions.
 

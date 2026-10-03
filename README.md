@@ -22,9 +22,21 @@ Phase 0-2 retain their existing GitHub Releases. Under ADR-0012, Phase 3 onward 
 
 The selected preview version is `0.1.0-alpha.2`; it is not published to nuget.org. After downloading an unpublished candidate CI artifact and extracting it to `./candidate-packages`, a local consumer can use:
 
+Create a project-local `NuGet.Config` beside the consumer project so both the candidate and its separately resolved dependencies can restore on Windows/Linux/macOS:
+
+```xml
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="candidate" value="./candidate-packages" />
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+```
+
 ```bash
-dotnet add package PgCliSharp --version 0.1.0-alpha.2 --source ./candidate-packages
-dotnet restore --source ./candidate-packages --source https://api.nuget.org/v3/index.json
+dotnet add package PgCliSharp --version 0.1.0-alpha.2
+dotnet restore
 ```
 
 The package targets `netstandard2.0`, `net8.0`, and `net10.0`. Local restore also needs the separate dependencies available from NuGet or an offline feed; no PostgreSQL binary is included. Candidate source, SDK, build lock and audit accompany the CI artifact. External publication requires explicit approval and Trusted Publishing verification. Long-lived NuGet API keys are not stored in this repository. See [third-party notices](THIRD-PARTY-NOTICES.md).
