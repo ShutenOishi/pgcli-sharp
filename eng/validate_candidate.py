@@ -3,6 +3,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -41,6 +42,8 @@ def main():
     if args.require_enabled:
         assert c['publication_enabled'], 'Publication remains disabled; a reviewed enablement is required.'
     if args.outputs:
+        # GitHub output files require UTF-8, including on Windows redirect pipes.
+        sys.stdout.reconfigure(encoding="utf-8")
         for key in ('source_commit', 'sdk_version', 'version', 'tag', 'title', 'nuget_user', 'prerelease'):
             value = c[key]
             print(key + '=' + (str(value).lower() if isinstance(value, bool) else value))

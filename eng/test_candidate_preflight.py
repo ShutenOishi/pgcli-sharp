@@ -1,6 +1,7 @@
 """Reject incorrect CI provenance, missing jobs and enabled-publication mistakes."""
 import copy
 import json
+import os
 import subprocess
 import sys
 import unittest
@@ -37,6 +38,13 @@ class PreflightTests(unittest.TestCase):
         for invalid_jobs in (jobs[:-1], jobs[:-2], [dict(jobs[0], conclusion='skipped')] + jobs[1:]):
             with self.assertRaises(AssertionError):
                 check(run, invalid_jobs, c)
+
+    def test_bilingual_github_outputs_survive_windows_legacy_encoding(self):
+        result = subprocess.run([sys.executable, str(ROOT / 'eng/validate_candidate.py'), '--outputs'],
+            env=dict(os.environ, PYTHONIOENCODING='cp1252'), capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        title = json.loads((ROOT / '.github/release-candidate.json').read_text())['title']
+        self.assertIn('title=' + title, result.stdout.decode('utf-8'))
 
     def test_disabled_publication_fails_before_outputs(self):
         result = subprocess.run([sys.executable, str(ROOT / 'eng/validate_candidate.py'),
