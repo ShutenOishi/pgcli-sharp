@@ -123,6 +123,12 @@ def audit_symbols(package, candidate):
         pdbs = [name for name in archive.namelist() if name.endswith(".pdb")]
         assert len(pdbs) == 3
         assert set(pdbs) == {f"lib/{tfm}/PgCliSharp.pdb" for tfm in FRAMEWORKS}
+        payload = archive.namelist()
+        assert len(payload) == len(set(payload)), "Duplicate symbol archive entries"
+        core = [name for name in payload if name.startswith("package/services/metadata/core-properties/") and name.endswith(".psmdcp")]
+        assert len(core) == 1
+        assert set(payload) == set(pdbs) | {
+            "PgCliSharp.nuspec", "_rels/.rels", "[Content_Types].xml", core[0]}, "Unexpected symbol payload"
 
 
 def audit_consumer(dotnet, output, candidate, common):
@@ -272,7 +278,7 @@ def main():
                    "source_link": {"verified_portable_pdbs": 3, "dll_pdb_pairs_verified": True,
                        "wrong_sha_rejected": True, "mismatched_dll_rejected": True, "url":
                        "https://raw.githubusercontent.com/ShutenOishi/pgcli-sharp/" + candidate["source_commit"] + "/*"},
-                   "distribution_scope_review": {"complete": True, "dependency_binaries_embedded": False,
+                   "distribution_scope_review": {"complete": True, "symbols_payload_verified": True, "dependency_binaries_embedded": False,
                        "legacy_reference_package_embedded": False, "downstream_distribution_cleared": False},
                    "remaining_license_review": [],
                    "remaining_publication_gates": ["explicit approval and reviewed enablement", "nuget.org Trusted Publishing policy verification"],

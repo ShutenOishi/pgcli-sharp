@@ -71,7 +71,7 @@ execution. Older upstream-EOL binaries must stay isolated.
 
 The historical manifests preserve disabled Phase 3 alpha.1 and its original source.
 ADR-0019 resolves MIT licensing; ADR-0021 selects unpublished alpha.2 from
-`f0eb822c62def95e3cc8420b386b283437bf46cd` with source main CI 37084591633 (13 jobs, attempt 1).
+`0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d` with source main CI 37104736018 (16 jobs, attempt 1).
 The direct completion fixture and shipped notices are in that source; Windows
 TRX records 360 successful binary completions. The old timeout cause is unknown.
 
