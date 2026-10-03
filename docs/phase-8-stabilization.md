@@ -13,7 +13,16 @@ not imply API freeze, full real-binary compatibility or publication approval.
 | CP-01 | Generated XML EN/JA ordering, resources, diagnostic data and public dependency boundaries | Complete: PR #14; exact-main CI 36997454961 |
 | CP-02 | Reproducible PostgreSQL 10-18 evidence matrix, owned migration/rewind scenarios, OS exclusions | Linux checkpoint complete: PR #15; exact-main CI 37006276018; exclusions retained |
 | CP-03 | Complete naming/consistency review, checked API baseline, README/examples and breaking-API freeze | Complete including ADR-0018: PR #17; exact-main CI 37077909665; see [API review](phase-8-api-review.md) |
-| CP-04 | License, preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Final controls under ADR-0021: tested source selected, scoped notices/license review, runtime/PDB audits and shared preflight; exact final PR/main CI gates completion |
+| CP-04 | License, preserved Phase 3 candidate decision, selected-source package re-audit, reviewed release candidate | Bounded preview complete: PR #22; exact-main CI 37105452621, all 16 jobs; publication remains postponed |
+| CP-05 | Native Windows/macOS PostgreSQL 18/net10.0 representative scenarios alongside Linux 10–18 | Required for 1.0 under ADR-0022; [current completion receipt in PR #23](https://github.com/ShutenOishi/pgcli-sharp/pull/23) records exact PR/main CI and independently inspected native artifacts; [scope and exclusions](phase-8-native-os.md) |
+
+CP-04 completion evidence: PR #22; exact-main CI 37105452621 passed all 16 jobs
+at main `846943fb739efdc30b4d5a6da469eef0d8855a98`. Public Release/tag/NuGet
+publication is postponed. CP-05 is a separate required native-OS checkpoint.
+
+日本語: CP-04のプレビュー技術準備はPR #22／main CI 37105452621の全16ジョブ成功で
+完了しました。公開は延期し、CP-05ではWindows／macOSの実CLI代表シナリオを追加します。
+3OS成功を1.0の必須条件としますが、未検証範囲・1.0昇格・公開は別です。
 
 ### CP-01 audit and changes
 

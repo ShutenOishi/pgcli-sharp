@@ -134,6 +134,22 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase 8 - 1.0 stabilization
 
+CP-04 bounded preview preparation completed through PR #22, main
+`846943fb739efdc30b4d5a6da469eef0d8855a98`, exact-main CI 37105452621 (all 16 jobs,
+attempt 1). Publication is postponed. User-approved ADR-0022 makes the
+[three-OS native CLI checkpoint CP-05](phase-8-native-os.md) required for 1.0:
+retain Linux 10–18, add representative native Windows/macOS 18/net10.0. Exact PR
+and main CI plus independently inspected native artifacts are required before
+CP-05 completion; exclusions and separate 1.0 acceptance remain explicit.
+The current completion receipt is maintained in
+[PR #23](https://github.com/ShutenOishi/pgcli-sharp/pull/23), including failed and
+superseded runs rather than inferring success from implementation text.
+
+日本語: PR #22とmain CIの全16ジョブ成功でプレビュー技術準備は完了しました。
+公開は延期し、1.0の必須条件CP-05としてLinux 10〜18にWindows／macOS 18実CLI検証を
+追加します。最終PR／main CIと成果物の独立確認を完了条件とし、1.0昇格・公開とは分けます。
+最新の完了記録はPR #23に保持し、失敗・置換runも残して、実装本文だけで成功と判断しません。
+
 **Status: Final bounded preview controls prepared (2026-10-03); not 1.0 or publication-ready.** CP-01 and the CP-02 [scoped nine-major Linux checkpoint](phase-8-real-binary-matrix.md) are complete; exclusions remain. CP-03 including ADR-0018 is complete (PR #17; main `ddce19c77f9bd2a39eaa71eada9907c97b23aceb`; exact-main CI 37077909665, all 12 jobs successful). CP-04 selects MIT and unpublished alpha.2 under ADR-0019/0021; [candidate/provenance and resolved-dependency auditing](phase-8-candidate-audit.md) closes the actual shipped-payload license review. Managed completion/wait fixtures, bounded diagnostics and Windows stress provide regression evidence without claiming historical timeout/stall causes. Exact final PR/main CI and three-OS candidate audits are the completion gate. Publication approval/account verification and 1.0 acceptance remain separate. See [stabilization checkpoints](phase-8-stabilization.md). Publication manifests remain disabled.
 
 - Review all public APIs for naming and consistency.

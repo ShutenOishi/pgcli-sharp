@@ -250,25 +250,7 @@ public sealed class ProcessSessionRunnerTests
     }
 
     private static (string Executable, string[] Arguments) GetContinuousOutputCommand()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            string powerShell = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.System),
-                "WindowsPowerShell",
-                "v1.0",
-                "powershell.exe");
-            const string Script =
-                "while ($true) { [Console]::Out.Write(('x' * 4096)) }";
-            return (
-                powerShell,
-                new[] { "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", Script });
-        }
-
-        return (
-            "/bin/sh",
-            new[] { "-c", "while :; do printf 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\n'; done" });
-    }
+        => ManagedTestProcess.Command("produce");
 
 #if NET8_0_OR_GREATER
     private sealed class BlockingWriteStream : Stream
