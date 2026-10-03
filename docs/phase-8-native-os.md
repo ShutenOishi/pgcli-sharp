@@ -33,6 +33,9 @@ without proving its cause. A test-only Windows hang stack reader (ClrMD 3.1.5128
 isolated from the solution/package dependencies) now analyzes watchdog dumps on
 their originating runner. Only stack/async-state text is retained; raw dumps are
 removed before upload. The watchdog, process deadlines and assertions remain.
+Native jobs run independently so their build/runtime diagnostics are available
+while deterministic Windows failures are investigated. All 18 jobs must still
+pass on the same final PR/main commits; this does not waive the deterministic gate.
 
 | OS | Required real execution | Scope |
 |---|---|---|
@@ -97,6 +100,8 @@ CI 37112048520ではWindowsの全3対象とnet48反復1回目が成功し、2回
 子のEOF・drainを記録できましたが、親の完了待ちは戻っていません。次は所有CI内で
 停止時のスタックと非同期状態を読み、テキストのみ保存します。解析依存は本番・候補に
 追加せず、メモリダンプはアップロード前に削除します。期限・検証は維持します。
+実CLIジョブは独立に起動し、Windowsの通常テスト調査中にもビルド・実行診断を得ます。
+最終PR／mainの同一commitで全18ジョブ成功という条件は変えません。
 
 Linuxの既存10〜18検証を維持し、Windows／macOSに同じ版・hashの18.6をネイティブ
 ビルドして追加します。公開APIでバックアップ／行のリストア確認、有限・セッションpsql、
