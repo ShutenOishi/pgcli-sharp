@@ -99,7 +99,6 @@ public sealed class ProcessSessionRunnerTests
             () => session.Completion);
     }
 
-#if NET8_0_OR_GREATER
     [Fact]
     public async Task Session_NonCooperativeOutput_DoesNotMakeCancellationUnbounded()
     {
@@ -130,9 +129,7 @@ public sealed class ProcessSessionRunnerTests
 
         output.Release();
     }
-#endif
 
-#if NET8_0_OR_GREATER
     [Fact]
     public async Task Session_OutputWriteFault_TerminatesProducerAndPropagatesOriginalFailure()
     {
@@ -158,7 +155,6 @@ public sealed class ProcessSessionRunnerTests
             () => session.Completion);
         Assert.False(output.IsDisposed);
     }
-#endif
 
 #if NET48
     [Fact]
@@ -228,6 +224,7 @@ public sealed class ProcessSessionRunnerTests
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
             () => session.Completion);
     }
+
 #endif
 
     private static (string Executable, string[] Arguments) GetBinaryEchoCommand()
@@ -252,7 +249,6 @@ public sealed class ProcessSessionRunnerTests
     private static (string Executable, string[] Arguments) GetContinuousOutputCommand()
         => ManagedTestProcess.Command("produce");
 
-#if NET8_0_OR_GREATER
     private sealed class BlockingWriteStream : Stream
     {
         private readonly TaskCompletionSource<bool> _writeStarted =
@@ -294,6 +290,13 @@ public sealed class ProcessSessionRunnerTests
             _release.Task.GetAwaiter().GetResult();
         }
 
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            _writeStarted.TrySetResult(true);
+            await _release.Task.ConfigureAwait(false);
+        }
+
+#if NET8_0_OR_GREATER
         public override async ValueTask WriteAsync(
             ReadOnlyMemory<byte> buffer,
             CancellationToken cancellationToken = default)
@@ -301,6 +304,7 @@ public sealed class ProcessSessionRunnerTests
             _writeStarted.TrySetResult(true);
             await _release.Task.ConfigureAwait(false);
         }
+#endif
 
         protected override void Dispose(bool disposing)
         {
@@ -320,8 +324,6 @@ public sealed class ProcessSessionRunnerTests
         public override void SetLength(long value) =>
             throw new NotSupportedException();
     }
-
-#endif
 
     private sealed class ThrowingWriteStream : Stream
     {

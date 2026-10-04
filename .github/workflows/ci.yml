@@ -62,6 +62,7 @@ jobs:
           python3 -m unittest discover -s eng -p test_candidate_preflight.py
           python3 -m unittest discover -s eng -p test_native_postgresql.py
           python3 -m unittest discover -s eng -p test_analyze_windows_hang.py
+          python3 -m unittest discover -s eng -p test_development_dependencies.py
           python3 eng/validate_candidate.py
 
       - name: Restore
@@ -155,6 +156,7 @@ jobs:
             artifacts/*.nupkg
             artifacts/*.snupkg
             artifacts/DEVELOPMENT-PACKAGE-PROVENANCE.txt
+            artifacts/DEVELOPMENT-DEPENDENCIES.json
           if-no-files-found: error
 
   release-preflight:

@@ -7,6 +7,44 @@ namespace PgCliSharp.Tests;
 public sealed class ProcessRunnerTests
 {
     [Fact]
+    public async Task RunAsync_DoesNotRequireTheStartupSynchronizationContext()
+    {
+        using var input = new MemoryStream();
+        using var output = new MemoryStream();
+        var context = new QueuedSynchronizationContext();
+        SynchronizationContext? original = SynchronizationContext.Current;
+        string gate = Path.Combine(Path.GetTempPath(), "pgcli-context-" + Guid.NewGuid().ToString("N"));
+        (string executable, string[] arguments) = ManagedTestProcess.Command("gate", gate);
+        Task<ProcessRunResult> completion;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(context);
+            completion = new ProcessRunner().RunAsync(new ProcessRunRequest(executable, arguments, output, TimeSpan.FromSeconds(15), standardInput: input), CancellationToken.None);
+            Assert.Same(context, SynchronizationContext.Current);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(original);
+        }
+
+        try
+        {
+            File.WriteAllText(gate, string.Empty);
+            Task winner = await Task.WhenAny(completion, Task.Delay(TimeSpan.FromSeconds(5)));
+            Assert.True(winner == completion, $"Completion required the occupied startup context; observed posts: {context.PostCount}.");
+            Assert.Equal(0, (await completion).ExitCode);
+            Assert.Equal(0, context.PostCount);
+            Assert.True(input.CanRead);
+            Assert.True(output.CanWrite);
+        }
+        finally
+        {
+            context.Release();
+            File.Delete(gate);
+        }
+    }
+
+    [Fact]
     public async Task RunAsync_Timeout_TerminatesProcessAndThrowsTimeoutException()
     {
         (string executable, string[] arguments) = GetLongRunningCommand();
@@ -194,7 +232,6 @@ public sealed class ProcessRunnerTests
         Assert.Equal(expected, output.ToArray());
     }
 
-#if NET8_0_OR_GREATER
     [Fact]
     public async Task RunAsync_NonCooperativeOutput_DoesNotMakeCancellationUnbounded()
     {
@@ -221,9 +258,7 @@ public sealed class ProcessRunnerTests
 
         output.Release();
     }
-#endif
 
-#if NET8_0_OR_GREATER
     [Fact]
     public async Task RunAsync_OutputWriteFault_TerminatesProducerAndPropagatesOriginalFailure()
     {
@@ -269,7 +304,6 @@ public sealed class ProcessRunnerTests
         await Assert.ThrowsAsync<IOException>(() => runTask);
         Assert.False(input.IsDisposed);
     }
-#endif
 
     private static async Task<bool> WaitForFileAsync(
         string path,
@@ -359,7 +393,6 @@ public sealed class ProcessRunnerTests
             new[] { "-c", "while :; do printf 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\n'; done" });
     }
 
-#if NET8_0_OR_GREATER
     private sealed class BlockingWriteStream : Stream
     {
         private readonly TaskCompletionSource<bool> _writeStarted =
@@ -401,6 +434,13 @@ public sealed class ProcessRunnerTests
             _release.Task.GetAwaiter().GetResult();
         }
 
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            _writeStarted.TrySetResult(true);
+            await _release.Task.ConfigureAwait(false);
+        }
+
+#if NET8_0_OR_GREATER
         public override async ValueTask WriteAsync(
             ReadOnlyMemory<byte> buffer,
             CancellationToken cancellationToken = default)
@@ -408,6 +448,7 @@ public sealed class ProcessRunnerTests
             _writeStarted.TrySetResult(true);
             await _release.Task.ConfigureAwait(false);
         }
+#endif
 
         protected override void Dispose(bool disposing)
         {
@@ -427,8 +468,6 @@ public sealed class ProcessRunnerTests
         public override void SetLength(long value) =>
             throw new NotSupportedException();
     }
-
-#endif
 
     private sealed class ThrowingWriteStream : Stream
     {

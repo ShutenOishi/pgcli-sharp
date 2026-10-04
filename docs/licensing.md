@@ -19,14 +19,14 @@ redistribute PostgreSQL binaries/source, retain its copyright/license text and
 audit any additional components in the particular distribution. Calling an
 external CLI is not a substitute for a distribution's third-party obligations.
 
-The netstandard2.0 asset references [CliWrap 3.10.5](https://www.nuget.org/packages/CliWrap/3.10.5),
-whose package declares MIT and Copyright (C) Oleksii Holub. It is resolved as a
-separate NuGet dependency, not embedded or relicensed as PgCliSharp code. Modern
-net8.0/net10.0 assets do not reference CliWrap. Preserve upstream notices whenever
-redistributing dependencies. SourceLink and test tools are build/test dependencies,
-not shipped runtime dependencies. The reviewed runtime dependency inventory,
-copyright/permission text and upstream .NET notices are included in
-[THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md).
+New netstandard2.0 assets reference System.Management 10.0.10 for best-effort
+Windows descendant discovery under ADR-0024; CliWrap is removed. Modern assets
+have no execution runtime dependencies. The reviewed legacy runtime inventory
+and .NET additional notices remain in [THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md).
+Native argument serialization adapts .NET Foundation MIT source with retained
+attribution and permission text. No CliWrap/PolyShim source is vendored. Frozen
+alpha.2 still contains its original CliWrap backend and independently pinned
+notices/dependency lock. SourceLink and tests remain build/test dependencies.
 
 The preserved Phase 3 artifacts/source are not rewritten. Adopting MIT does not
 enable publication or claim Phase 8 completion. The separate [unpublished
@@ -49,11 +49,11 @@ PostgreSQLは独自のPostgreSQL Licenseのままで、MITへ変更するもの�
 PostgreSQL本体を再配布する場合は、その著作権表示・ライセンス文と、対象配布物に
 含まれる第三者コンポーネントの条件を別途保持・確認してください。
 
-netstandard2.0のみCliWrap 3.10.5へ依存します。同パッケージの表示はMIT、
-著作権者はOleksii Holubです。NuGetが別途解決する依存であり、PgCliSharpへ埋め込んで
-権利表示を置き換えません。依存物を再配布する際は元の表示を保持してください。
-推移的な実行時依存の一覧・著作権・許諾文と.NET追加表示を
-[THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md)へ保存し、同梱します。
+新しいnetstandard2.0資産はWindows子孫終了用System.Management 10.0.10に依存し、
+CliWrap依存を外します。modern対象には実行用の依存を追加しません。.NET Foundationの
+MIT引数整形を改変し、出典・著作権・許諾文を保持します。CliWrap/PolyShimを取り込まず、
+固定alpha.2は旧実装・依存lock・表示を元のソースに保持します。現在の依存一覧と表示は
+[THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md)へ保存して同梱します。
 旧Phase 3の履歴は書き換えず、公開設定は無効のままです。
 [未公開候補監査](phase-8-candidate-audit.md)は確定した推移的依存と原文を記録します。
 古いMicrosoft独自ライセンスは原文・hashを残し、参照パッケージ・依存DLL・runtime.jsonを

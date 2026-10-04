@@ -2,7 +2,7 @@
 
 > This document is the consolidated current-state architecture. Decision rationale and historical changes are recorded in [Architecture Decision Records](adr/README.md). If an Accepted decision is replaced, preserve the old ADR and supersede it with a new ADR.
 
-Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007 through ADR-0008, and ADR-0011 through ADR-0018. ADR-0005 has been superseded by ADR-0008; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
+Key accepted decisions currently include ADR-0001 through ADR-0004, ADR-0007, and ADR-0011 through ADR-0018 plus ADR-0024. ADR-0005 was superseded by ADR-0008; ADR-0008 and ADR-0023 are superseded by ADR-0024; ADR-0006 and ADR-0010 have been superseded by ADR-0012.
 
 ## 1. Project purpose
 
@@ -131,20 +131,20 @@ Validation is part of the product, not merely test code.
 Execution uses target-specific internal backends while preserving one PgCliSharp behavior model:
 
 - `net8.0` and `net10.0` use `System.Diagnostics.Process` directly;
-- `netstandard2.0` uses CliWrap 3.10.5 internally as a compatibility backend;
-- CliWrap is referenced only by the `netstandard2.0` package asset and its types do not appear in the public PgCliSharp API.
+- `netstandard2.0` shares the Process lifecycle with narrow argument/exit compatibility under ADR-0024;
+- only the legacy asset references System.Management 10.0.10 for best-effort Windows descendant termination; CliWrap is removed from new assets.
 
 Requirements:
 
 - no shell mediation;
-- pass individual argument values; modern targets use `ProcessStartInfo.ArgumentList`, while the `netstandard2.0` backend delegates token formatting to CliWrap;
+- pass individual argument values; modern targets use `ProcessStartInfo.ArgumentList`, while the `netstandard2.0` backend uses attributed .NET native argument serialization;
 - redirect stdout/stderr where needed;
 - support binary stdout without converting the entire stream to text;
 - support binary-safe stdin streaming for tools/options that consume standard input, including PostgreSQL 17+ `pg_dump --filter=-`, `pg_restore` archive/filter stdin, and `pg_dumpall --filter=-`;
 - support `CancellationToken`;
 - support timeout configuration;
 - attempt to terminate the complete process tree on cancellation/timeout where the target framework supports it;
-- supervise modern stdout/stderr transfer faults as lifecycle outcomes rather than waiting only for process exit;
+- supervise stdout/stderr transfer faults on every target as lifecycle outcomes rather than waiting only for process exit;
 - keep the configured cancellation/timeout deadline active while redirected output drains after process exit;
 - bound abnormal cleanup after a best-effort termination attempt rather than waiting indefinitely for process exit or a caller-owned stream;
 - never dispose caller-owned streams or claim that arbitrary cancellation-noncooperative stream implementations can be forcibly stopped;
@@ -152,7 +152,16 @@ Requirements:
 
 The `netstandard2.0` compatibility backend must map execution results, cancellation, timeout, and failures back into PgCliSharp's own result/exception model. Public behavior should remain consistent across target frameworks.
 
-Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration. ADR-0014 makes modern session output faults part of lifecycle supervision and bounds the `netstandard2.0` CliWrap input bridge to approximately 1 MiB. Legacy `WriteAsync` therefore applies cancellation-aware backpressure; successful write completion means acceptance into the bounded delivery buffer, while `CompleteInput` drains already accepted bytes before EOF.
+Under ADR-0024, all internal awaits use explicit ConfigureAwait(false), and legacy
+exit waiting subscribes to Exited before checking HasExited. There is no command
+async iterator or dependency-startup context adapter. Caller context is not
+mutated; controlled-context regressions remain required. On legacy Windows,
+System.Management discovers descendants for best-effort termination. Modern
+runtimes retain the native tree API, including netstandard assets loaded on a
+runtime that exposes it. Older Unix runtimes without that API fall back to the
+immediate child, as the former dependency did; no tree guarantee is claimed.
+
+Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration. ADR-0014/0024 make session output faults part of lifecycle supervision on all targets and bound the `netstandard2.0` input bridge to approximately 1 MiB. Legacy `WriteAsync` therefore applies cancellation-aware backpressure; successful write completion means acceptance into the bounded delivery buffer, while `CompleteInput` drains already accepted bytes before EOF.
 
 ## 9. Output model
 
@@ -245,11 +254,11 @@ Phase 6 extends the specification-first contract to `psql` and `pgbench`, both m
 
 Finite psql execution uses the tool-specific `PsqlIo` model for optional caller-owned stdin/stdout/stderr. Command and file actions share one ordered collection because upstream permits `--command` and `--file` to repeat and interleave. Variable assignments preserve unset versus empty values, and version-specific output features such as PostgreSQL 12+ CSV are validated before process startup. psql's documented exit statuses 0-3 are returned as `PsqlExitStatus` values.
 
-ADR-0013 adds a separate internal long-lived redirected-process lifecycle rather than weakening the one-shot `IProcessRunner`. `PsqlSession` exposes writable stdin after process start, explicit EOF, streamed stdout/stderr, cancellation, timeout/process-tree termination, and asynchronous completion metadata. The modern .NET implementation uses `System.Diagnostics.Process`; `netstandard2.0` uses CliWrap internally while preserving the same PgCliSharp-owned abstraction. Redirected sessions are explicitly pipe based and are not TTY/PTY emulation.
+ADR-0013 adds a separate internal long-lived redirected-process lifecycle rather than weakening the one-shot `IProcessRunner`. `PsqlSession` exposes writable stdin after process start, explicit EOF, streamed stdout/stderr, cancellation, timeout/process-tree termination, and asynchronous completion metadata. All targets share `System.Diagnostics.Process` lifecycle supervision, with narrow legacy compatibility under ADR-0024. Redirected sessions are explicitly pipe based and are not TTY/PTY emulation.
 
 pgbench remains finite execution and uses `PgBenchIo` for caller-owned stdout/stderr; no public stdin contract is exposed because the audited PostgreSQL 10-18 CLI has no stdin workload interface. The wrapper models PostgreSQL 11/13/15/17 option changes, PostgreSQL 13+ server-side initialization step `G`, the report option rename, the PostgreSQL 17 `-d` reassignment while emitting stable `--debug`, script weights and script-count limits, initialization-versus-benchmark mode restrictions, logging/progress/partition/retry constraints, and the historical exit-status boundary where runtime status 2 is defined from PostgreSQL 12.
 
-Phase 6 tests cover spec-to-API/runtime availability, deterministic serialization, semantic exit statuses, caller-owned stderr streaming, executable-version mismatch, and the long-lived session lifecycle. Real process-session tests verify writes after startup, explicit EOF, timeout, and cancellation. Windows executes the suite through .NET Framework 4.8 as well as modern targets, exercising the `netstandard2.0`/CliWrap session backend.
+Phase 6 tests cover spec-to-API/runtime availability, deterministic serialization, semantic exit statuses, caller-owned stderr streaming, executable-version mismatch, and the long-lived session lifecycle. Real process-session tests verify writes after startup, explicit EOF, timeout, and cancellation. Windows executes the suite through .NET Framework 4.8 as well as modern targets, exercising the `netstandard2.0` compatibility session backend.
 
 Phase 7 separates server applications into `PgCliSharp.ServerApplications` under
 ADR-0015. Six dedicated Options APIs retain centralized option availability and
@@ -274,7 +283,7 @@ Use three logical test layers:
 
 Phase 8 CP-02 established pinned official-source PostgreSQL 10-18 Linux builds under historical ADR-0016. ADR-0022 retains that evidence and adds required native Windows/macOS PostgreSQL 18/net10.0 representative execution as CP-05. It requires actual source/binary/server versions, hashes, owned data directories and unique Passed TRX evidence. CI and independent artifact inspection must succeed before reporting this checkpoint complete. Native older versions/other TFMs, service lifecycle, TLS/ICU/TTY/compression and additional migration/destructive scenarios remain outside this scope. See `docs/phase-8-native-os.md` and `docs/integration-testing.md`. This checkpoint does not promote 1.0 or authorize publication.
 
-Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and CliWrap compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
+Windows CI should also execute tests through a .NET Framework consumer target so the `netstandard2.0` package asset and compatibility backend run in-process. CI should cover PostgreSQL 10-18 as far as reproducibly possible. Legacy versions may need isolated/containerized test environments.
 
 ## 14. Package and target framework policy
 
@@ -295,7 +304,7 @@ Initial target-framework matrix:
 
 Phase 0 validation confirmed this matrix across Linux, macOS, and Windows CI. Windows also executes a .NET Framework 4.8 test target against the `netstandard2.0` library asset so the legacy compatibility backend is exercised at runtime. Future changes to this accepted matrix require the ADR superseding workflow.
 
-The core package should avoid unnecessary dependencies such as Npgsql or Microsoft.Extensions packages unless a clear project-wide benefit justifies them. ADR-0008 allows CliWrap specifically and only for the `netstandard2.0` execution backend because the .NET Standard 2.0 BCL does not provide equivalent argument/process-tree APIs.
+The core package should avoid unnecessary dependencies such as Npgsql or Microsoft.Extensions packages unless a clear project-wide benefit justifies them. ADR-0024 removes CliWrap from new assets and permits System.Management only for legacy Windows descendant discovery. Modern assets keep no execution runtime dependencies. The preserved alpha.2 candidate retains its original CliWrap dependency lock and source.
 
 ## 15. NuGet and release policy
 

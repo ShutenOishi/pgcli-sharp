@@ -244,7 +244,7 @@ dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
 
 ターゲットフレームワークは `netstandard2.0;net8.0;net10.0` です。
 
-- `netstandard2.0`: ADR-0008 に基づき、内部のプロセス実行互換層として CliWrap を使用します。
+- `netstandard2.0`: ADR-0024に基づき、Processの終了監視を共有し、内部で引数整形・終了通知を補います。System.ManagementでWindows子孫終了を試み、CliWrap依存は外します。子孫終了APIのない古いUnixランタイムでは直接の子のみ停止できます。固定alpha.2候補は旧実装のままです。
 - `net8.0` / `net10.0`: .NET BCL のプロセス API を直接使用します。
 
 ## ライセンス

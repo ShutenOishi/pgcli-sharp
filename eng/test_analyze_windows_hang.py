@@ -28,7 +28,7 @@ class HangReaderTests(unittest.TestCase):
             child.poll.return_value = None
 
             def start(*args, **kwargs):
-                Path(kwargs["env"]["PGCLI_TEST_TRACE_FILE"]).write_text("ready", encoding="utf-8")
+                Path(kwargs["env"]["PGCLI_TEST_TRACE_FILE"]).write_text("diagnostic-ready", encoding="utf-8")
                 return child
 
             def run(command, **kwargs):
@@ -42,6 +42,27 @@ class HangReaderTests(unittest.TestCase):
                     analyzer.smoke(Path(root) / "reader.dll", root, Path(root) / "owned.exe")
             child.kill.assert_called_once()
             child.wait.assert_called_once_with(timeout=10)
+            self.assertFalse((Path(root) / "stack-reader-smoke.dmp").exists())
+
+    def test_smoke_cannot_pass_with_managed_frames_but_missing_nested_fields(self):
+        with tempfile.TemporaryDirectory() as root:
+            child = MagicMock(pid=12345)
+            child.poll.return_value = None
+
+            def start(*args, **kwargs):
+                Path(kwargs["env"]["PGCLI_TEST_TRACE_FILE"]).write_text("diagnostic-ready", encoding="utf-8")
+                return child
+
+            def run(command, **kwargs):
+                if "--capture" in command:
+                    Path(command[-1]).write_bytes(b"private-test-memory")
+                else:
+                    kwargs["stdout"].write("CLR 4.0\nTHREAD 1\nProgram.Main\n")
+
+            with patch.object(analyzer.subprocess, "Popen", side_effect=start), patch.object(analyzer.subprocess, "run", side_effect=run):
+                with self.assertRaisesRegex(RuntimeError, "expected nested fields"):
+                    analyzer.smoke(Path(root) / "reader.dll", root, Path(root) / "owned.exe")
+            child.kill.assert_called_once()
             self.assertFalse((Path(root) / "stack-reader-smoke.dmp").exists())
 
 

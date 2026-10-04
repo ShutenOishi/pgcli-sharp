@@ -18,7 +18,7 @@ Build a strongly typed .NET API for PostgreSQL command-line tools with explicit 
 - Add localization resources (English neutral + Japanese).
 - Implement common exceptions/diagnostics.
 - Implement process runner abstraction.
-- Use the BCL process backend on modern .NET and a conditional CliWrap backend on `netstandard2.0`.
+- Foundation originally used the BCL backend on modern .NET and CliWrap on `netstandard2.0`; ADR-0024 replaces that legacy backend during 1.0 stabilization.
 - Implement cancellation and timeout behavior.
 - Implement executable version parser/cache.
 - Add PostgreSQL 10-18 version metadata.
@@ -110,7 +110,7 @@ External NuGet/GitHub Release publication remains deferred under ADR-0012. Phase
 - `pgbench` — PostgreSQL 10-18, including PostgreSQL 11/13/15/17 option changes, PostgreSQL 13+ server-side initialization step `G`, PostgreSQL 12+ runtime exit status 2, script-weight semantics, and upstream-determinable mode/logging/progress/partition/retry validation.
 - `PsqlSession` exposes writable stdin after process startup, explicit EOF, cancellation, timeout/process-tree termination, caller-owned stdout/stderr streaming, and completion metadata.
 - Redirected psql sessions are pipe based and explicitly are not TTY/PTY emulation.
-- The internal session lifecycle is separate from the established one-shot process runner. Modern .NET uses `System.Diagnostics.Process`; the `netstandard2.0` path uses CliWrap without leaking dependency types.
+- The internal session lifecycle is separate from the established one-shot process runner. All targets now share `System.Diagnostics.Process` lifecycle supervision with narrow legacy compatibility under ADR-0024 and no public dependency types.
 - Windows CI exercises the `netstandard2.0` surface through .NET Framework 4.8 in addition to Linux/macOS modern targets.
 
 The maintained inventories are `spec/postgresql/psql.json` and `spec/postgresql/pgbench.json`. Research and implementation notes are in `docs/rich-io-phase-6.md`, the lifecycle decision is ADR-0013, and completion evidence is recorded in `docs/phase-6-completion.md`.
@@ -139,8 +139,22 @@ and CI 37115096538 (18 jobs, attempt 1), with independent artifact inspection.
 The remaining [Windows net48 completion investigation](phase-8-net48-investigation.md)
 verifies the diagnostic reader against an owned CLR4 dump and bounds stress to
 30 rounds without claiming the historical intermittent stall is fixed.
+Exact-main CI 37188258263 reproduced a stall and successfully retained actual
+CLR4 state. PR #25 baseline CI 37188939390 confirms a deterministic legacy
+startup SynchronizationContext defect; ADR-0023 isolates dependency startup while
+preserving synchronous errors and caller context. The current
+[PR #25 validation receipt](https://github.com/ShutenOishi/pgcli-sharp/pull/25)
+records final PR/main all-18 CI and independent diagnostic artifact inspection;
+these are required before the fix is considered complete.
+The context regressions now pass, but CI 37189457631 stalls in net48 round 27;
+the Draft PR's merge gate remains blocked while nested async diagnostics continue.
 日本語: CP-05はPR #23と正確なmain CIの全18ジョブ成功・成果物確認で完了しました。
 残るnet48停止は実ダンプでの解析器検証と上限付き反復で調査し、原因解決とは断定しません。
+mainでの再現と修正前CIから同期コンテキスト依存の欠陥を確認し、ADR-0023で
+内部起動処理を修正します。最終PR／mainの全18CIと成果物確認を完了条件とし、
+PR #25の検証記録に保持します。
+同期コンテキストの回帰は成功しましたが、net48反復27回目で再び停止し、
+PRはDraftのまま追加診断を続けます。
 
 CP-04 bounded preview preparation completed through PR #22, main
 `846943fb739efdc30b4d5a6da469eef0d8855a98`, exact-main CI 37105452621 (all 16 jobs,
@@ -213,3 +227,18 @@ For every phase:
 New PostgreSQL major versions should be added by extending version metadata, compatibility specifications, typed options, and tests without rewriting older-version support.
 
 Pre-release PostgreSQL versions should not automatically be advertised as stable supported versions.
+
+### Legacy backend replacement / 旧互換実行基盤の置換
+
+ADR-0024 supersedes ADR-0008/0023. CliWrap context isolation passed the controlled
+regressions but failed bounded stress and a subsequent initial full suite. New
+assets share the existing Process lifecycle, retain bounded input/EOF and add
+native argument/exit compatibility plus the already-reviewed System.Management
+Windows tree dependency. Fresh final PR and exact-main CI and actual artifacts
+are still mandatory; implementation alone does not clear the open 1.0 gate.
+Frozen alpha.2 and postponed publication remain unchanged.
+
+同期コンテキスト修正だけでは停止が再現したため、ADR-0024でCliWrap依存を外し、
+既存Processの終了監視を共有します。入力上限・EOF・公開APIを保持し、旧APIに不足する
+引数整形・終了通知・Windows子孫終了を補います。最終PR／mainのCI・成果物確認は未完で、
+1.0完了と固定alpha.2の差し替えを意味しません。公開は後回しのままです。

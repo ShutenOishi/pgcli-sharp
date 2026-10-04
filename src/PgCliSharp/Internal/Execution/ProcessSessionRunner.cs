@@ -2,9 +2,6 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
-#if NETSTANDARD2_0
-using CliWrap;
-#endif
 
 namespace PgCliSharp.Internal.Execution;
 
@@ -90,45 +87,10 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
 #endif
         cancellationToken.ThrowIfCancellationRequested();
 
-#if NETSTANDARD2_0
-        return StartWithCliWrap(request, cancellationToken);
-#else
         return StartWithProcess(request, cancellationToken);
-#endif
     }
 
-#if NETSTANDARD2_0
-    private static CliWrapProcessSession StartWithCliWrap(
-        ProcessSessionStartRequest request,
-        CancellationToken cancellationToken)
-    {
-        var inputPipe = new SessionInputPipe();
-
-        Command command = Cli.Wrap(request.ExecutablePath)
-            .WithArguments(request.Arguments)
-            .WithValidation(CommandResultValidation.None)
-            .WithStandardInputPipe(inputPipe.Source)
-            .WithStandardOutputPipe(PipeTarget.ToStream(request.StandardOutput))
-            .WithStandardErrorPipe(PipeTarget.ToStream(request.StandardError));
-
-        if (request.EnvironmentVariables is not null)
-        {
-            command = command.WithEnvironmentVariables(
-                builder =>
-                {
-                    foreach (KeyValuePair<string, string> pair in request.EnvironmentVariables)
-                        builder.Set(pair.Key, pair.Value);
-                });
-        }
-
-        return new CliWrapProcessSession(
-            request,
-            command,
-            inputPipe,
-            cancellationToken);
-    }
-#else
-    private static ModernProcessSession StartWithProcess(
+    private static NativeProcessSession StartWithProcess(
         ProcessSessionStartRequest request,
         CancellationToken cancellationToken)
     {
@@ -142,8 +104,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             RedirectStandardError = true,
         };
 
-        foreach (string argument in request.Arguments)
-            startInfo.ArgumentList.Add(argument);
+        ProcessCompatibility.SetArguments(startInfo, request.Arguments);
 
         if (request.EnvironmentVariables is not null)
         {
@@ -166,10 +127,10 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             throw new PgExecutableStartException(request.ExecutablePath, exception);
         }
 
-        return new ModernProcessSession(request, process, cancellationToken);
+        return new NativeProcessSession(request, process, cancellationToken);
     }
 
-    private sealed class ModernProcessSession : IProcessSession
+    private sealed class NativeProcessSession : IProcessSession
     {
         private static readonly TimeSpan AbnormalCleanupGracePeriod =
             TimeSpan.FromSeconds(2);
@@ -180,19 +141,30 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             new CancellationTokenSource();
         private readonly CancellationTokenSource _ioCancellation =
             new CancellationTokenSource();
+#if NETSTANDARD2_0
+        private readonly SessionInputPipe _inputPipe = new SessionInputPipe();
+        private readonly CancellationTokenSource _inputCancellation = new CancellationTokenSource();
+#endif
+        private readonly Task _standardInputTask;
         private readonly Task _standardOutputTask;
         private readonly Task _standardErrorTask;
         private int _inputCompleted;
         private int _disposed;
 
-        internal ModernProcessSession(
+        internal NativeProcessSession(
             ProcessSessionStartRequest request,
             Process process,
             CancellationToken cancellationToken)
         {
             _request = request;
             _process = process;
+#if NETSTANDARD2_0
+            StandardInput = _inputPipe.Writer;
+            _standardInputTask = PumpInputAsync();
+#else
             StandardInput = process.StandardInput.BaseStream;
+            _standardInputTask = Task.CompletedTask;
+#endif
             _standardOutputTask = process.StandardOutput.BaseStream.CopyToAsync(
                 request.StandardOutput,
                 81920,
@@ -213,6 +185,9 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             if (Interlocked.Exchange(ref _inputCompleted, 1) != 0)
                 return;
 
+#if NETSTANDARD2_0
+            _inputPipe.Complete();
+#else
             try
             {
                 _process.StandardInput.Close();
@@ -223,7 +198,26 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                 exception is IOException)
             {
             }
+#endif
         }
+
+#if NETSTANDARD2_0
+        private async Task PumpInputAsync()
+        {
+            try
+            {
+                await _inputPipe.PumpAsync(_process.StandardInput.BaseStream, _inputCancellation.Token)
+                    .ConfigureAwait(false);
+                _process.StandardInput.Close();
+            }
+            catch (Exception exception) when ((_inputCancellation.IsCancellationRequested || _process.HasExited) &&
+                (exception is OperationCanceledException || exception is IOException || exception is ObjectDisposedException))
+            {
+                // Exit/cancellation releases blocked writers; accepted input need not
+                // be consumed by a process that has already ended.
+            }
+        }
+#endif
 
         public void Cancel()
         {
@@ -254,7 +248,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                     _manualCancellation.Token);
 
             var stopwatch = Stopwatch.StartNew();
-            Task waitTask = _process.WaitForExitAsync(CancellationToken.None);
+            Task waitTask = ProcessCompatibility.WaitForExitAsync(_process);
             Task cancellationTask = lifetimeCancellation.Token.CanBeCanceled
                 ? Task.Delay(Timeout.Infinite, lifetimeCancellation.Token)
                 : Task.Delay(Timeout.Infinite, CancellationToken.None);
@@ -263,7 +257,8 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                 : Task.Delay(Timeout.Infinite, CancellationToken.None);
             Task<Exception> ioFaultTask = WaitForIoFaultAsync(
                 _standardOutputTask,
-                _standardErrorTask);
+                _standardErrorTask,
+                _standardInputTask);
 
             try
             {
@@ -283,11 +278,16 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                     TryTerminateProcessTree(_process);
                     CompleteInput();
                     _ioCancellation.Cancel();
+#if NETSTANDARD2_0
+                    _inputCancellation.Cancel();
+                    _inputPipe.Dispose();
+#endif
 
                     await AwaitBoundedCleanupAsync(
                             waitTask,
                             _standardOutputTask,
-                            _standardErrorTask)
+                            _standardErrorTask,
+                            _standardInputTask)
                         .ConfigureAwait(false);
                     stopwatch.Stop();
 
@@ -313,9 +313,14 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                         "Process session ended without a process, timeout, cancellation, or I/O outcome.");
                 }
 
+#if NETSTANDARD2_0
+                _inputCancellation.Cancel();
+                _inputPipe.Dispose();
+#endif
                 Task drainTask = Task.WhenAll(
                     _standardOutputTask,
-                    _standardErrorTask);
+                    _standardErrorTask,
+                    _standardInputTask);
 
                 completedTask = await Task.WhenAny(
                         drainTask,
@@ -331,7 +336,8 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
                     await AwaitBoundedCleanupAsync(
                             drainTask,
                             _standardOutputTask,
-                            _standardErrorTask)
+                            _standardErrorTask,
+                            _standardInputTask)
                         .ConfigureAwait(false);
                     stopwatch.Stop();
 
@@ -356,6 +362,11 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             finally
             {
                 _ioCancellation.Cancel();
+#if NETSTANDARD2_0
+                _inputCancellation.Cancel();
+                _inputPipe.Dispose();
+                _inputCancellation.Dispose();
+#endif
                 _ioCancellation.Dispose();
                 _manualCancellation.Dispose();
                 _process.Dispose();
@@ -419,142 +430,11 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             }
         }
 
-        private static void TryTerminateProcessTree(Process process)
-        {
-            try
-            {
-                if (!process.HasExited)
-                    process.Kill(entireProcessTree: true);
-            }
-            catch (Exception exception) when (
-                exception is InvalidOperationException ||
-                exception is Win32Exception ||
-                exception is NotSupportedException)
-            {
-                // Best effort. Completion still reports the primary outcome.
-            }
-        }
+        private static void TryTerminateProcessTree(Process process) =>
+            ProcessCompatibility.TryTerminateProcessTree(process);
     }
-#endif
 
 #if NETSTANDARD2_0
-    private sealed class CliWrapProcessSession : IProcessSession
-    {
-        private readonly ProcessSessionStartRequest _request;
-        private readonly SessionInputPipe _inputPipe;
-        private readonly CancellationTokenSource _manualCancellation = new CancellationTokenSource();
-        private readonly CancellationTokenSource? _timeoutCancellation;
-        private readonly CancellationTokenSource _lifetimeCancellation;
-        private readonly CancellationTokenSource _forcefulCancellation;
-        private int _disposed;
-
-        internal CliWrapProcessSession(
-            ProcessSessionStartRequest request,
-            Command command,
-            SessionInputPipe inputPipe,
-            CancellationToken cancellationToken)
-        {
-            _request = request;
-            _inputPipe = inputPipe;
-            StandardInput = inputPipe.Writer;
-            _timeoutCancellation = request.Timeout.HasValue
-                ? new CancellationTokenSource(request.Timeout.Value)
-                : null;
-            _lifetimeCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                cancellationToken,
-                _manualCancellation.Token);
-            _forcefulCancellation = _timeoutCancellation is null
-                ? CancellationTokenSource.CreateLinkedTokenSource(
-                    _lifetimeCancellation.Token)
-                : CancellationTokenSource.CreateLinkedTokenSource(
-                    _lifetimeCancellation.Token,
-                    _timeoutCancellation.Token);
-
-            CommandTask<CommandResult> commandTask;
-            try
-            {
-                commandTask = command.ExecuteAsync(_forcefulCancellation.Token);
-            }
-            catch (Exception exception) when (
-                exception is Win32Exception ||
-                exception is InvalidOperationException)
-            {
-                DisposeSources();
-                throw new PgExecutableStartException(request.ExecutablePath, exception);
-            }
-
-            Completion = CompleteAsync(commandTask);
-        }
-
-        public Stream StandardInput { get; }
-
-        public Task<ProcessSessionResult> Completion { get; }
-
-        public void CompleteInput() => _inputPipe.Complete();
-
-        public void Cancel()
-        {
-            try
-            {
-                _manualCancellation.Cancel();
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-        }
-
-        public void Dispose()
-        {
-            if (Interlocked.Exchange(ref _disposed, 1) != 0)
-                return;
-
-            CompleteInput();
-            Cancel();
-        }
-
-        private async Task<ProcessSessionResult> CompleteAsync(
-            CommandTask<CommandResult> commandTask)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            try
-            {
-                CommandResult result = await commandTask.ConfigureAwait(false);
-                stopwatch.Stop();
-                return new ProcessSessionResult(result.ExitCode, stopwatch.Elapsed);
-            }
-            catch (OperationCanceledException) when (_forcefulCancellation.IsCancellationRequested)
-            {
-                stopwatch.Stop();
-
-                if (_lifetimeCancellation.IsCancellationRequested)
-                    throw new OperationCanceledException();
-
-                if (_timeoutCancellation is not null &&
-                    _timeoutCancellation.IsCancellationRequested)
-                {
-                    throw new PgProcessTimeoutException(
-                        _request.ExecutablePath,
-                        _request.Timeout!.Value);
-                }
-
-                throw;
-            }
-            finally
-            {
-                DisposeSources();
-            }
-        }
-
-        private void DisposeSources()
-        {
-            _inputPipe.Dispose();
-            _forcefulCancellation.Dispose();
-            _lifetimeCancellation.Dispose();
-            _timeoutCancellation?.Dispose();
-            _manualCancellation.Dispose();
-        }
-    }
-
     private sealed class SessionInputPipe : IDisposable
     {
         private const int SegmentSize = 64 * 1024;
@@ -573,11 +453,9 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
 
         internal SessionInputPipe()
         {
-            Source = PipeSource.Create(PumpAsync);
             Writer = new SessionInputStream(this);
         }
 
-        internal PipeSource Source { get; }
         internal Stream Writer { get; }
 
         internal void Enqueue(byte[] buffer, int offset, int count)
@@ -714,7 +592,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             _signal.Release();
         }
 
-        private async Task PumpAsync(
+        internal async Task PumpAsync(
             Stream destination,
             CancellationToken cancellationToken)
         {
