@@ -134,6 +134,14 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase 8 - 1.0 stabilization
 
+CP-05 has completed through PR #23, exact main `f5f7ecbb4f5d04647bc3b2eb570d4e1aa2c503b3`
+and CI 37115096538 (18 jobs, attempt 1), with independent artifact inspection.
+The remaining [Windows net48 completion investigation](phase-8-net48-investigation.md)
+verifies the diagnostic reader against an owned CLR4 dump and bounds stress to
+30 rounds without claiming the historical intermittent stall is fixed.
+日本語: CP-05はPR #23と正確なmain CIの全18ジョブ成功・成果物確認で完了しました。
+残るnet48停止は実ダンプでの解析器検証と上限付き反復で調査し、原因解決とは断定しません。
+
 CP-04 bounded preview preparation completed through PR #22, main
 `846943fb739efdc30b4d5a6da469eef0d8855a98`, exact-main CI 37105452621 (all 16 jobs,
 attempt 1). Publication is postponed. User-approved ADR-0022 makes the
