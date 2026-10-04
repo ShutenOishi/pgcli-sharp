@@ -2,6 +2,32 @@
 
 ## Replacement follow-up / 実行基盤の置換
 
+Replacement final-candidate CI 37192663590 at
+`2a1b77d0f9320f34addc5dcbb086f97957aa77e8` passes all normal full suites,
+native Windows/macOS PostgreSQL and the corrected clean-consumer package audit.
+However, its Windows stress step remains reported in progress beyond its
+10-minute step cap, with no downloadable job log or Windows artifact at the
+observation point. This is unresolved runner/command-lifecycle evidence, not a
+proved recurrence of the library stall and not a successful completion receipt.
+The earlier replacement CI 37192226343 completed all 30/3/3 rounds but failed its
+initial dependency-audit expectation; neither incomplete run clears the merge gate.
+
+The next diagnostic revision independently bounds each owned dotnet test command
+to 180 seconds, including host/collector shutdown, records UTC/PID/TFM/round,
+elapsed duration and actual exit in stress-commands.jsonl, and stops on the first
+nonzero/timeout outcome. Timeout terminates only the newly started invocation's
+tree and is recorded as failure 124. The original session 15-second deadlines,
+testcase two-minute blame watchdog, total 10-minute step cap and 30/3/3 counts
+remain. No local VSTest execution or browser fallback is used. Existing workflow
+concurrency supersedes the unresponsive run when this meaningful diagnostic
+revision is published; old run outcomes remain separate evidence.
+
+置換案の最終候補は通常テスト・両native・依存監査を通過しましたが、Windows反復stepが
+10分上限後も実行中表示で、ログ／Windows成果物を取得できません。ライブラリ再停止とは
+断定せず、マージを保留します。新しい診断では各自所有のdotnet testコマンドの終了を
+180秒で制限し、PID・対象・回数・所要時間・実終了値を記録します。期限切れは失敗とし、
+再試行せず止めます。既存の15秒／2分／10分期限と反復回数は変えません。
+
 Nested-diagnostic CI 37191060046 at source
 `3859d4eb31fa71e0b19dc87d23e35c5dee72d9fe` reproduces a five-byte stall in the
 initial net48 full suite (44 completed, aborted before stress); modern suites

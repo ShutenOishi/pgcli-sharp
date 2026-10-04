@@ -63,6 +63,7 @@ jobs:
           python3 -m unittest discover -s eng -p test_native_postgresql.py
           python3 -m unittest discover -s eng -p test_analyze_windows_hang.py
           python3 -m unittest discover -s eng -p test_development_dependencies.py
+          python3 -m unittest discover -s eng -p test_windows_stress.py
           python3 eng/validate_candidate.py
 
       - name: Restore
@@ -87,15 +88,7 @@ jobs:
         env:
           PGCLI_TEST_TRACE_DIRECTORY: ${{ github.workspace }}/test-results/process-stages
         if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          foreach ($tfm in @('net48', 'net8.0', 'net10.0')) {
-            $rounds = if ($tfm -eq 'net48') { 30 } else { 3 }
-            1..$rounds | ForEach-Object {
-              dotnet test tests/PgCliSharp.Tests/PgCliSharp.Tests.csproj -c Release -f $tfm --no-build --no-restore --filter 'FullyQualifiedName~PsqlCompletionTests|FullyQualifiedName~ProcessSessionRunnerTests' --logger trx --results-directory "test-results/stress-$tfm-$_" --blame-hang-timeout 2m --blame-hang-dump-type full --diag "test-results/stress-$tfm-$_/vstest.log"
-              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            }
-          }
+        run: python eng/run_windows_stress.py test-results
 
       - name: Read Windows hang stacks and remove intermediate dumps
         if: always() && runner.os == 'Windows'
