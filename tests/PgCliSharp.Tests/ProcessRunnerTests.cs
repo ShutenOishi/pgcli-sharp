@@ -7,6 +7,44 @@ namespace PgCliSharp.Tests;
 public sealed class ProcessRunnerTests
 {
     [Fact]
+    public async Task RunAsync_DoesNotRequireTheStartupSynchronizationContext()
+    {
+        using var input = new MemoryStream();
+        using var output = new MemoryStream();
+        var context = new QueuedSynchronizationContext();
+        SynchronizationContext? original = SynchronizationContext.Current;
+        string gate = Path.Combine(Path.GetTempPath(), "pgcli-context-" + Guid.NewGuid().ToString("N"));
+        (string executable, string[] arguments) = ManagedTestProcess.Command("gate", gate);
+        Task<ProcessRunResult> completion;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(context);
+            completion = new ProcessRunner().RunAsync(new ProcessRunRequest(executable, arguments, output, TimeSpan.FromSeconds(15), standardInput: input), CancellationToken.None);
+            Assert.Same(context, SynchronizationContext.Current);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(original);
+        }
+
+        try
+        {
+            File.WriteAllText(gate, string.Empty);
+            Task winner = await Task.WhenAny(completion, Task.Delay(TimeSpan.FromSeconds(5)));
+            Assert.True(winner == completion, $"Completion required the occupied startup context; observed posts: {context.PostCount}.");
+            Assert.Equal(0, (await completion).ExitCode);
+            Assert.Equal(0, context.PostCount);
+            Assert.True(input.CanRead);
+            Assert.True(output.CanWrite);
+        }
+        finally
+        {
+            context.Release();
+            File.Delete(gate);
+        }
+    }
+
+    [Fact]
     public async Task RunAsync_Timeout_TerminatesProcessAndThrowsTimeoutException()
     {
         (string executable, string[] arguments) = GetLongRunningCommand();

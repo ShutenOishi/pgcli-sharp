@@ -17,6 +17,26 @@ in the five-byte case during stress round 2. The latter parent trace records
 `drained`. These prove neither child process exit nor the identity of the pending
 task. Later successful runs do not establish a root-cause fix.
 
+PR #24 passed all 18 PR CI jobs (37187722869), but exact-main CI 37188258263
+at `1e794140c80b2d0092f2d1a4ae0ceb8d85d790fc` reproduced the zero-byte stall
+in net48 stress round 3. The failed run is retained without retry.
+Artifact 11297931986, SHA-256
+`fb7e8b8a9a479e52035240cbda75dae890df0bfa2712a02a314c7874d299613b`,
+was independently downloaded and checked. The actual CLR4 dump reader succeeded;
+all four CliWrap stdIn/stdOut/stdErr/process tasks had flags `0x7000400`
+(RanToCompletion set, Faulted/Canceled unset), while its ExecuteAsync state machine
+remained at state 2 and wrapper completion flags were `0x2000400` (pending).
+Thus, for this capture, unfinished process/pipe tasks do not explain the stall.
+Reference-source Task flag definitions and pinned CliWrap/PolyShim source inform
+the next investigation; they do not alone identify a historical root cause.
+
+A follow-up adds deterministic session/one-shot regressions: start under a context
+that queues callbacks without pumping, restore the caller's original context,
+then require completion within five seconds without any posts to the occupied
+startup context. Cleanup releases queued baseline continuations. Start-failure
+coverage separately requires caller-context restoration. Before changing runtime
+behavior, Windows CI must demonstrate the failing baseline.
+
 The prepared ClrMD reader had not previously compiled or read a dump in CI.
 Windows now first captures an owned net48 `wait` helper using `MiniDumpWriteDump`
 and requires CLR4, thread and fixture-managed frames from the actual dump.

@@ -8,6 +8,11 @@ Record("entry");
 Console.Error.WriteLine("ready");
 Console.Error.Flush();
 Record("ready");
+if (args.Length == 2 && args[0] == "gate")
+{
+    // The parent releases this owned fixture only after startup has returned.
+    while (!File.Exists(args[1])) Thread.Sleep(10);
+}
 if (args.Length == 1 && args[0] == "produce")
 {
     using Stream producer = Console.OpenStandardOutput();

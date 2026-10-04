@@ -5,6 +5,62 @@ namespace PgCliSharp.Tests;
 
 public sealed class PsqlCompletionTests
 {
+    [Fact]
+    public async Task CompleteAsync_DoesNotRequireTheStartupSynchronizationContext()
+    {
+        using var output = new MemoryStream();
+        using var error = new MemoryStream();
+        var context = new QueuedSynchronizationContext();
+        SynchronizationContext? original = SynchronizationContext.Current;
+        (string executable, string[] arguments) = ManagedTestProcess.Command();
+        IProcessSession process;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(context);
+            process = new ProcessSessionRunner().Start(new ProcessSessionStartRequest(executable, arguments, output, error, TimeSpan.FromSeconds(15)), CancellationToken.None);
+            Assert.Same(context, SynchronizationContext.Current);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(original);
+        }
+
+        using var session = new PsqlSession(process, executable, new Version(18, 6), "18.6");
+        try
+        {
+            Task<PsqlSessionResult> completion = session.CompleteAsync();
+            Task winner = await Task.WhenAny(completion, Task.Delay(TimeSpan.FromSeconds(5)));
+            Assert.True(winner == completion, $"Completion required the occupied startup context; observed posts: {context.PostCount}.");
+            Assert.Equal(PsqlExitStatus.Success, (await completion).Status);
+            Assert.Equal(0, context.PostCount);
+            Assert.True(output.CanWrite);
+            Assert.True(error.CanWrite);
+        }
+        finally
+        {
+            // Release any baseline regression continuations before disposing caller streams.
+            context.Release();
+        }
+    }
+
+    [Fact]
+    public void StartFailure_PreservesTheCallersSynchronizationContext()
+    {
+        var context = new QueuedSynchronizationContext();
+        SynchronizationContext? original = SynchronizationContext.Current;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(context);
+            string absent = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "absent.exe");
+            Assert.Throws<PgExecutableStartException>(() => new ProcessSessionRunner().Start(new ProcessSessionStartRequest(absent, Array.Empty<string>(), Stream.Null, Stream.Null), CancellationToken.None));
+            Assert.Same(context, SynchronizationContext.Current);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(original);
+        }
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(5)]
