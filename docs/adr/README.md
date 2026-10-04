@@ -65,7 +65,7 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0005](0005-direct-process-execution-and-stream-safe-output.md) | Execute tools directly and preserve stream-safe output | Superseded |
 | [0006](0006-nuget-release-and-trusted-publishing.md) | Publish NuGet packages through automated trusted releases | Superseded |
 | [0007](0007-target-framework-matrix.md) | Initial target framework matrix | Accepted |
-| [0008](0008-netstandard20-cliwrap-process-backend.md) | Use a conditional CliWrap backend for .NET Standard 2.0 process execution | Accepted |
+| [0008](0008-netstandard20-cliwrap-process-backend.md) | Use a conditional CliWrap backend for .NET Standard 2.0 process execution | Superseded |
 | [0009](0009-phase-release-artifacts.md) | Record every completed phase as a GitHub Release with immutable artifacts | Superseded |
 | [0010](0010-bilingual-human-facing-releases.md) | Provide bilingual human-facing documentation and Phase Releases | Superseded |
 | [0011](0011-specification-first-tool-implementation.md) | Use a specification-first workflow for PostgreSQL CLI tools | Accepted |
@@ -80,6 +80,9 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0020](0020-select-unpublished-full-wrapper-preview.md) | Select an unpublished full-wrapper preview | Superseded |
 | [0021](0021-finish-preview-engineering-without-publication.md) | Finish preview engineering without publication | Accepted |
 | [0022](0022-require-three-os-native-cli-checkpoint.md) | Require a three-OS native CLI checkpoint for 1.0 | Accepted |
+| [0023](0023-isolate-legacy-startup-synchronization-context.md) | Isolate the legacy backend's startup synchronization context | Superseded |
+
+| [0024](0024-share-process-backend-with-legacy-compatibility.md) | Share the Process backend with narrow legacy compatibility | Accepted |
 
 ## Template
 

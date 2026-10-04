@@ -1,10 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
-#if NETSTANDARD2_0
-using System.Text;
-using CliWrap;
-#endif
 
 namespace PgCliSharp.Internal.Execution;
 
@@ -25,103 +21,9 @@ internal sealed class ProcessRunner : IProcessRunner
 
         cancellationToken.ThrowIfCancellationRequested();
 
-#if NETSTANDARD2_0
-        return RunWithCliWrapAsync(request, cancellationToken);
-#else
         return RunWithProcessAsync(request, cancellationToken);
-#endif
     }
 
-#if NETSTANDARD2_0
-    private static async Task<ProcessRunResult> RunWithCliWrapAsync(
-        ProcessRunRequest request,
-        CancellationToken cancellationToken)
-    {
-        var standardError = request.StandardError is null ? new StringBuilder() : null;
-        Stream standardOutput = request.StandardOutput ?? Stream.Null;
-
-        Command command = Cli.Wrap(request.ExecutablePath)
-            .WithArguments(request.Arguments)
-            .WithValidation(CommandResultValidation.None)
-            .WithStandardOutputPipe(PipeTarget.ToStream(standardOutput))
-            .WithStandardErrorPipe(
-                request.StandardError is null
-                    ? PipeTarget.ToStringBuilder(standardError!)
-                    : PipeTarget.ToStream(request.StandardError));
-
-        if (request.StandardInput is not null)
-        {
-            command = command.WithStandardInputPipe(
-                PipeSource.FromStream(request.StandardInput));
-        }
-
-        if (request.EnvironmentVariables is not null)
-        {
-            command = command.WithEnvironmentVariables(
-                builder =>
-                {
-                    foreach (KeyValuePair<string, string> pair in request.EnvironmentVariables)
-                    {
-                        builder.Set(pair.Key, pair.Value);
-                    }
-                });
-        }
-
-        using var timeoutSource = request.Timeout.HasValue
-            ? new CancellationTokenSource(request.Timeout.Value)
-            : null;
-        using var executionSource = timeoutSource is null
-            ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
-            : CancellationTokenSource.CreateLinkedTokenSource(
-                cancellationToken,
-                timeoutSource.Token);
-
-        CommandTask<CommandResult> commandTask;
-        try
-        {
-            commandTask = command.ExecuteAsync(executionSource.Token);
-        }
-        catch (Exception exception) when (
-            exception is Win32Exception ||
-            exception is InvalidOperationException)
-        {
-            throw new PgExecutableStartException(request.ExecutablePath, exception);
-        }
-
-        var stopwatch = Stopwatch.StartNew();
-
-        CommandResult commandResult;
-        try
-        {
-            commandResult = await commandTask.ConfigureAwait(false);
-        }
-        catch (OperationCanceledException) when (executionSource.IsCancellationRequested)
-        {
-            stopwatch.Stop();
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (timeoutSource is not null && timeoutSource.IsCancellationRequested)
-            {
-                throw new PgProcessTimeoutException(
-                    request.ExecutablePath,
-                    request.Timeout!.Value);
-            }
-
-            throw;
-        }
-
-        stopwatch.Stop();
-
-        var result = new ProcessRunResult(
-            commandResult.ExitCode,
-            stopwatch.Elapsed,
-            standardError?.ToString() ?? string.Empty);
-
-        ThrowForNonZeroExitCodeIfRequested(request, result);
-        return result;
-    }
-#else
     private static readonly TimeSpan AbnormalCleanupGracePeriod =
         TimeSpan.FromSeconds(2);
 
@@ -150,6 +52,10 @@ internal sealed class ProcessRunner : IProcessRunner
         }
 
         var stopwatch = Stopwatch.StartNew();
+#if NETSTANDARD2_0
+        // The former backend supplied EOF when no input source was configured.
+        if (request.StandardInput is null) TryCloseStandardInput(process);
+#endif
         using var outputCancellation = new CancellationTokenSource();
 
         Task<string> standardErrorTask = ReadOrStreamStandardErrorAsync(
@@ -176,7 +82,7 @@ internal sealed class ProcessRunner : IProcessRunner
                 process.StandardInput,
                 inputCancellation.Token);
 
-        Task waitTask = process.WaitForExitAsync(CancellationToken.None);
+        Task waitTask = ProcessCompatibility.WaitForExitAsync(process);
         Task cancellationTask = cancellationToken.CanBeCanceled
             ? Task.Delay(Timeout.Infinite, cancellationToken)
             : Task.Delay(Timeout.Infinite, CancellationToken.None);
@@ -356,8 +262,12 @@ internal sealed class ProcessRunner : IProcessRunner
     {
         if (destination is null)
         {
+            #if NETSTANDARD2_0
+            return await process.StandardError.ReadToEndAsync().ConfigureAwait(false);
+#else
             return await process.StandardError.ReadToEndAsync(
                 cancellationToken).ConfigureAwait(false);
+#endif
         }
 
         await process.StandardError.BaseStream.CopyToAsync(
@@ -410,13 +320,14 @@ internal sealed class ProcessRunner : IProcessRunner
             CreateNoWindow = true,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
+#if NETSTANDARD2_0
+            RedirectStandardInput = true,
+#else
             RedirectStandardInput = request.StandardInput is not null,
+#endif
         };
 
-        foreach (string argument in request.Arguments)
-        {
-            startInfo.ArgumentList.Add(argument);
-        }
+        ProcessCompatibility.SetArguments(startInfo, request.Arguments);
 
         if (request.EnvironmentVariables is not null)
         {
@@ -442,24 +353,8 @@ internal sealed class ProcessRunner : IProcessRunner
         }
     }
 
-    private static void TryTerminateProcessTree(Process process)
-    {
-        try
-        {
-            if (!process.HasExited)
-            {
-                process.Kill(entireProcessTree: true);
-            }
-        }
-        catch (Exception exception) when (
-            exception is InvalidOperationException ||
-            exception is Win32Exception ||
-            exception is NotSupportedException)
-        {
-            // Best effort: cancellation/timeout/I/O failure still reports the primary outcome.
-        }
-    }
-#endif
+    private static void TryTerminateProcessTree(Process process) =>
+        ProcessCompatibility.TryTerminateProcessTree(process);
 
     private static void ThrowForNonZeroExitCodeIfRequested(
         ProcessRunRequest request,

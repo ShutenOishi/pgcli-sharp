@@ -81,4 +81,6 @@ EOF
   dotnet build "$dir/Smoke.csproj" --configuration Release --no-restore
 done
 
+python3 eng/audit_development_dependencies.py "$consumer" "$artifacts_dir/DEVELOPMENT-DEPENDENCIES.json"
+
 echo "Verified $nupkg and $snupkg"

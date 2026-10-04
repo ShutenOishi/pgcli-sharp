@@ -242,7 +242,7 @@ dotnet build PgCliSharp.slnx --configuration Release --no-restore
 dotnet test PgCliSharp.slnx --configuration Release --no-build --no-restore
 ```
 
-The `netstandard2.0` process backend uses CliWrap internally according to ADR-0008. Modern targets use the .NET BCL process APIs directly.
+All targets use the .NET BCL Process lifecycle. Under ADR-0024, `netstandard2.0` adds internal argument/exit compatibility and uses System.Management for best-effort Windows descendant termination; CliWrap is no longer a dependency. Modern targets use ArgumentList and native asynchronous exit/tree APIs. Older Unix runtimes without tree termination support can terminate only the immediate child. The preserved alpha.2 candidate still contains its original backend.
 
 ## License
 

@@ -1,10 +1,10 @@
 # ADR-0008: Use a conditional CliWrap backend for .NET Standard 2.0 process execution
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-09-18
 - Decision owners: PgCliSharp maintainers
 - Supersedes: ADR-0005
-- Superseded by: None
+- Superseded by: ADR-0024
 
 ## Context
 
