@@ -29,6 +29,14 @@ if (args.Length == 1 && args[0] == "wait")
     Thread.Sleep(Timeout.Infinite);
     return;
 }
+if (args.Length == 1 && args[0] == "diagnostic-wait")
+{
+    var fixture = new StackReaderSmokeFixture();
+    Record("diagnostic-ready");
+    Thread.Sleep(Timeout.Infinite);
+    GC.KeepAlive(fixture);
+    return;
+}
 using Stream input = Console.OpenStandardInput();
 using Stream output = Console.OpenStandardOutput();
 Record("copy-enter");
@@ -38,3 +46,21 @@ Console.Error.WriteLine("eof");
 output.Flush();
 Console.Error.WriteLine("drained");
 Record("drained");
+
+// Kept alive in the owned smoke process to verify nested CLR4 field addresses.
+internal sealed class StackReaderSmokeFixture
+{
+    internal SmokePromise Promise = new() { Marker = 1729, Awaiter = new() { Token = 37, Completed = true } };
+}
+
+internal struct SmokePromise
+{
+    internal int Marker;
+    internal SmokeAwaiter Awaiter;
+}
+
+internal struct SmokeAwaiter
+{
+    internal short Token;
+    internal bool Completed;
+}

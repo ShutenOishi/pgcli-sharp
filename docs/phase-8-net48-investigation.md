@@ -52,6 +52,28 @@ records the exact final PR/main commits, CI runs and independently inspected
 diagnostic artifacts, preserving failures and superseded revisions. This avoids
 an untested follow-up source change solely to embed the CI's own source SHA.
 
+The context-isolation revision `c3d53b4bb23f3f7ee00638ce677028d8d5531f4e`
+passed the full Windows suites and 26 net48 stress rounds in CI 37189457631,
+then stalled in round 27 on the 262144-byte case. Its controlled-context tests
+pass, so the confirmed startup-context fix is not sufficient for the intermittent
+defect. The PR remains Draft; this failed run is not retried or merged.
+Artifact 11297554452, SHA-256
+`a4d56daa20274368b2f22c25f7fa4c246095ef6f0d2767ea4c176d543d07fded`,
+was independently checked. Again, all four lower tasks are normally completed;
+the outer ExecuteAsync is at state 2, while the internalized WhenEach iterator
+is at state -4 with a completed stdout task as its current yielded value.
+
+Further diagnosis reads bounded nested value-type fields (awaiters and the
+ManualResetValueTaskSourceCore promise), including short tokens, completion flags
+and captured-context type references, with three-level nesting and a global
+10,000-field limit. ExecutionContext fields are decoded only as scalar flags and
+type/address references; string/environment contents are still never read.
+Iterator state -2 is retained rather than treated as an ordinary completed async
+method. This is an evidence improvement, not another claimed runtime fix.
+The owned CLR4 smoke fixture now keeps a nested struct alive and requires its
+actual int/short/bool values (1729/37/true) from the dump, so a decoder that cannot
+read interior field addresses cannot silently pass the readiness gate.
+
 The prepared ClrMD reader had not previously compiled or read a dump in CI.
 Windows now first captures an owned net48 `wait` helper using `MiniDumpWriteDump`
 and requires CLR4, thread and fixture-managed frames from the actual dump.
@@ -97,3 +119,6 @@ ADR-0023に従い、CliWrap起動だけを同期コンテキストnullで初期�
 過去の全停止の原因とは断定しません。最終PR／main CIと成果物確認を必須とし、
 正確なcommit・run・成果物をPR #25の検証記録に保持します。
 1.0判定と外部公開は保留します。
+同期コンテキスト修正後も反復27回目で停止が再現し、PRはDraftのままです。
+awaiter／promiseの構造体内部と継続先の型を上限付きで採取し、専用CLR4子の
+既知のint／short／boolを実ダンプから読めることも必須にします。

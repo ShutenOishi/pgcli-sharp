@@ -53,6 +53,12 @@ it would exceed the evidence. A passing bounded run is regression evidence, not
 proof of absence of all intermittent process defects. 1.0 acceptance and postponed
 publication remain separate.
 
+CI 37189457631 confirms the limitation: the context regressions pass, but net48
+stress round 27 still stalls with all four lower tasks complete and a yielded
+WhenEach value awaiting consumer progress. Context isolation is a confirmed
+partial fix; final merge gates remain blocked. Nested promise/awaiter diagnostics
+are expanded before choosing any additional runtime/dependency change.
+
 ## Primary-source evidence
 
 - [Pinned CliWrap execution](https://github.com/Tyrrrz/CliWrap/blob/3.10.5/CliWrap/Command.Execution.cs)

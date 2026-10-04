@@ -37,33 +37,50 @@ foreach (ClrInfo info in target.ClrVersions)
             Console.WriteLine($"  {frame}");
     }
     // Only relevant async state/pipe fields; do not print environment, strings or arbitrary memory.
+    int fieldsRead = 0;
+    void Fields(ulong address, ClrType type, bool interior, int depth)
+    {
+        foreach (ClrInstanceField field in type.Fields.Take(40))
+        {
+            if (++fieldsRead > 10000) return;
+            string prefix = new string(' ', 2 + depth * 2);
+            try
+            {
+                if (field.ElementType == ClrElementType.Int32)
+                    Console.WriteLine($"{prefix}{field.Name} = {field.Read<int>(address, interior)}");
+                else if (field.ElementType == ClrElementType.Int16)
+                    Console.WriteLine($"{prefix}{field.Name} = {field.Read<short>(address, interior)}");
+                else if (field.ElementType == ClrElementType.Boolean)
+                    Console.WriteLine($"{prefix}{field.Name} = {field.Read<bool>(address, interior)}");
+                else if (field.IsObjectReference)
+                {
+                    ClrObject value = field.ReadObject(address, interior);
+                    Console.WriteLine($"{prefix}{field.Name} = {value.Address:x} {value.Type?.Name}");
+                    ClrInstanceField? flags = value.Type?.GetFieldByName("m_stateFlags");
+                    if (flags is not null) Console.WriteLine($"{prefix}  taskFlags = {flags.Read<int>(value.Address, false):x}");
+                    if (depth < 3 && value.Type?.Name == "System.Threading.ExecutionContext")
+                        Fields(value.Address, value.Type, false, depth + 1);
+                }
+                else if (field.ElementType == ClrElementType.Struct && depth < 3)
+                {
+                    ClrValueType value = field.ReadStruct(address, interior);
+                    Console.WriteLine($"{prefix}{field.Name} STRUCT {value.Type?.Name}");
+                    if (value.Type is not null) Fields(value.Address, value.Type, true, depth + 1);
+                }
+            }
+            catch (Exception e) { Console.WriteLine($"{prefix}{field.Name}: {e.GetType().Name}"); }
+        }
+    }
     int count = 0;
     foreach (ClrObject obj in runtime.Heap.EnumerateObjects())
     {
         string name = obj.Type?.Name ?? "";
-        if (!(name.Contains("CliWrap.Command+") || name.Contains("ProcessSessionRunner+") || name.Contains("PsqlSession+") || name.Contains("PolyShim.") || name.StartsWith("MemberPolyfills_") || name == "System.Diagnostics.Process")) continue;
+        if (!(name.Contains("CliWrap.Command+") || name.Contains("ProcessSessionRunner+") || name.Contains("PsqlSession+") || name.Contains("PolyShim.") || name.StartsWith("MemberPolyfills_") || name == "System.Diagnostics.Process" || name == "StackReaderSmokeFixture")) continue;
         ClrInstanceField? state = obj.Type!.GetFieldByName("<>1__state");
-        if (state is not null && state.Read<int>(obj.Address, false) == -2) continue;
+        if (!name.StartsWith("MemberPolyfills_") && state is not null && state.Read<int>(obj.Address, false) == -2) continue;
         if (++count > 500) break;
         Console.WriteLine($"OBJECT {obj.Address:x} {name}");
-        foreach (ClrInstanceField field in obj.Type.Fields)
-        {
-            try
-            {
-                if (field.ElementType == ClrElementType.Int32)
-                    Console.WriteLine($"  {field.Name} = {field.Read<int>(obj.Address, false)}");
-                else if (field.ElementType == ClrElementType.Boolean)
-                    Console.WriteLine($"  {field.Name} = {field.Read<bool>(obj.Address, false)}");
-                else if (field.IsObjectReference)
-                {
-                    ClrObject value = field.ReadObject(obj.Address, false);
-                    Console.WriteLine($"  {field.Name} = {value.Address:x} {value.Type?.Name}");
-                    ClrInstanceField? flags = value.Type?.GetFieldByName("m_stateFlags");
-                    if (flags is not null) Console.WriteLine($"    taskFlags = {flags.Read<int>(value.Address, false):x}");
-                }
-            }
-            catch (Exception e) { Console.WriteLine($"  {field.Name}: {e.GetType().Name}"); }
-        }
+        Fields(obj.Address, obj.Type!, false, 0);
     }
 }
 internal static class Native
@@ -80,12 +97,12 @@ def smoke(reader, folder, helper):
     trace = Path(folder) / "stack-reader-smoke.child.log"
     dump = Path(folder) / "stack-reader-smoke.dmp"
     trace.unlink(missing_ok=True)
-    child = subprocess.Popen([str(Path(helper).resolve()), "wait"], stdin=subprocess.DEVNULL,
+    child = subprocess.Popen([str(Path(helper).resolve()), "diagnostic-wait"], stdin=subprocess.DEVNULL,
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                              env={**os.environ, "PGCLI_TEST_TRACE_FILE": str(trace.resolve())})
     try:
         deadline = time.monotonic() + 10
-        while not trace.exists() or "ready" not in trace.read_text(encoding="utf-8"):
+        while not trace.exists() or "diagnostic-ready" not in trace.read_text(encoding="utf-8"):
             if child.poll() is not None or time.monotonic() >= deadline:
                 raise RuntimeError("Owned CLR4 smoke child did not become ready.")
             time.sleep(0.05)
@@ -96,6 +113,8 @@ def smoke(reader, folder, helper):
         stacks = log.read_text(encoding="utf-8")
         if "CLR 4." not in stacks or "THREAD " not in stacks or "Program." not in stacks:
             raise RuntimeError("Owned CLR4 smoke dump did not yield expected managed frames.")
+        if not all(marker in stacks for marker in ("Marker = 1729", "Token = 37", "Completed = True")):
+            raise RuntimeError("Owned CLR4 smoke dump did not yield expected nested fields.")
     finally:
         if child.poll() is None:
             child.kill()
