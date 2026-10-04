@@ -308,6 +308,17 @@ The core package should avoid unnecessary dependencies such as Npgsql or Microso
 
 ## 15. NuGet and release policy
 
+ADR-0025 freezes new features until 1.0: only bug fixes, verification and
+documentation improvements proceed. Unpublished `1.0.0-rc.1` preparation uses a
+separate Process-backend lock/profile and a successful exact-main source selected
+after source preparation CI. All 18 source jobs and three-OS candidate audits are
+mandatory. Alpha.2 remains historical evidence, not current-backend distribution.
+RC completion does not promote 1.0 or enable publication.
+
+日本語: 1.0までは不具合修正・検証・文書改善に限定します。未公開rc.1は準備mainの
+全18CI成功後に固定し、別lockと3OS候補監査を使います。旧alpha.2を保存し、
+RC完了・1.0昇格・外部公開を区別します。
+
 ADR-0019 licenses original PgCliSharp code/documentation under MIT. Packages declare
 the MIT expression and include the root LICENSE and bilingual licensing guide.
 PostgreSQL executables are externally supplied, not bundled or relicensed.

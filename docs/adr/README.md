@@ -78,11 +78,11 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0018](0018-offline-commands-and-configuration-snapshots.md) | Add lambda configuration, offline commands and execution snapshots | Accepted |
 | [0019](0019-adopt-mit-license.md) | Adopt the MIT license | Accepted |
 | [0020](0020-select-unpublished-full-wrapper-preview.md) | Select an unpublished full-wrapper preview | Superseded |
-| [0021](0021-finish-preview-engineering-without-publication.md) | Finish preview engineering without publication | Accepted |
+| [0021](0021-finish-preview-engineering-without-publication.md) | Finish preview engineering without publication | Superseded |
 | [0022](0022-require-three-os-native-cli-checkpoint.md) | Require a three-OS native CLI checkpoint for 1.0 | Accepted |
 | [0023](0023-isolate-legacy-startup-synchronization-context.md) | Isolate the legacy backend's startup synchronization context | Superseded |
-
 | [0024](0024-share-process-backend-with-legacy-compatibility.md) | Share the Process backend with narrow legacy compatibility | Accepted |
+| [0025](0025-freeze-features-for-unpublished-rc1.md) | Freeze features for an unpublished 1.0 release candidate | Accepted |
 
 ## Template
 

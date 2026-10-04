@@ -5,6 +5,13 @@
 Status: **In progress, not release-ready.** Baseline is the completed Phase 7
 main commit `c857161047ec0b7027b6061fa8f19c688e60dc94`.
 
+ADR-0025 starts [unpublished rc.1 preparation](phase-8-rc1.md) with new features
+frozen. PR #26's replacement is complete through exact main CI 37194612585 and
+independent artifacts; historical failures remain in its receipt. Candidate
+selection/audit, 1.0 acceptance and publication are still separate pending gates.
+日本語: 新機能を止めrc.1を準備します。Process置換は完了、候補の固定・監査、
+1.0昇格と公開は別途残します。
+
 Stabilization is split into bounded checkpoints. Completing one checkpoint does
 not imply API freeze, full real-binary compatibility or publication approval.
 

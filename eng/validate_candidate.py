@@ -19,6 +19,11 @@ def validate(candidate):
     assert re.fullmatch(r'[A-Za-z0-9_-]+', candidate['nuget_user'])
     assert candidate['github_environment'] == 'release'
     assert isinstance(candidate['publication_enabled'], bool)
+    profile = candidate.get('dependency_profile', 'legacy-cliwrap')
+    assert profile in ('legacy-cliwrap', 'process-compat-v1'), 'Unknown dependency profile'
+    if candidate['version'].startswith('1.0.0-rc.'):
+        assert profile == 'process-compat-v1', 'RC must use the reviewed Process backend'
+        assert re.fullmatch(r'[0-9a-f]{64}', candidate.get('lock_sha256', '')), 'RC lock must be pinned'
     for field in ('title', 'package_release_notes'):
         value = candidate[field]
         assert value.strip() and '\n' not in value and '\r' not in value

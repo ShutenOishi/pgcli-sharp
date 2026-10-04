@@ -16,6 +16,12 @@ def check(run, jobs, candidate):
     assert run['status'] == 'completed' and run['conclusion'] == 'success'
     required = {f'Build and test ({os})' for os in ('ubuntu-latest', 'windows-latest', 'macos-latest')}
     required.update(f'Real PostgreSQL {major} (Linux/net10.0)' for major in range(10, 19))
+    if candidate.get('dependency_profile') == 'process-compat-v1':
+        required.update(f'Native PostgreSQL 18 ({os}/net10.0)' for os in ('windows-latest', 'macos-latest'))
+        required.update(f'Unpublished candidate audit ({os})' for os in ('ubuntu-latest', 'windows-latest', 'macos-latest'))
+        required.add('Release preflight / Verify reviewed preview without publication')
+        assert run['run_attempt'] == 1, 'RC source requires first-attempt evidence'
+        assert len(jobs) == len({job['name'] for job in jobs}), 'Duplicate source CI jobs'
     assert required <= {job['name'] for job in jobs}
     assert any(job['name'].startswith('Unpublished candidate audit (') for job in jobs)
     assert len(jobs) >= 13 and all(job['conclusion'] == 'success' for job in jobs)

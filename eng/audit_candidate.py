@@ -14,6 +14,18 @@ from validate_candidate import validate
 
 ROOT = Path(__file__).resolve().parent.parent
 FRAMEWORKS = ("netstandard2.0", "net8.0", "net10.0")
+PROFILES = {
+    "legacy-cliwrap": ("eng/candidate.packages.lock.json", [("CliWrap", "3.10.5")]),
+    "process-compat-v1": ("eng/rc1.packages.lock.json", [("System.Management", "10.0.10")]),
+}
+
+
+def profile(candidate):
+    name = candidate.get("dependency_profile", "legacy-cliwrap")
+    assert name in PROFILES, "Unknown candidate dependency profile"
+    return PROFILES[name]
+
+
 LEGACY_LICENSES = {
     "NETStandard.Library/2.0.3": ("LICENSE.TXT", "fc95de1436a321aadbfafd21f8a8506a2f4678bfc003bd806d6b59d3088efadc", "MIT"),
     "Microsoft.NETCore.Platforms/1.1.0": ("dotnet_library_license.txt", "f1db688d8481c91a452fabcea5060a23da9ea5088329b58c478a040e2e426297", "LicenseRef-Microsoft-DotNet-Library"),
@@ -67,7 +79,7 @@ def audit_package(package, source, candidate):
         assert {group.get("targetFramework") for group in groups} == {".NETStandard2.0", "net8.0", "net10.0"}
         for group in groups:
             deps = [(node.get("id"), node.get("version")) for node in group.findall("dependency")]
-            assert deps == ([("CliWrap", "3.10.5")] if group.get("targetFramework") == ".NETStandard2.0" else [])
+            assert deps == (profile(candidate)[1] if group.get("targetFramework") == ".NETStandard2.0" else [])
         return {"file": package.name, "sha256": sha256(package.read_bytes()), "payload": archive.namelist()}
 
 
@@ -234,7 +246,9 @@ def main():
     assert sdk == candidate["sdk_version"], "Wrong candidate SDK"
     project = source / "src/PgCliSharp/PgCliSharp.csproj"
     common = ("-m:1", "-nodeReuse:false", "-p:UseSharedCompilation=false")
-    pinned_lock = ROOT / "eng/candidate.packages.lock.json"
+    pinned_lock = ROOT / profile(candidate)[0]
+    if "lock_sha256" in candidate:
+        assert sha256(pinned_lock.read_bytes()) == candidate["lock_sha256"], "Wrong candidate lock"
     (project.parent / "packages.lock.json").write_bytes(pinned_lock.read_bytes())
     run(args.dotnet, "restore", str(project), "--locked-mode", *common, cwd=output)
     run(args.dotnet, "pack", str(project), "-c", "Release", "--no-restore", "-o", str(output),
