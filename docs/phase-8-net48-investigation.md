@@ -35,7 +35,18 @@ that queues callbacks without pumping, restore the caller's original context,
 then require completion within five seconds without any posts to the occupied
 startup context. Cleanup releases queued baseline continuations. Start-failure
 coverage separately requires caller-context restoration. Before changing runtime
-behavior, Windows CI must demonstrate the failing baseline.
+behavior, Windows CI must demonstrate the failing baseline. Baseline CI 37188939390
+at PR #25 head `b18a9a7b8187408a232ad4d4d6753a04b00820bd` confirms two net48
+failures: both controlled-context completions time out with two posts each.
+Modern net8/net10 suites each pass 554 tests, and the start-error restoration test
+passes on all targets. This is a deterministic context-dependence defect.
+
+ADR-0023 fixes it by initializing the existing CliWrap command task synchronously
+under a null SynchronizationContext and restoring the caller's context in finally.
+Both finite and session runners use the same internal adapter. No Task.Run or
+wider ExecutionContext suppression is used. Final exact PR/main CI and artifact
+inspection remain the acceptance gate for this change. The known defect and the
+historical captured stall are distinguished; no claim covers every past timeout.
 
 The prepared ClrMD reader had not previously compiled or read a dump in CI.
 Windows now first captures an owned net48 `wait` helper using `MiniDumpWriteDump`
@@ -54,8 +65,10 @@ PR/main CI and inspection of actual smoke/stress artifacts are required before
 this diagnostic change is accepted. A successful bounded run is preparedness and
 regression evidence, not proof that the intermittent defect is resolved.
 
-No production execution behavior, public API, frozen preview source or publication
-settings change. 1.0 acceptance and external publication remain pending.
+The initial PR #24 diagnostics did not change production execution. The PR #25
+follow-up deliberately changes only legacy startup context capture under ADR-0023.
+Public API, runtime dependencies, frozen preview source and publication settings
+remain unchanged. 1.0 acceptance and external publication remain pending.
 
 ## 日本語
 
@@ -70,5 +83,12 @@ CLR4・スレッド・fixtureの管理フレームを必須とし、子は後片
 net48反復は30回を上限に最初の失敗で止め、既存のタイムアウトは維持します。
 生ダンプは削除しアップロードからも除外します。文字列や環境値を出力せず、
 スタック・型・アドレス・Task状態のテキストを保持します。
-成功した場合も原因解決とは扱いません。実行実装・公開API・固定候補・公開設定は
-変更せず、1.0判定と外部公開は保留します。
+PR #24のmainで再現した停止の実ダンプを解析し、下位4Taskの正常完了と上位処理の
+保留を確認しました。PR #25の修正前CI 37188939390では、処理しない同期コンテキストを
+使う回帰テストがnet48の通常実行・セッション双方で失敗し、それぞれ2回のPostを
+観測しました。modern対象と起動失敗時のコンテキスト保持は成功しました。
+ADR-0023に従い、CliWrap起動だけを同期コンテキストnullで初期化し、finallyで
+呼び出し元の状態を戻します。同期的な起動エラー・実行コンテキスト・公開API・
+依存・固定候補・公開設定は保持します。確認できた依存の欠陥を修正しますが、
+過去の全停止の原因とは断定しません。最終PR／main CIと成果物確認を必須とし、
+1.0判定と外部公開は保留します。

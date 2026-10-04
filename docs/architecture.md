@@ -152,6 +152,12 @@ Requirements:
 
 The `netstandard2.0` compatibility backend must map execution results, cancellation, timeout, and failures back into PgCliSharp's own result/exception model. Public behavior should remain consistent across target frameworks.
 
+Under ADR-0023, both legacy finite and session backends initialize CliWrap
+synchronously with SynchronizationContext temporarily cleared, restoring the
+caller context in finally. Internal completion therefore does not require the
+startup context to pump callbacks. Start errors remain synchronous; no Task.Run,
+ExecutionContext suppression, public API or dependency change is introduced.
+
 Phase 6 additionally separates finite one-shot execution from long-lived redirected process sessions under ADR-0013. A redirected `psql` session exposes programmatic duplex pipe I/O but is not a TTY/PTY and does not promise Readline, command-history, or terminal-emulation behavior. Long-running rich-I/O tools may stream both stdout and stderr to caller-owned destinations so memory usage does not have to grow with process duration. ADR-0014 makes modern session output faults part of lifecycle supervision and bounds the `netstandard2.0` CliWrap input bridge to approximately 1 MiB. Legacy `WriteAsync` therefore applies cancellation-aware backpressure; successful write completion means acceptance into the bounded delivery buffer, while `CompleteInput` drains already accepted bytes before EOF.
 
 ## 9. Output model

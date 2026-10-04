@@ -79,7 +79,7 @@ internal sealed class ProcessRunner : IProcessRunner
         CommandTask<CommandResult> commandTask;
         try
         {
-            commandTask = command.ExecuteAsync(executionSource.Token);
+            commandTask = CliWrapExecution.Start(command, executionSource.Token);
         }
         catch (Exception exception) when (
             exception is Win32Exception ||

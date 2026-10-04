@@ -41,7 +41,7 @@ foreach (ClrInfo info in target.ClrVersions)
     foreach (ClrObject obj in runtime.Heap.EnumerateObjects())
     {
         string name = obj.Type?.Name ?? "";
-        if (!(name.Contains("CliWrap.Command+") || name.Contains("ProcessSessionRunner+") || name.Contains("PsqlSession+") || name.Contains("PolyShim.") || name == "System.Diagnostics.Process")) continue;
+        if (!(name.Contains("CliWrap.Command+") || name.Contains("ProcessSessionRunner+") || name.Contains("PsqlSession+") || name.Contains("PolyShim.") || name.StartsWith("MemberPolyfills_") || name == "System.Diagnostics.Process")) continue;
         ClrInstanceField? state = obj.Type!.GetFieldByName("<>1__state");
         if (state is not null && state.Read<int>(obj.Address, false) == -2) continue;
         if (++count > 500) break;

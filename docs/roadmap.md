@@ -139,8 +139,14 @@ and CI 37115096538 (18 jobs, attempt 1), with independent artifact inspection.
 The remaining [Windows net48 completion investigation](phase-8-net48-investigation.md)
 verifies the diagnostic reader against an owned CLR4 dump and bounds stress to
 30 rounds without claiming the historical intermittent stall is fixed.
+Exact-main CI 37188258263 reproduced a stall and successfully retained actual
+CLR4 state. PR #25 baseline CI 37188939390 confirms a deterministic legacy
+startup SynchronizationContext defect; ADR-0023 isolates dependency startup while
+preserving synchronous errors and caller context. Final PR/main gates are pending.
 日本語: CP-05はPR #23と正確なmain CIの全18ジョブ成功・成果物確認で完了しました。
 残るnet48停止は実ダンプでの解析器検証と上限付き反復で調査し、原因解決とは断定しません。
+mainでの再現と修正前CIから同期コンテキスト依存の欠陥を確認し、ADR-0023で
+内部起動処理を修正します。最終PR／mainのCIと成果物確認は未完了です。
 
 CP-04 bounded preview preparation completed through PR #22, main
 `846943fb739efdc30b4d5a6da469eef0d8855a98`, exact-main CI 37105452621 (all 16 jobs,

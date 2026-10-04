@@ -80,6 +80,7 @@ Do not silently edit an old Accepted ADR to make history appear different.
 | [0020](0020-select-unpublished-full-wrapper-preview.md) | Select an unpublished full-wrapper preview | Superseded |
 | [0021](0021-finish-preview-engineering-without-publication.md) | Finish preview engineering without publication | Accepted |
 | [0022](0022-require-three-os-native-cli-checkpoint.md) | Require a three-OS native CLI checkpoint for 1.0 | Accepted |
+| [0023](0023-isolate-legacy-startup-synchronization-context.md) | Isolate the legacy backend's startup synchronization context | Accepted |
 
 ## Template
 

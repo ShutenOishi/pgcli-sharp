@@ -473,7 +473,7 @@ internal sealed class ProcessSessionRunner : IProcessSessionRunner
             CommandTask<CommandResult> commandTask;
             try
             {
-                commandTask = command.ExecuteAsync(_forcefulCancellation.Token);
+                commandTask = CliWrapExecution.Start(command, _forcefulCancellation.Token);
             }
             catch (Exception exception) when (
                 exception is Win32Exception ||
