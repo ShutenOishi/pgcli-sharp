@@ -12,12 +12,8 @@ and lock at its immutable source.
 
 | Package | Reviewed version | License | Package copyright |
 |---|---|---|---|
-| System.Buffers | 4.6.1 | MIT | © Microsoft Corporation. All rights reserved. |
 | System.CodeDom | 10.0.10 | MIT | © Microsoft Corporation. All rights reserved. |
 | System.Management | 10.0.10 | MIT | © Microsoft Corporation. All rights reserved. |
-| System.Memory | 4.6.3 | MIT | © Microsoft Corporation. All rights reserved. |
-| System.Numerics.Vectors | 4.6.1 | MIT | © Microsoft Corporation. All rights reserved. |
-| System.Runtime.CompilerServices.Unsafe | 6.1.2 | MIT | © Microsoft Corporation. All rights reserved. |
 
 The expressions and copyright strings are from the exact NuGet packages.
 The standard MIT permission/disclaimer below accompanies these notices; it does

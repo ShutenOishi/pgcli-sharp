@@ -49,6 +49,10 @@ timeout contracts remain requirements; removing netstandard2.0 is not proposed.
 - Retain the 64 KiB / 16-segment legacy input bridge, feed it directly to stdin,
   and deliver EOF only after accepted bytes drain. Exit/cancel/disposal must
   release blocked producers without disposing caller streams.
+- Preserve the former legacy finite-command EOF when no stdin source is supplied.
+  Modern finite commands keep their existing inherited-input behavior. Sessions
+  always redirect stdin on every target and require explicit EOF unless the child
+  exits first. A dedicated net48 regression verifies the legacy no-source case.
 - Remove CliWrap and its now-unneeded async-iterator dependencies from new
   package assets. Do not retarget frozen alpha.2 or alter its dependency lock.
 

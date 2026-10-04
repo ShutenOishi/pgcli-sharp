@@ -6,6 +6,20 @@ namespace PgCliSharp.Tests;
 
 public sealed class ProcessCompatibilityTests
 {
+#if NET48
+    [Fact]
+    public async Task FiniteWithoutInput_PreservesLegacyEof()
+    {
+        (string executable, string[] arguments) = ManagedTestProcess.Command();
+        using var output = new MemoryStream();
+        Task<ProcessRunResult> completion = new ProcessRunner().RunAsync(
+            new ProcessRunRequest(executable, arguments, output, TimeSpan.FromSeconds(15)), CancellationToken.None);
+        Assert.Same(completion, await Task.WhenAny(completion, Task.Delay(5000)));
+        Assert.Equal(0, (await completion).ExitCode);
+        Assert.Empty(output.ToArray());
+    }
+#endif
+
     [Fact]
     public async Task NativeArguments_PreserveEmptyQuotesBackslashesUnicodeAndEnvironment()
     {

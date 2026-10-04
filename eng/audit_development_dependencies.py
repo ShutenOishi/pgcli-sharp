@@ -5,9 +5,7 @@ import sys
 from audit_candidate import audit_dependencies
 
 EXPECTED = {
-    "System.Management/10.0.10", "System.CodeDom/10.0.10", "System.Memory/4.6.3",
-    "System.Buffers/4.6.1", "System.Numerics.Vectors/4.6.1",
-    "System.Runtime.CompilerServices.Unsafe/6.1.2",
+    "System.Management/10.0.10", "System.CodeDom/10.0.10",
 }
 
 

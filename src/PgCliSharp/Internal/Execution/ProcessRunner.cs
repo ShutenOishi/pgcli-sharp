@@ -52,6 +52,10 @@ internal sealed class ProcessRunner : IProcessRunner
         }
 
         var stopwatch = Stopwatch.StartNew();
+#if NETSTANDARD2_0
+        // The former backend supplied EOF when no input source was configured.
+        if (request.StandardInput is null) TryCloseStandardInput(process);
+#endif
         using var outputCancellation = new CancellationTokenSource();
 
         Task<string> standardErrorTask = ReadOrStreamStandardErrorAsync(
@@ -316,7 +320,11 @@ internal sealed class ProcessRunner : IProcessRunner
             CreateNoWindow = true,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
+#if NETSTANDARD2_0
+            RedirectStandardInput = true,
+#else
             RedirectStandardInput = request.StandardInput is not null,
+#endif
         };
 
         ProcessCompatibility.SetArguments(startInfo, request.Arguments);
