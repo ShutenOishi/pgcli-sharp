@@ -47,6 +47,10 @@ Both finite and session runners use the same internal adapter. No Task.Run or
 wider ExecutionContext suppression is used. Final exact PR/main CI and artifact
 inspection remain the acceptance gate for this change. The known defect and the
 historical captured stall are distinguished; no claim covers every past timeout.
+The current [PR #25 validation receipt](https://github.com/ShutenOishi/pgcli-sharp/pull/25)
+records the exact final PR/main commits, CI runs and independently inspected
+diagnostic artifacts, preserving failures and superseded revisions. This avoids
+an untested follow-up source change solely to embed the CI's own source SHA.
 
 The prepared ClrMD reader had not previously compiled or read a dump in CI.
 Windows now first captures an owned net48 `wait` helper using `MiniDumpWriteDump`
@@ -91,4 +95,5 @@ ADR-0023に従い、CliWrap起動だけを同期コンテキストnullで初期�
 呼び出し元の状態を戻します。同期的な起動エラー・実行コンテキスト・公開API・
 依存・固定候補・公開設定は保持します。確認できた依存の欠陥を修正しますが、
 過去の全停止の原因とは断定しません。最終PR／main CIと成果物確認を必須とし、
+正確なcommit・run・成果物をPR #25の検証記録に保持します。
 1.0判定と外部公開は保留します。

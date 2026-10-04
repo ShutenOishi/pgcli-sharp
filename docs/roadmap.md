@@ -142,11 +142,15 @@ verifies the diagnostic reader against an owned CLR4 dump and bounds stress to
 Exact-main CI 37188258263 reproduced a stall and successfully retained actual
 CLR4 state. PR #25 baseline CI 37188939390 confirms a deterministic legacy
 startup SynchronizationContext defect; ADR-0023 isolates dependency startup while
-preserving synchronous errors and caller context. Final PR/main gates are pending.
+preserving synchronous errors and caller context. The current
+[PR #25 validation receipt](https://github.com/ShutenOishi/pgcli-sharp/pull/25)
+records final PR/main all-18 CI and independent diagnostic artifact inspection;
+these are required before the fix is considered complete.
 日本語: CP-05はPR #23と正確なmain CIの全18ジョブ成功・成果物確認で完了しました。
 残るnet48停止は実ダンプでの解析器検証と上限付き反復で調査し、原因解決とは断定しません。
 mainでの再現と修正前CIから同期コンテキスト依存の欠陥を確認し、ADR-0023で
-内部起動処理を修正します。最終PR／mainのCIと成果物確認は未完了です。
+内部起動処理を修正します。最終PR／mainの全18CIと成果物確認を完了条件とし、
+PR #25の検証記録に保持します。
 
 CP-04 bounded preview preparation completed through PR #22, main
 `846943fb739efdc30b4d5a6da469eef0d8855a98`, exact-main CI 37105452621 (all 16 jobs,
