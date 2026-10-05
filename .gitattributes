@@ -1,2 +1,4 @@
 # Preserve the upstream notice byte-for-byte, including its original CRLF/spacing.
 docs/third-party/dotnet-notices.txt -text -whitespace
+# The RC lock hash is byte-exact and must be identical on every audit OS.
+eng/rc1.packages.lock.json text eol=lf
