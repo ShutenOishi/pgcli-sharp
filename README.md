@@ -7,7 +7,7 @@ Strongly typed .NET wrapper for PostgreSQL command-line tools.
 
 ## Project status
 
-All 25 wrappers and the reviewed API are implemented, including lambda configuration and offline command generation. Phase 8 now prepares unpublished `1.0.0-rc.1` with the shared Process backend. Until 1.0, changes are limited to bug fixes, validation and documentation under ADR-0025. See [RC preparation](docs/phase-8-rc1.md) for selection/audit gates and exclusions. This is not 1.0 acceptance or publication approval; historical alpha.1/alpha.2 remain preserved.
+All 25 wrappers and the reviewed API are implemented, including lambda configuration and offline command generation. Phase 8 has selected an exact source/main-CI pair for unpublished `1.0.0-rc.1` with the shared Process backend; its three-OS RC audit and final selection CI remain required. Until 1.0, changes are limited to bug fixes, validation and documentation under ADR-0025. See [RC preparation](docs/phase-8-rc1.md) for selection/audit gates and exclusions. This is not 1.0 acceptance or publication approval; historical alpha.1/alpha.2 remain preserved.
 
 Initial PostgreSQL compatibility target:
 
@@ -20,7 +20,7 @@ Phase 0-2 retain their existing GitHub Releases. Under ADR-0012, Phase 3 onward 
 
 ## NuGet preview
 
-No package is published to nuget.org. `1.0.0-rc.1` is being prepared; use it only after its exact source is selected and all three-OS candidate audits pass. The manifest and audited artifact identify that source. Preserved alpha.2 artifacts contain the old backend and are not RCs. After extracting the verified RC artifact to `./candidate-packages`, a local consumer can use:
+No package is published to nuget.org. The manifest now selects the exact source for `1.0.0-rc.1`; use the candidate only after all three-OS RC audits and final selection CI pass. The manifest and audited artifact identify that source. Preserved alpha.2 artifacts contain the old backend and are not RCs. After extracting the verified RC artifact to `./candidate-packages`, a local consumer can use:
 
 Create a project-local `NuGet.Config` beside the consumer project so both the candidate and its separately resolved dependencies can restore on Windows/Linux/macOS:
 
