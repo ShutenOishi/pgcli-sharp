@@ -31,6 +31,25 @@ Windows成果物は生成されず、ログ取得も `BlobNotFound` でした。
 断定せず、ADR-0025の「attempt 1・全18ジョブ」条件も満たしません。新しいソースcommitで
 新規CIを実行し直します。
 
+A second fresh run, CI `37259044557`, made the Windows failure concrete:
+the normal net48/net8/net10 suites passed 562/559/559, then the first net48
+stress round reported two control tests completing normally instead of observing
+their requested timeout/cancellation. The same class's owned infinite fixture
+continued to pass its backpressure cases. The follow-up keeps production code
+unchanged and separates fixture purposes: short timeout/cancellation control
+tests use a multi-second native OS command, while backpressure tests retain the
+owned infinite managed fixture so they cannot naturally expire before delayed
+assertions. A new attempt-1 CI is required; this test-fixture correction is not
+recorded as proof of a production root cause.
+
+2回目の新規CI `37259044557` では原因範囲をさらに絞れました。通常の
+net48/net8/net10は562/559/559件すべて成功した後、net48反復1回目で
+timeout／手動cancelの2件だけが要求した制御結果ではなく正常終了を返しました。
+同じクラスの無期限fixtureを使うバックプレッシャー検証は成功しています。
+本番コードは変更せず、短いtimeout／cancel検証は数秒間動くOSネイティブコマンド、
+遅延し得るバックプレッシャー検証は無期限の管理対象fixture、と役割を分離します。
+改めてattempt 1の全CIを必須とし、このテストfixture修正を本番原因の証明とは扱いません。
+
 1. Prepare current source documentation, RC notes and fail-closed audit controls.
 2. Require fresh final PR and exact-main all-18 CI and actual artifact inspection.
 3. Fix that successful source SHA/main CI as `1.0.0-rc.1`, retaining alpha.2
