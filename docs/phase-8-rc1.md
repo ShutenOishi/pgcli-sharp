@@ -10,6 +10,27 @@ completed the Process-backend replacement through all 18 CI jobs at attempt 1;
 [the exact artifact receipt](https://github.com/ShutenOishi/pgcli-sharp/pull/26#issuecomment-5978994921)
 records Windows 30/3/3 stress and actual three-OS PostgreSQL evidence.
 
+### Preparation CI history / 準備CI履歴
+
+The first preparation run, CI `37242487375`, is intentionally retained as a
+failed receipt rather than retried into acceptance. Linux/macOS deterministic
+jobs and both native PostgreSQL 18 jobs completed successfully. Windows normal
+tests completed successfully, but the bounded Windows stress step remained
+reported in progress until the job itself ended in failure; GitHub did not
+produce a Windows artifact and the job-log endpoint returned `BlobNotFound`.
+The nine Linux PostgreSQL jobs, three candidate audits and shared preflight were
+therefore skipped by dependency gating. This evidence does not establish a
+library regression or runner root cause and does not satisfy ADR-0025's
+attempt-1 all-18 gate. A new source commit and fresh CI run are required.
+
+最初の準備CI `37242487375` は、再実行で合格扱いにせず失敗記録として保持します。
+Linux／macOS通常ジョブとWindows／macOSのnative PostgreSQL 18は成功し、Windowsの
+通常テストも成功しました。一方、Windows反復stepは実行中表示のままジョブが失敗終了し、
+Windows成果物は生成されず、ログ取得も `BlobNotFound` でした。このためLinux 10〜18、
+3OS候補監査、preflightは依存関係でskipされています。ライブラリ回帰やrunner原因とは
+断定せず、ADR-0025の「attempt 1・全18ジョブ」条件も満たしません。新しいソースcommitで
+新規CIを実行し直します。
+
 1. Prepare current source documentation, RC notes and fail-closed audit controls.
 2. Require fresh final PR and exact-main all-18 CI and actual artifact inspection.
 3. Fix that successful source SHA/main CI as `1.0.0-rc.1`, retaining alpha.2
