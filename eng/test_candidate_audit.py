@@ -20,7 +20,8 @@ class CandidateAuditTests(unittest.TestCase):
         self.assertIs(candidate["publication_enabled"], False)
         self.assertIs(preserved["publication_enabled"], False)
         self.assertNotEqual(candidate["version"], preserved["version"])
-        self.assertEqual(candidate["supersedes_candidate"]["source_commit"], preserved["release_source_commit"])
+        historical = candidate.get("preserved_phase3_candidate", candidate["supersedes_candidate"])
+        self.assertEqual(historical["source_commit"], preserved["release_source_commit"])
         self.assertTrue((audit.ROOT / candidate["notes_file"]).is_file())
 
     def test_package_rejects_wrong_provenance_license_and_missing_satellite(self):
@@ -53,6 +54,17 @@ class CandidateAuditTests(unittest.TestCase):
                 return audit.audit_package(package, folder, candidate)
 
             check(entries, xml)
+            candidate['dependency_profile'] = 'process-compat-v1'
+            process_xml = xml.replace('id="CliWrap" version="3.10.5"', 'id="System.Management" version="10.0.10"')
+            check(entries, process_xml)
+            with self.assertRaises(AssertionError):
+                check(entries, xml)
+            candidate['dependency_profile'] = 'unknown'
+            with self.assertRaisesRegex(AssertionError, 'Unknown candidate dependency profile'):
+                check(entries, process_xml)
+            del candidate['dependency_profile']
+            with self.assertRaises(AssertionError):
+                check(entries, process_xml)
             for invalid_xml in (xml.replace(candidate['source_commit'], "b" * 40), xml.replace('>MIT<', '>GPL-3.0-only<')):
                 with self.assertRaises(AssertionError):
                     check(entries, invalid_xml)

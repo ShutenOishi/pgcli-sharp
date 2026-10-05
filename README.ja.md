@@ -7,7 +7,7 @@ PostgreSQL のコマンドラインツールを、型安全な .NET API から�
 
 ## 現在の状況
 
-全25ラッパーとレビュー済みAPIを実装し、Phase 8で未公開 `0.1.0-alpha.2` プレビューを準備しています。ラムダ設定と実行しないコマンド生成も含みます。[最終レビュー](docs/phase-8-final-review.md)で検証範囲と公開前条件を記録します。1.0の安定性を保証するものではありません。旧alpha.1はADR-0012により履歴として保存します。
+全25ラッパー、レビュー済みAPI、ラムダ設定と実行しないコマンド生成を実装済みです。Phase 8では共有Process実装を含む未公開 `1.0.0-rc.1` を準備します。ADR-0025により1.0までは不具合修正・検証・文書改善に限定します。[RC準備](docs/phase-8-rc1.md)に固定・監査の条件と未検証範囲を記録します。1.0昇格や公開承認ではなく、旧alpha.1／alpha.2は履歴として保存します。
 
 初期対応範囲:
 
@@ -20,7 +20,7 @@ Phase 0〜2 の既存 GitHub Release は維持します。ADR-0012 により Pha
 
 ## NuGet プレビュー
 
-選択したプレビュー版は `0.1.0-alpha.2` で、nuget.orgには未公開です。CIの未公開候補artifactを取得して `./candidate-packages` へ展開した場合は、利用側で次のように指定できます。
+nuget.orgには未公開です。`1.0.0-rc.1` は準備中で、正確なソースの固定と3OS候補監査が成功してから使用してください。manifestと監査済みartifactで出所を確認します。保存したalpha.2は旧実装で、RCではありません。検証済みRC artifactを `./candidate-packages` へ展開後、利用側で次のように指定できます。
 
 利用側プロジェクトの横に次の `NuGet.Config` を作り、候補と別途解決する依存をWindows／Linux／macOSで復元できるようにします:
 
@@ -35,7 +35,7 @@ Phase 0〜2 の既存 GitHub Release は維持します。ADR-0012 により Pha
 ```
 
 ```bash
-dotnet add package PgCliSharp --version 0.1.0-alpha.2
+dotnet add package PgCliSharp --version 1.0.0-rc.1
 dotnet restore
 ```
 

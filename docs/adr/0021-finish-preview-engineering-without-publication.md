@@ -1,6 +1,7 @@
 # ADR-0021: Finish preview engineering without publication
 
-- Status: Accepted
+- Status: Superseded
+- Superseded by: ADR-0025
 - Date: 2026-10-03
 - Supersedes: ADR-0020
 - Complements: ADR-0012, ADR-0016, ADR-0019

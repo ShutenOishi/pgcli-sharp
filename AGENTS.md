@@ -28,6 +28,7 @@ If an Accepted decision changes, create a new superseding ADR instead of rewriti
 - Validate option availability and incompatible combinations before starting the process.
 - Use `ProcessStartInfo.ArgumentList` on modern targets. The `netstandard2.0` compatibility backend shares the Process lifecycle with attributed native argument serialization, race-safe exit events and best-effort legacy Windows tree termination according to ADR-0024. Do not execute PostgreSQL tools through `cmd.exe`, PowerShell, `bash -c`, or another shell.
 - Keep the core package free of unnecessary runtime dependencies.
+- Under ADR-0025, until 1.0 accept only bug fixes, validation and documentation improvements; do not add new features. RC engineering, 1.0 acceptance and external publication are separate gates.
 - Public APIs must have bilingual English/Japanese XML documentation according to `docs/localization.md`.
 - Human-facing project surfaces must provide Japanese as well as English. This includes the repository README, GitHub Release titles/notes, user-oriented guides, and other prominent public documentation. The root README may link prominently to a maintained `README.ja.md` instead of duplicating the full text inline.
 - User-facing diagnostics and exception messages must be localizable in English and Japanese using resources; do not hard-code localized strings throughout the implementation.

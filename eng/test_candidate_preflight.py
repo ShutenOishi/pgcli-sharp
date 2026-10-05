@@ -10,6 +10,36 @@ from verify_candidate_ci import check
 
 
 class PreflightTests(unittest.TestCase):
+    def test_rc_requires_process_profile_and_pinned_lock(self):
+        c = json.loads((ROOT / '.github/release-candidate.json').read_text())
+        c.update(version='1.0.0-rc.1', tag='v1.0.0-rc.1',
+                 dependency_profile='process-compat-v1', lock_sha256='a' * 64,
+                 notes_file='docs/releases/nuget-1.0.0-rc.1.md')
+        validate(c)
+        for changes in ({'dependency_profile': 'legacy-cliwrap'},
+                        {'dependency_profile': 'unknown'}, {'lock_sha256': 'bad'}):
+            with self.assertRaises(AssertionError):
+                validate(dict(c, **changes))
+
+    def test_rc_source_requires_all_18_first_attempt_jobs(self):
+        c = {'source_commit': 'a' * 40, 'dependency_profile': 'process-compat-v1'}
+        run = {'id': 123, 'head_sha': c['source_commit'], 'event': 'push', 'head_branch': 'main',
+               'path': '.github/workflows/ci.yml', 'status': 'completed', 'conclusion': 'success', 'run_attempt': 1}
+        names = [f'Build and test ({os})' for os in ('ubuntu-latest', 'windows-latest', 'macos-latest')]
+        names += [f'Real PostgreSQL {major} (Linux/net10.0)' for major in range(10, 19)]
+        names += [f'Native PostgreSQL 18 ({os}/net10.0)' for os in ('windows-latest', 'macos-latest')]
+        names += [f'Unpublished candidate audit ({os})' for os in ('ubuntu-latest', 'windows-latest', 'macos-latest')]
+        names += ['Release preflight / Verify reviewed preview without publication']
+        jobs = [{'name': name, 'conclusion': 'success'} for name in names]
+        check(run, jobs, c)
+        for index in range(len(jobs)):
+            with self.assertRaises(AssertionError):
+                check(run, jobs[:index] + jobs[index + 1:], c)
+        with self.assertRaisesRegex(AssertionError, 'first-attempt'):
+            check(dict(run, run_attempt=2), jobs, c)
+        with self.assertRaisesRegex(AssertionError, 'Duplicate'):
+            check(run, jobs + [jobs[0]], c)
+
     def test_manifest_identity_and_inputs(self):
         c = json.loads((ROOT / '.github/release-candidate.json').read_text())
         validate(c)

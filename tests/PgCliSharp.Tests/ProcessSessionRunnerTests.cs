@@ -57,7 +57,7 @@ public sealed class ProcessSessionRunnerTests
     [Fact]
     public async Task Session_Timeout_TerminatesProcessAndThrowsTimeout()
     {
-        (string executable, string[] arguments) = GetLongRunningCommand();
+        (string executable, string[] arguments) = GetControlLongRunningCommand();
         var request = new ProcessSessionStartRequest(
             executable,
             arguments,
@@ -80,7 +80,7 @@ public sealed class ProcessSessionRunnerTests
     [Fact]
     public async Task Session_ManualCancellation_TerminatesProcess()
     {
-        (string executable, string[] arguments) = GetLongRunningCommand();
+        (string executable, string[] arguments) = GetControlLongRunningCommand();
         var request = new ProcessSessionStartRequest(
             executable,
             arguments,
@@ -160,7 +160,7 @@ public sealed class ProcessSessionRunnerTests
     [Fact]
     public async Task Session_LegacyInputBuffer_AppliesBackpressureAndHonorsWriteCancellation()
     {
-        (string executable, string[] arguments) = GetLongRunningCommand();
+        (string executable, string[] arguments) = GetOwnedLongRunningCommand();
         var request = new ProcessSessionStartRequest(
             executable,
             arguments,
@@ -191,7 +191,7 @@ public sealed class ProcessSessionRunnerTests
     [Fact]
     public async Task Session_LegacyInputBuffer_ReleasesBlockedWriterWhenSessionEnds()
     {
-        (string executable, string[] arguments) = GetLongRunningCommand();
+        (string executable, string[] arguments) = GetOwnedLongRunningCommand();
         var request = new ProcessSessionStartRequest(
             executable,
             arguments,
@@ -377,10 +377,27 @@ public sealed class ProcessSessionRunnerTests
             throw new NotSupportedException();
     }
 
-    private static (string Executable, string[] Arguments) GetLongRunningCommand()
+    private static (string Executable, string[] Arguments) GetControlLongRunningCommand()
     {
-        // Cancellation/backpressure tests must own the child's lifetime. A
-        // five-second ping/sleep can finish before a delayed assertion runs.
+        // Timeout/cancellation assertions are intentionally much shorter than
+        // this fixture's lifetime. Using a native command keeps CLR fixture
+        // startup/early-exit noise out of the control-outcome race itself.
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            string windowsDirectory = Environment.GetFolderPath(
+                Environment.SpecialFolder.Windows);
+            return (
+                Path.Combine(windowsDirectory, "System32", "ping.exe"),
+                new[] { "127.0.0.1", "-n", "6" });
+        }
+
+        return ("/bin/sleep", new[] { "5" });
+    }
+
+    private static (string Executable, string[] Arguments) GetOwnedLongRunningCommand()
+    {
+        // Backpressure tests must own the child's lifetime. A five-second
+        // ping/sleep can finish before a delayed blocked-writer assertion runs.
         return ManagedTestProcess.Command("wait");
     }
 }

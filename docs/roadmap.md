@@ -134,6 +134,20 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase 8 - 1.0 stabilization
 
+ADR-0025 now limits 1.0 changes to bug fixes, validation and documentation.
+Unpublished `1.0.0-rc.1` [source preparation and selection gates](phase-8-rc1.md)
+are in progress. PR #26's Process replacement is complete at main
+`d66a1e229d230d5f6d7b6fdd8db0c79a85bba89c`, exact CI 37194612585, all 18 jobs
+at attempt 1, with independently inspected actual artifacts. See the
+[final receipt](https://github.com/ShutenOishi/pgcli-sharp/pull/26#issuecomment-5978994921).
+The fixed alpha.2 is retained until a successful RC preparation main is selected;
+it does not contain the replacement. RC engineering, 1.0 acceptance and publication
+are separate; publication remains disabled.
+
+日本語: 1.0までは不具合修正・検証・文書改善に絞ります。PR #26の置換は正確なmainの
+全18CI・実成果物確認で完了です。rc.1準備mainを成功後に固定し、旧alpha.2を保存します。
+RC準備・1.0判定・公開は別で、公開は無効のままです。以下は過去の調査・選定の記録です。
+
 CP-05 has completed through PR #23, exact main `f5f7ecbb4f5d04647bc3b2eb570d4e1aa2c503b3`
 and CI 37115096538 (18 jobs, attempt 1), with independent artifact inspection.
 The remaining [Windows net48 completion investigation](phase-8-net48-investigation.md)
