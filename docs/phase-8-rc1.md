@@ -2,13 +2,34 @@
 
 ## English
 
-Status: source preparation; candidate selection and three-OS audit pending.
+Status: exact source selected for unpublished `1.0.0-rc.1`; three-OS RC audit and final selection CI pending.
 ADR-0025 limits remaining 1.0 work to bug fixes, validation and documentation.
 All 25 wrappers, lambda configuration, offline commands and the reviewed API
 remain unchanged. PR #26 / main `d66a1e229d230d5f6d7b6fdd8db0c79a85bba89c`
 completed the Process-backend replacement through all 18 CI jobs at attempt 1;
 [the exact artifact receipt](https://github.com/ShutenOishi/pgcli-sharp/pull/26#issuecomment-5978994921)
 records Windows 30/3/3 stress and actual three-OS PostgreSQL evidence.
+
+
+### Selected preparation source / 固定した準備ソース
+
+PR #27 completed source preparation at main `3a253d924998193259210320a7365dbd5f4c3c5f`. Exact-main CI
+`37260328001` completed all 18 required jobs successfully on attempt 1.
+The manifest now fixes that immutable source/main-CI pair as unpublished
+`1.0.0-rc.1`, with SDK `10.0.100`, dependency profile
+`process-compat-v1` and RC lock SHA-256
+`325325b23cc30597037e58b417885099a5c95f944762523cec3d8b95512555fd`.
+Historical alpha.2 source/CI/selection history remains preserved. The selection
+is not complete until the new RC package itself passes three-OS package,
+consumer and SourceLink audits plus the final selection PR/main CI.
+External publication remains disabled.
+
+PR #27のソース準備はmain `3a253d924998193259210320a7365dbd5f4c3c5f` で完了し、exact-main CI
+`37260328001` はattempt 1で必須18ジョブをすべて成功しました。manifestはこの
+不変source／main CIを未公開 `1.0.0-rc.1` として固定し、SDK `10.0.100`、
+`process-compat-v1`、上記RC lock SHA-256を使用します。旧alpha.2のsource／CI／
+履歴は保存します。新RC実体の3OS package／consumer／SourceLink監査と最終selection
+PR／main CIが成功するまでは固定完了とせず、外部公開は無効のままです。
 
 ### Preparation CI history / 準備CI履歴
 
@@ -76,7 +97,7 @@ acceptance determine a future 1.0 selection.
 
 ## 日本語
 
-現在はソース準備段階で、候補の固定と3OS監査は未完です。新機能を止め、
+ソース準備mainの検証は完了し、候補sourceを未公開rc.1へ固定しました。3OSのRC実体監査と最終selection CIは未完です。新機能を止め、
 不具合修正・検証・文書改善に限定します。Process置換はPR #26と正確なmainで
 全18CI・Windows30/3/3反復・3OS実PostgreSQL成果物まで確認済みです。
 準備PR／mainを検証後、その成功済みソースをrc.1へ固定し、旧alpha.2の履歴を保持します。
