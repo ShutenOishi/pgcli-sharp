@@ -134,19 +134,20 @@ Tools that can alter or recover data directories require especially explicit doc
 
 ## Phase 8 - 1.0 stabilization
 
-ADR-0025 now limits 1.0 changes to bug fixes, validation and documentation.
+ADR-0025 limits 1.0 changes to bug fixes, validation and documentation.
 Unpublished `1.0.0-rc.1` [source preparation and selection gates](phase-8-rc1.md)
-are in progress. PR #26's Process replacement is complete at main
-`d66a1e229d230d5f6d7b6fdd8db0c79a85bba89c`, exact CI 37194612585, all 18 jobs
-at attempt 1, with independently inspected actual artifacts. See the
-[final receipt](https://github.com/ShutenOishi/pgcli-sharp/pull/26#issuecomment-5978994921).
-The fixed alpha.2 is retained until a successful RC preparation main is selected;
-it does not contain the replacement. RC engineering, 1.0 acceptance and publication
-are separate; publication remains disabled.
+are in progress. Source preparation is complete at exact main `3a253d924998193259210320a7365dbd5f4c3c5f`,
+CI 37260328001, with all 18 jobs successful on attempt 1. The separate selection
+control now fixes that source/CI with SDK 10.0.100 and the reviewed Process-backend
+lock; three-OS RC package/consumer/SourceLink audits and final selection PR/main
+CI remain required. Historical alpha.2 provenance is retained and is not the RC.
+RC engineering, 1.0 acceptance and publication remain separate; publication is disabled.
 
-日本語: 1.0までは不具合修正・検証・文書改善に絞ります。PR #26の置換は正確なmainの
-全18CI・実成果物確認で完了です。rc.1準備mainを成功後に固定し、旧alpha.2を保存します。
-RC準備・1.0判定・公開は別で、公開は無効のままです。以下は過去の調査・選定の記録です。
+日本語: 1.0までは不具合修正・検証・文書改善に絞ります。rc.1の準備sourceは正確なmain
+`3a253d924998193259210320a7365dbd5f4c3c5f`／CI 37260328001（attempt 1・全18ジョブ成功）で確定し、別selection変更で
+そのsource／CI・固定SDK・Process用lockをmanifestへ固定しました。3OSのRC実体監査と
+最終selection PR／main CIはまだ必要です。旧alpha.2は履歴として保持し、RC・1.0判定・
+公開は別ゲート、外部公開は無効のままです。以下は過去の調査・選定の記録です。
 
 CP-05 has completed through PR #23, exact main `f5f7ecbb4f5d04647bc3b2eb570d4e1aa2c503b3`
 and CI 37115096538 (18 jobs, attempt 1), with independent artifact inspection.
