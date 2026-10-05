@@ -14,14 +14,37 @@ class CandidateAuditTests(unittest.TestCase):
     def test_msbuild_separator_escaping(self):
         self.assertEqual(audit.msbuild_value("a,b;c%"), "a%2Cb%3Bc%25")
 
-    def test_candidate_keeps_publication_disabled_and_distinct_from_history(self):
+    def test_candidate_keeps_publication_disabled_and_preserves_candidate_history(self):
         candidate = json.loads((audit.ROOT / ".github/release-candidate.json").read_text())
-        preserved = json.loads((audit.ROOT / ".github/nuget-release.json").read_text())
+        preserved_phase3 = json.loads((audit.ROOT / ".github/nuget-release.json").read_text())
         self.assertIs(candidate["publication_enabled"], False)
-        self.assertIs(preserved["publication_enabled"], False)
-        self.assertNotEqual(candidate["version"], preserved["version"])
-        historical = candidate.get("preserved_phase3_candidate", candidate["supersedes_candidate"])
-        self.assertEqual(historical["source_commit"], preserved["release_source_commit"])
+        self.assertIs(preserved_phase3["publication_enabled"], False)
+        self.assertNotEqual(candidate["version"], preserved_phase3["version"])
+
+        # The current RC supersedes the immediately previous unpublished
+        # candidate (alpha.2), while the Phase 3 manifest independently
+        # preserves alpha.1 and its original source. These are distinct
+        # provenance records and must not be collapsed into one identity.
+        superseded = candidate["supersedes_candidate"]
+        self.assertEqual("0.1.0-alpha.2", superseded["version"])
+        self.assertEqual(
+            "0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d",
+            superseded["source_commit"])
+        self.assertEqual(37104736018, superseded["source_main_ci"])
+        self.assertEqual("0.1.0-alpha.1", preserved_phase3["version"])
+        self.assertEqual(
+            "cccf8d9fbe1f2e1104676ab94a7863209c0220dd",
+            preserved_phase3["release_source_commit"])
+        self.assertNotEqual(
+            superseded["source_commit"],
+            preserved_phase3["release_source_commit"])
+
+        history = candidate["selection_history"]
+        self.assertTrue(any(
+            item["version"] == superseded["version"]
+            and item["source_commit"] == superseded["source_commit"]
+            and item["source_main_ci"] == superseded["source_main_ci"]
+            for item in history))
         self.assertTrue((audit.ROOT / candidate["notes_file"]).is_file())
 
     def test_package_rejects_wrong_provenance_license_and_missing_satellite(self):

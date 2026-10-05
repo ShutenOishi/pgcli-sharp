@@ -1,17 +1,25 @@
 {
   "package_id": "PgCliSharp",
-  "version": "0.1.0-alpha.2",
-  "source_commit": "0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d",
-  "source_main_ci": 37104736018,
+  "version": "1.0.0-rc.1",
+  "source_commit": "3a253d924998193259210320a7365dbd5f4c3c5f",
+  "source_main_ci": 37260328001,
   "sdk_version": "10.0.100",
   "publication_enabled": false,
   "supersedes_candidate": {
-    "version": "0.1.0-alpha.1",
-    "source_commit": "cccf8d9fbe1f2e1104676ab94a7863209c0220dd"
+    "version": "0.1.0-alpha.2",
+    "source_commit": "0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d",
+    "source_main_ci": 37104736018
   },
-  "package_release_notes": "Preview of all 25 typed PostgreSQL CLI wrappers, lambda configuration, offline command generation and MIT licensing. / 全25ラッパー・ラムダ設定・コマンド生成・MITのプレビュー。",
-  "notes_file": "docs/releases/nuget-0.1.0-alpha.2.md",
+  "package_release_notes": "Unpublished 1.0 release candidate with all 25 typed PostgreSQL CLI wrappers and the reviewed shared Process backend. / 全25型付きPostgreSQL CLIラッパーとレビュー済み共有Process実装を含む未公開1.0リリース候補。",
+  "notes_file": "docs/releases/nuget-1.0.0-rc.1.md",
   "selection_history": [
+    {
+      "version": "0.1.0-alpha.2",
+      "source_commit": "0b7a2bb2e4dc1c1ed016181b2598645a1e3a8d5d",
+      "source_main_ci": 37104736018,
+      "decision": "ADR-0025",
+      "status": "superseded by unpublished 1.0.0-rc.1 selection; preserved legacy-backend history"
+    },
     {
       "version": "0.1.0-alpha.2",
       "source_commit": "f0eb822c62def95e3cc8420b386b283437bf46cd",
@@ -27,9 +35,11 @@
       "status": "superseded unpublished preparation"
     }
   ],
-  "tag": "v0.1.0-alpha.2",
-  "title": "PgCliSharp 0.1.0-alpha.2 — Full wrapper preview / 全ラッパープレビュー",
+  "tag": "v1.0.0-rc.1",
+  "title": "PgCliSharp 1.0.0-rc.1 — Unpublished release candidate / 未公開リリース候補",
   "nuget_user": "ShutenOishi",
   "github_environment": "release",
-  "prerelease": true
+  "prerelease": true,
+  "dependency_profile": "process-compat-v1",
+  "lock_sha256": "325325b23cc30597037e58b417885099a5c95f944762523cec3d8b95512555fd"
 }
